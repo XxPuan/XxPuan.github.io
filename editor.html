@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>博客编辑�?· XxPuan's Value</title>
+  <title>博客编辑�?· XxPuan's Value</title>
   <link rel="icon" href="assets/LOGO.png" type="image/png">
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -19,7 +19,7 @@
       max-width:900px;margin:0 auto;
     }
 
-    /* ===== 工具�?===== */
+    /* ===== 工具�?===== */
     .toolbar{
       display:flex;flex-wrap:wrap;gap:6px;align-items:center;
       padding:.6rem .8rem;
@@ -174,8 +174,8 @@
 <body>
 
 <div class="editor-wrap">
-  <h1>📝 博客编辑�?/h1>
-  <p class="sub">填写内容后点击「生�?HTML 代码」，复制粘贴�?blog.html �?/p>
+  <h1>📝 博客编辑�?/h1>
+  <p class="sub">填写内容后点击「生�?HTML 代码」，复制粘贴�?blog.html �?/p>
 
   <!-- 日期 -->
   <div class="field">
@@ -188,12 +188,12 @@
         <option value="AI">AI</option>
         <option value="毕设">毕设</option>
         <option value="鸿蒙">鸿蒙</option>
-        <option value="嵌入�?>嵌入�?/option>
+        <option value="嵌入�?>嵌入�?/option>
         <option value="生活">生活</option>
         <option value="其他">其他</option>
       </select>
     </div>
-    <div class="date-hint">时间线左侧将显示「日 / 英文�?/ 年」格�?/div>
+    <div class="date-hint">时间线左侧将显示「日 / 英文�?/ 年」格�?/div>
   </div>
 
   <!-- 标题 -->
@@ -204,8 +204,8 @@
 
   <!-- 摘要 -->
   <div class="field">
-    <label>📋 摘要（显示在博客列表的简介文字，1~2 句话�?/label>
-    <input type="text" id="postExcerpt" placeholder="简短介绍一下这篇文�?..">
+    <label>📋 摘要（显示在博客列表的简介文字，1~2 句话�?/label>
+    <input type="text" id="postExcerpt" placeholder="简短介绍一下这篇文�?..">
   </div>
 
   <!-- 富文本编辑器 -->
@@ -214,42 +214,42 @@
     <div class="toolbar">
       <button onclick="execCmd('bold')" title="加粗"><b>B</b></button>
       <button onclick="execCmd('italic')" title="斜体"><i>I</i></button>
-      <button onclick="execCmd('underline')" title="下划�?><u>U</u></button>
+      <button onclick="execCmd('underline')" title="下划�?><u>U</u></button>
       <span class="sep"></span>
-      <button onclick="execCmd('insertOrderedList')" title="有序列表">�?列表</button>
-      <button onclick="execCmd('insertUnorderedList')" title="无序列表">�?列表</button>
+      <button onclick="execCmd('insertOrderedList')" title="有序列表">�?列表</button>
+      <button onclick="execCmd('insertUnorderedList')" title="无序列表">�?列表</button>
       <span class="sep"></span>
       <button onclick="execCmd('formatBlock','<h2>')" title="二级标题">H2</button>
       <button onclick="execCmd('formatBlock','<h3>')" title="三级标题">H3</button>
       <span class="sep"></span>
       <select onchange="execCmd('fontSize',this.value)" title="字号">
         <option value="3">正常</option>
-        <option value="4">�?/option>
+        <option value="4">�?/option>
         <option value="5">更大</option>
-        <option value="1">�?/option>
+        <option value="1">�?/option>
         <option value="2">较小</option>
       </select>
       <button onclick="addImage()" title="添加图片">🖼 图片</button>
-      <button onclick="addCode()" title="插入代码�?>&lt;/&gt; 代码</button>
+      <button onclick="addCode()" title="插入代码�?>&lt;/&gt; 代码</button>
     </div>
     <div class="editor-content" id="editor" contenteditable="true"></div>
   </div>
 
   <div class="actions">
-    <button class="btn btn-primary" onclick="generateHTML()">�?生成 HTML 代码</button>
-    <button class="btn btn-outline" onclick="resetEditor()">�?清空</button>
+    <button class="btn btn-primary" onclick="generateHTML()">�?生成 HTML 代码</button>
+    <button class="btn btn-outline" onclick="resetEditor()">�?清空</button>
   </div>
 
   <!-- ===== 输出区域 ===== -->
   <div class="output-wrap" id="outputWrap">
-    <h3>📋 生成的代�?�?复制下面内容�?blog.html</h3>
+    <h3>📋 生成的代�?�?复制下面内容�?blog.html</h3>
     <div class="output-box" id="outputBox"></div>
     <button class="copy-btn" onclick="copyCode()">📋 复制代码</button>
   </div>
 </div>
 
 <script>
-// 设置默认日期为今�?document.getElementById('postDate').valueAsDate = new Date()
+// 设置默认日期为今�?document.getElementById('postDate').valueAsDate = new Date()
 
 function execCmd(command, value) {
   document.execCommand(command, false, value || null)
@@ -258,14 +258,14 @@ function execCmd(command, value) {
 
 // 添加图片
 function addImage() {
-  const url = prompt('输入图片 URL 地址�?)
+  const url = prompt('输入图片 URL 地址�?)
   if (url) {
     execCmd('insertImage', url)
   }
 }
 
-// 添加代码�?function addCode() {
-  const code = prompt('粘贴代码�?)
+// 添加代码�?function addCode() {
+  const code = prompt('粘贴代码�?)
   if (code) {
     const el = document.getElementById('editor')
     const pre = document.createElement('pre')
@@ -273,11 +273,11 @@ function addImage() {
     codeEl.textContent = code
     pre.appendChild(codeEl)
     el.appendChild(pre)
-    // 在末尾加个换�?    el.appendChild(document.createElement('br'))
+    // 在末尾加个换�?    el.appendChild(document.createElement('br'))
   }
 }
 
-// 格式化日�?function formatDate(dateStr) {
+// 格式化日�?function formatDate(dateStr) {
   const d = new Date(dateStr)
   const day = String(d.getDate()).padStart(2, '0')
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -286,7 +286,7 @@ function addImage() {
   return { day, month, year, full: `${year}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` }
 }
 
-// 获取正文纯文本摘�?function getPlainText() {
+// 获取正文纯文本摘�?function getPlainText() {
   const el = document.getElementById('editor')
   return el.innerText.trim().slice(0, 100)
 }
@@ -296,12 +296,12 @@ function generateHTML() {
   const dateVal = document.getElementById('postDate').value
   if (!dateVal) { alert('请选择日期'); return }
   const title = document.getElementById('postTitle').value.trim()
-  if (!title) { alert('请输入标�?); return }
+  if (!title) { alert('请输入标�?); return }
   const tags = document.getElementById('postTags').value
   const excerpt = document.getElementById('postExcerpt').value.trim() || getPlainText()
   const fd = formatDate(dateVal)
   const contentHTML = document.getElementById('editor').innerHTML.trim()
-  if (!contentHTML) { alert('请输入正文内�?); return }
+  if (!contentHTML) { alert('请输入正文内�?); return }
 
   // 转义标题用于 slug
   const slug = title.replace(/[^\w\u4e00-\u9fa5]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'post'
@@ -323,7 +323,7 @@ function generateHTML() {
       </div>
     </div>`
 
-  // 生成文章详情�?HTML
+  // 生成文章详情�?HTML
   const postHTML = `\
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -381,7 +381,7 @@ function generateHTML() {
 <div id="headerMark"></div>
 <header id="header"><div id="headerTitle"><b>XxPuan</b><span class="suffix">'s Value</span></div></header>
 <main>
-  <a class="back-link" href="../blog.html">�?返回博客</a>
+  <a class="back-link" href="../blog.html">�?返回博客</a>
   <article>
     <h1>${title}</h1>
     <div class="post-meta">${fd.full} · <a href="#">#${tags}</a></div>
@@ -404,20 +404,21 @@ function generateHTML() {
   // 显示结果
   const outputBox = document.getElementById('outputBox')
   outputBox.textContent = 
-    '══�?步骤 1：复制下面这段，粘贴�?blog.html 的时间线区域 ═══\n\n' +
+    '══�?步骤 1：复制下面这段，粘贴�?blog.html 的时间线区域 ═══\n\n' +
     code + '\n\n' +
     '═══════════════════════════════════════════════\n\n' +
-    '══�?步骤 2：在 xxpuan-site/posts/ 目录下新�?' + slug + '.html 文件，粘贴下面内�?═══\n\n' +
+    '══�?步骤 2：在 xxpuan-site/posts/ 目录下新�?' + slug + '.html 文件，粘贴下面内�?═══\n\n' +
     postHTML
 
   document.getElementById('outputWrap').classList.add('show')
-  // 滚动到输出区�?  document.getElementById('outputWrap').scrollIntoView({behavior:'smooth', block:'start'})
+  // 滚动到输出区域
+  document.getElementById('outputWrap').scrollIntoView({behavior:'smooth', block:'start'})
 }
 
 function copyCode() {
   const text = document.getElementById('outputBox').textContent
   navigator.clipboard.writeText(text).then(() => {
-    alert('�?已复制！请按提示粘贴到对应文�?)
+    alert('�?已复制！请按提示粘贴到对应文�?)
   }).catch(() => {
     // fallback
     const range = document.createRange()
@@ -425,7 +426,7 @@ function copyCode() {
     window.getSelection().removeAllRanges()
     window.getSelection().addRange(range)
     document.execCommand('copy')
-    alert('�?已复制！')
+    alert('�?已复制！')
   })
 }
 
