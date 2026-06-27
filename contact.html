@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>联系 · XxPuan's Value</title>
+  <link rel="icon" href="assets/LOGO.png" type="image/png">
   <style>
     @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2')format('woff2');font-weight:400;font-display:swap}
     @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2')format('woff2');font-weight:500;font-display:swap}
@@ -38,7 +39,7 @@
     .page-title{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;margin-bottom:0.4rem}
     .page-sub{color:var(--bc10);font-size:0.9rem;line-height:1.7;margin-bottom:2.5rem;max-width:480px}
 
-    /* ===== 液态玻璃胶囊 ===== */
+    /* ===== 液态玻璃胶�?===== */
     .capsules-row{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
     .contact-cap{
       position:relative;
@@ -71,7 +72,7 @@
     .contact-cap .cap-label{font-size:1rem;font-weight:600;letter-spacing:.04em;color:var(--bc12);position:relative;z-index:1;transition:color .35s}
     .contact-cap:not(.clicked):hover .cap-label{color:var(--bc15)}
 
-    /* ===== 背面（信息条） ===== */
+    /* ===== 背面（信息条�?===== */
     .contact-cap .cap-back{
       position:absolute;inset:0;
       display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -88,7 +89,7 @@
     .contact-cap .cap-back .back-info{font-size:0.85rem;font-weight:600;color:var(--bc13);line-height:1.5;word-break:break-all;text-align:center}
     .contact-cap .cap-back .back-label{font-size:10px;font-weight:500;letter-spacing:.06em;color:var(--primary-light);margin-top:4px;text-transform:uppercase}
 
-    /* QR 码占位 */
+    /* QR 码占�?*/
     .contact-cap .cap-back .qr-placeholder{
       width:70px;height:70px;
       background:rgba(255,255,255,.06);
@@ -132,16 +133,16 @@
 
 <div class="page-wrap">
   <div class="page">
-    <h1 class="page-title reveal">联系我</h1>
-    <p class="page-sub reveal reveal-d1">不为了什么宏大的目标，只是想在这个浮躁时代，留下一点属于自己的痕迹。</p>
+    <h1 class="page-title reveal">联系�?/h1>
+    <p class="page-sub reveal reveal-d1">不为了什么宏大的目标，只是想在这个浮躁时代，留下一点属于自己的痕迹�?/p>
 
     <div class="capsules-row reveal reveal-d2">
-      <!-- Email — 直接打开邮箱 -->
+      <!-- Email �?直接打开邮箱 -->
       <div class="contact-cap" data-type="email" data-mail="XxPuan@163.com">
         <div class="cap-icon"><img src="assets/邮箱.png" alt="Email"></div>
         <div class="cap-label">Email</div>
         <div class="icon-glow"></div>
-        <div class="cap-back"><div class="back-info">XxPuan@163.com</div><div class="back-label">发送邮件</div></div>
+        <div class="cap-back"><div class="back-info">XxPuan@163.com</div><div class="back-label">发送邮�?/div></div>
       </div>
       <!-- TEL -->
       <div class="contact-cap" data-type="tel">
@@ -150,33 +151,33 @@
         <div class="icon-glow"></div>
         <div class="cap-back"><div class="back-info">***-***-****</div><div class="back-label">拨打电话</div></div>
       </div>
-      <!-- TikTok — QR -->
+      <!-- TikTok �?QR -->
       <div class="contact-cap" data-type="qr">
         <div class="cap-icon"><img src="assets/抖音.png" alt="TikTok"></div>
         <div class="cap-label">TikTok.CN</div>
         <div class="icon-glow"></div>
         <div class="cap-back">
-          <div class="qr-placeholder"><span>二维码</span></div>
+          <div class="qr-placeholder"><span>二维�?/span></div>
           <div class="back-label">抖音搜索</div>
         </div>
       </div>
-      <!-- WeChat — QR -->
+      <!-- WeChat �?QR -->
       <div class="contact-cap" data-type="qr">
         <div class="cap-icon"><img src="assets/微信.png" alt="WeChat"></div>
         <div class="cap-label">WeChat.CN</div>
         <div class="icon-glow"></div>
         <div class="cap-back">
-          <div class="qr-placeholder"><span>二维码</span></div>
+          <div class="qr-placeholder"><span>二维�?/span></div>
           <div class="back-label">添加微信</div>
         </div>
       </div>
-      <!-- QQ — QR -->
+      <!-- QQ �?QR -->
       <div class="contact-cap" data-type="qr">
         <div class="cap-icon"><img src="assets/QQ.png" alt="QQ"></div>
         <div class="cap-label">QQ.CN</div>
         <div class="icon-glow"></div>
         <div class="cap-back">
-          <div class="qr-placeholder"><span>二维码</span></div>
+          <div class="qr-placeholder"><span>二维�?/span></div>
           <div class="back-label">QQ联系</div>
         </div>
       </div>
@@ -242,8 +243,7 @@
   // --- 胶囊点击 ---
   caps.forEach(cap=>{
     cap.addEventListener('click',()=>{
-      // 已点击过的忽略
-      if(cap.classList.contains('clicked')) return
+      // 已点击过的忽�?      if(cap.classList.contains('clicked')) return
       cap.classList.add('clicked')
 
       const type=cap.dataset.type
@@ -251,8 +251,7 @@
       const cx=r.left+r.width/2
       const cy=r.top+r.height/2
 
-      // 粒子消散 → 翻转显示背面（所有胶囊统一流程）
-      burstParticles(cx,cy)
+      // 粒子消散 �?翻转显示背面（所有胶囊统一流程�?      burstParticles(cx,cy)
       cap.style.transition='all .5s cubic-bezier(.22,1,.36,1)'
       cap.style.transform='scale(0.6)'
       cap.style.opacity='0'
@@ -285,3 +284,4 @@
 </script>
 </body>
 </html>
+
