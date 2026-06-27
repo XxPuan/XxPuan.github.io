@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>简历 · XxPuan's Value</title>
+  <style>
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Bold.woff2') format('woff2'); font-weight:700; font-display:swap; }
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Black.woff2') format('woff2'); font-weight:800; font-display:swap; }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--primary-rgb:124,58,237;--primary:#7C3AED;--primary-light:#A855F7;--bg:#08080E;--bc15:#F1F1F6;--bc13:#D4D4E0;--bc12:#B8B8CC;--bc10:#8888A0;--bc8:#5A5A70;--header-h:80px;--lem:1rem}
+    html{font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--bc15);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+    body{min-height:100vh;position:relative}
+    img{-webkit-user-drag:none;-moz-user-drag:none;-o-user-drag:none;user-drag:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none}
+    a{color:inherit;text-decoration:none}
+    #cursorGlow{position:fixed;top:0;left:0;width:900px;height:900px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(124,58,237,.2),rgba(168,85,247,.1) 35%,transparent 68%);transform:translate(-50%,-50%)}
+    #cursorGlow::after{content:'';position:absolute;top:50%;left:50%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.1),transparent 55%);transform:translate(-50%,-50%)}
+
+    /* ===== 沉浸光感页眉 ===== */
+    #headerMark{display:block;width:100%;height:var(--header-h)}
+    #header{position:fixed;top:0;left:0;z-index:100;width:100%;height:var(--header-h);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,14,.55);backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid rgba(255,255,255,.04);box-shadow:0 1px 0 rgba(124,58,237,.08) inset,0 0 60px rgba(124,58,237,.04)}
+    #header::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(124,58,237,.35) 25%,rgba(168,85,247,.5) 50%,rgba(124,58,237,.35) 75%,transparent 95%);opacity:.8}
+    #header::after{content:'';position:absolute;bottom:-1px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.15),transparent)}
+    #headerTitle{font-size:16px;font-weight:500;color:var(--bc15);display:flex;align-items:center}
+    #headerTitle b{font-size:22px;font-weight:800;margin-right:2px}
+    #headerTitle .suffix{font-size:16px;font-weight:500;color:var(--bc12);letter-spacing:.01em}
+    /* 页眉右侧：简历标识 */
+    #headerBadge{height:36px;width:auto;opacity:.85;transition:opacity .3s}
+    #headerBadge:hover{opacity:1}
+
+    /* ===== 左侧进度能量条 ===== */
+    #progressTrack{
+      position:fixed;top:var(--header-h);left:32px;bottom:0;width:3px;z-index:50;
+      background:rgba(255,255,255,.04);
+    }
+    #progressFill{
+      position:absolute;top:0;left:0;width:100%;height:0%;
+      background:linear-gradient(180deg,var(--primary-light),var(--primary));
+      box-shadow:0 0 8px rgba(168,85,247,.3), 0 0 20px rgba(124,58,237,.15);
+      transition:height .1s linear;
+    }
+    #progressGlow{
+      position:absolute;top:0;left:-4px;width:11px;height:100%;
+      background:linear-gradient(180deg,transparent 0%,rgba(168,85,247,.08) 50%,transparent 100%);
+      filter:blur(4px);
+      pointer-events:none;
+    }
+
+    /* ===== 页面主体 ===== */
+    .page-wrap{
+      display:flex;
+      min-height:calc(100vh - var(--header-h));
+    }
+    .page{
+      flex:1;
+      padding:3rem 4rem 5rem 4rem;
+      max-width:960px;
+      margin:0 auto;
+    }
+
+    /* ===== 右下角悬浮胶囊 ===== */
+    .float-back{
+      position:fixed;bottom:2.5rem;right:2.5rem;z-index:99;
+      display:inline-flex;align-items:center;gap:8px;
+      padding:0.65rem 1.2rem 0.65rem 1rem;
+      border-radius:999px;
+      background:#fff;
+      color:var(--primary);
+      font-size:0.9rem;
+      font-weight:700;
+      text-decoration:none;
+      border:none;
+      box-shadow:0 4px 20px rgba(124,58,237,.15);
+      transition:all .3s ease;
+      cursor:pointer;
+    }
+    .float-back:hover{
+      background:var(--primary-light);
+      color:#fff;
+      transform:translateY(-3px);
+      box-shadow:0 8px 28px rgba(124,58,237,.25);
+    }
+    .float-back .float-back-icon{
+      width:20px;height:20px;
+      object-fit:contain;
+    }
+    .float-back:hover .float-back-icon{
+      filter:brightness(10);
+    }
+
+    .page-header{
+      margin-bottom:3.5rem;
+    }
+    .page-header h1{
+      font-size:clamp(1.8rem,3vw,2.4rem);font-weight:700;
+    }
+    .page-header .sub{
+      color:var(--bc10);font-size:0.95rem;margin-top:.5rem;
+    }
+
+    /* ===== 分区标题 & 荧光色块 ===== */
+    .section-block{
+      margin-bottom:3rem;
+      position:relative;
+    }
+    .section-title-wrap{
+      position:relative;
+      margin-bottom:2rem;
+    }
+    .section-title-wrap h2{
+      font-size:1.15rem;
+      font-weight:700;
+      color:var(--bc15);
+      letter-spacing:.04em;
+      position:relative;
+      z-index:1;
+    }
+    /* 分区标题图片 */
+    .section-title-wrap .section-img{
+      height:24px;width:auto;display:block;
+    }
+
+    /* ===== 基本信息网格 ===== */
+    .info-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:.8rem 2rem;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:14px;
+      padding:1.5rem 2rem;
+    }
+    .info-item{
+      display:flex;gap:.8rem;align-items:baseline;
+    }
+    .info-item .key{
+      font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+      color:var(--bc8);white-space:nowrap;min-width:4.5em;
+    }
+    .info-item .val{
+      font-size:14px;color:var(--bc12);
+    }
+
+    /* ===== 文本卡片 ===== */
+    .text-card{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.05);
+      border-radius:14px;
+      padding:1.5rem 2rem;
+      transition:all .3s;
+    }
+    .text-card:hover{
+      border-color:rgba(124,58,237,.15);
+      background:rgba(124,58,237,.02);
+    }
+    .text-card p{
+      font-size:14px;color:var(--bc10);line-height:1.9;
+    }
+    .text-card p + p{
+      margin-top:.8rem;
+    }
+
+    /* ===== 经历卡片 ===== */
+    .exp-card{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.05);
+      border-radius:14px;
+      padding:1.5rem 2rem;
+      margin-bottom:1rem;
+      transition:all .3s;
+    }
+    .exp-card:hover{
+      border-color:rgba(124,58,237,.15);
+      background:rgba(124,58,237,.02);
+      transform:translateX(4px);
+    }
+    .exp-card .exp-header{
+      display:flex;justify-content:space-between;align-items:baseline;
+      margin-bottom:.5rem;flex-wrap:wrap;gap:.3rem;
+    }
+    .exp-card .exp-header h3{
+      font-size:1rem;font-weight:600;color:var(--bc13);
+    }
+    .exp-card .exp-header .exp-tag{
+      font-size:13px;font-weight:600;letter-spacing:.04em;
+      color:var(--primary-light);
+      border:1px solid rgba(124,58,237,.25);
+      padding:2px 12px;border-radius:5px;white-space:nowrap;
+    }
+    .exp-card .exp-sub{
+      font-size:13px;color:var(--bc8);margin-bottom:.6rem;
+    }
+    .exp-card .exp-desc{
+      font-size:14px;color:var(--bc10);line-height:1.8;
+    }
+
+    /* ===== 专业技能（信号风格） ===== */
+    .skill-terminal{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.05);
+      border-radius:14px;
+      overflow:hidden;
+    }
+    .skill-row{
+      display:grid;
+      grid-template-columns:auto minmax(0,1fr);
+      gap:1rem;
+      padding:1.2rem 1.8rem;
+      border-bottom:1px solid rgba(255,255,255,.04);
+      transition:all .3s;
+    }
+    .skill-row:last-child{border-bottom:none}
+    .skill-row:hover{
+      background:rgba(124,58,237,.03);
+    }
+    .skill-row .skill-index{
+      font-size:0.85rem;font-weight:700;letter-spacing:.08em;
+      color:rgba(168,85,247,.5);
+      padding-top:0.1rem;
+      min-width:1.8em;
+    }
+    .skill-row .skill-body{
+    }
+    .skill-row .skill-body .skill-name{
+      font-size:1rem;font-weight:600;
+      color:var(--bc13);margin-bottom:0.3rem;
+    }
+    .skill-row .skill-body .skill-desc{
+      font-size:0.88rem;color:var(--bc10);line-height:1.7;
+    }
+
+    /* ===== 底部 ===== */
+    footer{
+      padding:2rem 4rem;
+      border-top:1px solid rgba(255,255,255,.04);
+      text-align:center;color:var(--bc8);font-size:13px;
+    }
+    footer .footer-inner{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+    footer a{color:var(--bc10);transition:color .3s}
+    footer a:hover{color:var(--primary-light)}
+
+    /* ===== 滚动动画 ===== */
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .reveal-d1{transition-delay:.08s}.reveal-d2{transition-delay:.16s}.reveal-d3{transition-delay:.24s}
+
+    @media screen and (max-width:767px){
+      #header{padding:0 1rem}
+      #headerBadge{height:28px}
+      #progressTrack{left:0;width:2px}
+      .page{padding:2rem 1.5rem 4rem}
+      .info-grid,.skill-terminal{grid-template-columns:1fr}
+      .exp-card{padding:1.2rem 1.2rem}
+      .exp-card .exp-header{flex-direction:column}
+      .text-card{padding:1.2rem}
+      footer{padding:2rem 1.5rem}
+      footer .footer-inner{flex-direction:column;gap:8px}
+    }
+  </style>
+</head>
+<body>
+<div id="cursorGlow"></div>
+<div id="headerMark"></div>
+
+<!-- ===== 页眉 ===== -->
+<header id="header">
+  <div id="headerTitle"><b>XxPuan</b><span class="suffix">'s Value</span></div>
+  <img id="headerBadge" src="assets/jieshao.png" alt="简历" width="305" height="206">
+</header>
+
+<!-- ===== 左侧进度能量条 ===== -->
+<div id="progressTrack">
+  <div id="progressFill"></div>
+  <div id="progressGlow"></div>
+</div>
+
+<!-- ===== 页面主体 ===== -->
+<div class="page-wrap">
+
+  <div class="page">
+
+    <div class="page-header reveal reveal-d1">
+      <img src="assets/xxpuan.png" alt="XxPuan" style="height:52px;width:auto;display:block;margin-bottom:.8rem;">
+      <p class="sub" style="margin-top:0;">Payne XU · 物联网工程 · 淮安大学</p>
+    </div>
+
+    <!-- ===== 基本信息 ===== -->
+    <div class="section-block reveal">
+      <div class="section-title-wrap">
+        <img class="section-img" src="assets/基本信息.png" alt="基本信息">
+      </div>
+      <div class="info-grid reveal reveal-d1">
+        <div class="info-item"><span class="key">出生年月</span><span class="val">2003.10</span></div>
+        <div class="info-item"><span class="key">联系电话</span><span class="val">***-***-****</span></div>
+        <div class="info-item"><span class="key">联系邮箱</span><span class="val">XxPuan@163.com</span></div>
+        <div class="info-item"><span class="key">政治面貌</span><span class="val">中共预备党员</span></div>
+        <div class="info-item"><span class="key">籍　　贯</span><span class="val">江苏淮安</span></div>
+        <div class="info-item"><span class="key">常 居 地</span><span class="val">江苏淮安</span></div>
+      </div>
+    </div>
+
+    <!-- ===== 教育背景 ===== -->
+    <div class="section-block reveal reveal-d1">
+      <div class="section-title-wrap">
+        <img class="section-img" src="assets/教育经历与学业成绩.png" alt="教育背景">
+      </div>
+      <div class="text-card reveal reveal-d2">
+        <p><strong style="color:var(--bc13);font-weight:700">2022.09 — 2026.06</strong>　<strong style="font-weight:700">淮安大学　计算机与软件工程学院　物联网工程（本科）</strong></p>
+        <p>本科阶段核心课程：计算机网络（87 分）、Linux 操作系统及应用（90 分）、Python 程序设计（91 分），同时涵盖 5G 通信技术及应用、云计算与物联网、物联网安全技术、嵌入式系统与设计等，对网络系统、4G/5G 技术、云计算、网络安全有着良好的知识储备。</p>
+        <p>在校期间满贯校奖学金、校三好学生，获得优秀共青团员、优秀共青团干部。</p>
+      </div>
+    </div>
+
+    <!-- ===== 专业技能 ===== -->
+    <div class="section-block reveal reveal-d1">
+      <div class="section-title-wrap">
+        <img class="section-img" src="assets/专业技能.png" alt="专业技能">
+      </div>
+      <div class="skill-terminal reveal reveal-d2">
+        <div class="skill-row">
+          <span class="skill-index">01</span>
+          <div class="skill-body">
+            <div class="skill-name">编程与数据处理</div>
+            <div class="skill-desc">熟练用 C++、Python 完成嵌入式程序开发、网络数据统计分析及代码优化，可支撑业务平台自动化运维与大数据处理</div>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-index">02</span>
+          <div class="skill-body">
+            <div class="skill-name">网络与系统运维</div>
+            <div class="skill-desc">掌握 Linux 系统运维、TCP/IP 协议及网络拓扑构建，能协助网络监控、故障排查与设备调试</div>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-index">03</span>
+          <div class="skill-body">
+            <div class="skill-name">硬件与嵌入式技术</div>
+            <div class="skill-desc">具备 PCB 制版、嵌入式设备调试、无线模块适配及硬件故障排查能力，可辅助网络设备端侧运维</div>
+          </div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-index">04</span>
+          <div class="skill-body">
+            <div class="skill-name">前沿技术应用</div>
+            <div class="skill-desc">了解 4G/5G 架构、智能管道、云计算与物联网协同机制及网络安全防护，能配合技术研究与防护工作</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 项目与竞赛经历 ===== -->
+    <div class="section-block reveal reveal-d2">
+      <div class="section-title-wrap">
+        <img class="section-img" src="assets/科研与竞赛经历.png" alt="项目与竞赛经历">
+      </div>
+
+      <div class="exp-card reveal">
+        <div class="exp-header">
+          <h3>国家级大学生创新创业训练计划项目</h3>
+          <span class="exp-tag">主持人 · 结题</span>
+        </div>
+        <div class="exp-sub">省级重点项目</div>
+        <div class="exp-desc">以主持人身份成功结题国家级（省级重点项目）大创项目，负责项目整体统筹与技术方案落地。</div>
+      </div>
+
+      <div class="exp-card reveal reveal-d1">
+        <div class="exp-header">
+          <h3>省级大学生创新创业训练计划项目</h3>
+          <span class="exp-tag">成员</span>
+        </div>
+        <div class="exp-sub">主负责硬件 PCB 绘制与打板</div>
+        <div class="exp-desc">以成员身份参与省级一般大创，主导硬件电路设计与 PCB 制版，完成从原理图到打板的全流程。</div>
+      </div>
+
+      <div class="exp-card reveal reveal-d2">
+        <div class="exp-header">
+          <h3>"建行杯"江苏大学生创新大赛</h3>
+          <span class="exp-tag">高教主赛道三等奖</span>
+        </div>
+        <div class="exp-sub">主负责电路板绘制、硬件程序包装</div>
+        <div class="exp-desc">参与"建行杯"江苏大学生创新大赛高教主赛道，负责电路板绘制与硬件程序封装，获三等奖。</div>
+      </div>
+
+      <div class="exp-card reveal">
+        <div class="exp-header">
+          <h3>第十五届蓝桥杯全国软件和信息技术专业人才大赛</h3>
+          <span class="exp-tag">江苏赛区三等奖</span>
+        </div>
+        <div class="exp-sub">单片机设计与开发</div>
+        <div class="exp-desc">在全国 A 类赛事蓝桥杯单片机设计与开发赛道中荣获江苏赛区三等奖，强化嵌入式实战能力。</div>
+      </div>
+    </div>
+
+    <!-- ===== 在校经历 ===== -->
+    <div class="section-block reveal reveal-d2">
+      <div class="section-title-wrap">
+        <img class="section-img" src="assets/校园与社会经历.png" alt="在校经历">
+      </div>
+
+      <div class="exp-card reveal">
+        <div class="exp-header">
+          <h3>共青团淮安市委 · 青发部实习</h3>
+          <span class="exp-tag">2024 暑期</span>
+        </div>
+        <div class="exp-desc">经遴选加入共青团淮安市委青发部实习，参与青年发展相关工作，积累政府机关实务经验。</div>
+      </div>
+
+      <div class="exp-card reveal reveal-d1">
+        <div class="exp-header">
+          <h3>淮安市大学生发展联盟</h3>
+          <span class="exp-tag">驻会主席</span>
+        </div>
+        <div class="exp-sub">共青团淮安市委指导下的市级组织</div>
+        <div class="exp-desc">担任驻会主席，统筹联盟各项活动保障与日常运转，获"年度先进个人"称号（连续两年）。</div>
+      </div>
+
+      <div class="exp-card reveal reveal-d2">
+        <div class="exp-header">
+          <h3>校融媒体中心</h3>
+          <span class="exp-tag">主席团执行团长</span>
+        </div>
+        <div class="exp-sub">校党委宣传部指导</div>
+        <div class="exp-desc">担任执行团长，统筹校级宣传平台运营与内容生产，协调团队高效运转。</div>
+      </div>
+
+      <div class="exp-card reveal">
+        <div class="exp-header">
+          <h3>班主任助理</h3>
+          <span class="exp-tag">班级管理</span>
+        </div>
+        <div class="exp-desc">推动班级获"先进班集体"称号，个人连续两年获"年度先进个人"。</div>
+      </div>
+    </div>
+
+    <!-- ===== 自我评价 ===== -->
+    <div class="section-block reveal reveal-d3">
+      <div class="section-title-wrap">
+        <img class="section-img" src="assets/自我评价.png" alt="自我评价">
+      </div>
+      <div class="text-card reveal">
+        <p>思想上，作为预备党员，年度团员教育评议始终"优秀"，荣获"优秀共青团员"和"优秀共青团干部"称号，以高标准自律，具备强责任意识与团队协作素养，能快速融入技术团队。</p>
+        <p>学业与技能上，就读物联网工程专业，平均绩点 3.21，连续获校奖学金及"校三好学生"，CET-4 465 分可阅读专业英文文档。专业能力精准匹配岗位：熟练用 C++、Python 开发运维脚本、处理网络数据；掌握 Linux 运维、TCP/IP 协议，能协助网络监控与故障排查；了解 4G/5G 架构、云计算、网络安全，且会嵌入式设备调试，可覆盖业务平台维护、智能管道建设等场景。</p>
+        <p>实践中，主导国家级大创、参与省级大创，积累技术落地经验；获蓝桥杯江苏赛区三等奖，强化实战能力；任淮安市大学生发展联盟驻会主席、班主任助理时，统筹活动保障、推动班级获"先进班集体"，个人连续两年获得"年度先进个人"称号，提升组织协调能力。</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== 页脚 ===== -->
+<footer>
+  <div class="footer-inner">
+    <span>© 2026 XxPuan's Value</span>
+  </div>
+</footer>
+
+<!-- ===== 右下角悬浮返回胶囊 ===== -->
+<a href="index.html" class="float-back">
+  <img src="assets/返回.png" alt="返回" class="float-back-icon">
+  返回首页
+</a>
+
+<script>
+;(function(){
+  'use strict'
+
+  // --- 鼠标光晕 ---
+  const cg=document.getElementById('cursorGlow');let mx=0,my=0,gx=0,gy=0
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY})
+  function anim(){gx+=(mx-gx)*.02;gy+=(my-gy)*.02;cg.style.transform=`translate(${gx-450}px,${gy-450}px)`;requestAnimationFrame(anim)}
+  anim()
+
+  // --- 图片保护 ---
+  document.querySelectorAll('img').forEach(i=>{i.addEventListener('contextmenu',e=>e.preventDefault());i.addEventListener('dragstart',e=>e.preventDefault())})
+
+  // --- 滚动出现动画 ---
+  const observer=new IntersectionObserver(e=>{
+    e.forEach(i=>{if(i.isIntersecting)i.target.classList.add('visible')})
+  },{threshold:.15,rootMargin:'0px 0px -40px 0px'})
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el))
+
+  // --- 左侧进度能量条 ---
+  const fill=document.getElementById('progressFill')
+  const track=document.getElementById('progressTrack')
+  function updateProgress(){
+    const scrollY=window.scrollY
+    const docH=document.documentElement.scrollHeight-window.innerHeight
+    const pct=docH>0?Math.min(100,Math.max(0,(scrollY/docH)*100)):0
+    fill.style.height=pct+'%'
+  }
+  window.addEventListener('scroll',updateProgress,{passive:true})
+  updateProgress()
+})()
+</script>
+</body>
+</html>

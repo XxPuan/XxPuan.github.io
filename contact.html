@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>联系 · XxPuan's Value</title>
+  <style>
+    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2')format('woff2');font-weight:400;font-display:swap}
+    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2')format('woff2');font-weight:500;font-display:swap}
+    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Bold.woff2')format('woff2');font-weight:700;font-display:swap}
+    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Black.woff2')format('woff2');font-weight:800;font-display:swap}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--primary-rgb:124,58,237;--primary:#7C3AED;--primary-light:#A855F7;--bg:#08080E;--bc15:#F1F1F6;--bc13:#D4D4E0;--bc12:#B8B8CC;--bc10:#8888A0;--bc8:#5A5A70;--header-h:80px;--lem:1rem}
+    html{font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--bc15);-webkit-font-smoothing:antialiased;overflow:hidden;height:100%}
+    body{height:100%;overflow:hidden;display:flex;flex-direction:column}
+    img{-webkit-user-drag:none;-moz-user-drag:none;-o-user-drag:none;user-drag:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;-webkit-touch-callout:none}
+    #cursorGlow{position:fixed;top:0;left:0;width:900px;height:900px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(124,58,237,.2),rgba(168,85,247,.1) 35%,transparent 68%);transform:translate(-50%,-50%)}
+    #cursorGlow::after{content:'';position:absolute;top:50%;left:50%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.1),transparent 55%);transform:translate(-50%,-50%)}
+    a{color:inherit;text-decoration:none}
+
+    #headerMark{flex-shrink:0;height:var(--header-h)}
+    #header{position:fixed;top:0;left:0;z-index:100;width:100%;height:var(--header-h);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,14,.55);backdrop-filter:blur(24px)saturate(1.4);border-bottom:1px solid rgba(255,255,255,.04);box-shadow:0 1px 0 rgba(124,58,237,.08)inset,0 0 60px rgba(124,58,237,.04)}
+    #header::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(124,58,237,.35)25%,rgba(168,85,247,.5)50%,rgba(124,58,237,.35)75%,transparent 95%);opacity:.8}
+    #header::after{content:'';position:absolute;bottom:-1px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.15),transparent)}
+    #headerTitle{font-size:16px;font-weight:500;color:var(--bc15);display:flex;align-items:center}
+    #headerTitle b{font-size:22px;font-weight:800;margin-right:2px}
+    #headerTitle .suffix{font-size:16px;font-weight:500;color:var(--bc12);letter-spacing:.01em}
+    #headerBadge{height:36px;width:auto;opacity:.85;transition:opacity .3s}
+    #headerBadge:hover{opacity:1}
+
+    .float-back{position:fixed;bottom:2.5rem;right:2.5rem;z-index:99;display:inline-flex;align-items:center;gap:8px;padding:0.65rem 1.2rem 0.65rem 1rem;border-radius:999px;background:#fff;color:var(--primary);font-size:0.9rem;font-weight:700;text-decoration:none;border:none;box-shadow:0 4px 20px rgba(124,58,237,.15);transition:all .3s ease;cursor:pointer}
+    .float-back:hover{background:var(--primary-light);color:#fff;transform:translateY(-3px);box-shadow:0 8px 28px rgba(124,58,237,.25)}
+    .float-back .float-back-icon{width:20px;height:20px;object-fit:contain}
+    .float-back:hover .float-back-icon{filter:brightness(10)}
+
+    .page-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:1rem 2rem 5rem;position:relative;overflow:hidden}
+    .page{width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;text-align:center}
+    .page-title{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;margin-bottom:0.4rem}
+    .page-sub{color:var(--bc10);font-size:0.9rem;line-height:1.7;margin-bottom:2.5rem;max-width:480px}
+
+    /* ===== 液态玻璃胶囊 ===== */
+    .capsules-row{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
+    .contact-cap{
+      position:relative;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:1rem;
+      width:200px;padding:2.5rem 1.2rem;
+      min-height:267px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.04);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      box-shadow:0 4px 24px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.06);
+      cursor:pointer;
+      transition:border-color .35s,background .35s,box-shadow .35s;
+      user-select:none;
+      overflow:hidden;
+    }
+    .contact-cap:not(.clicked):hover{
+      border-color:rgba(124,58,237,.2);
+      background:rgba(255,255,255,.06);
+      box-shadow:0 8px 32px rgba(124,58,237,.08),inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .contact-cap .cap-icon{width:52px;height:52px;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;transition:all .35s}
+    .contact-cap .cap-icon img{width:100%;height:100%;object-fit:contain;filter:brightness(0.7);transition:all .35s}
+    .contact-cap:not(.clicked):hover .cap-icon img{filter:brightness(1) drop-shadow(0 0 8px rgba(168,85,247,.3));transform:scale(1.1)}
+    .contact-cap .icon-glow{position:absolute;top:50%;left:50%;width:50px;height:50px;transform:translate(-50%,-50%) scale(0);border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.15),transparent);pointer-events:none;transition:transform .4s}
+    .contact-cap:not(.clicked):hover .icon-glow{transform:translate(-50%,-50%) scale(1.5)}
+    .contact-cap .cap-label{font-size:1rem;font-weight:600;letter-spacing:.04em;color:var(--bc12);position:relative;z-index:1;transition:color .35s}
+    .contact-cap:not(.clicked):hover .cap-label{color:var(--bc15)}
+
+    /* ===== 背面（信息条） ===== */
+    .contact-cap .cap-back{
+      position:absolute;inset:0;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:rgba(124,58,237,.06);
+      backdrop-filter:blur(14px);
+      border-radius:20px;
+      padding:1rem;
+      opacity:0;
+      transition:opacity .4s;
+      pointer-events:none;
+      border:1px solid rgba(124,58,237,.15);
+    }
+    .contact-cap .cap-back.show{opacity:1;pointer-events:auto}
+    .contact-cap .cap-back .back-info{font-size:0.85rem;font-weight:600;color:var(--bc13);line-height:1.5;word-break:break-all;text-align:center}
+    .contact-cap .cap-back .back-label{font-size:10px;font-weight:500;letter-spacing:.06em;color:var(--primary-light);margin-top:4px;text-transform:uppercase}
+
+    /* QR 码占位 */
+    .contact-cap .cap-back .qr-placeholder{
+      width:70px;height:70px;
+      background:rgba(255,255,255,.06);
+      border:1px dashed rgba(168,85,247,.25);
+      border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      margin-bottom:6px;
+    }
+    .contact-cap .cap-back .qr-placeholder span{
+      font-size:9px;color:var(--bc8);letter-spacing:.04em;
+    }
+
+    /* ===== 粒子 ===== */
+    #particlesContainer{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50}
+    .particle{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:particleFly .8s cubic-bezier(.22,1,.36,1) forwards}
+    @keyframes particleFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--px),var(--py)) scale(0)}}
+
+    footer{flex-shrink:0;padding:1rem 2rem;border-top:1px solid rgba(255,255,255,.04);text-align:center;color:var(--bc8);font-size:13px}
+    footer .footer-inner{max-width:1100px;margin:0 auto}
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+
+    @media screen and (max-width:767px){
+      #header{padding:0 1rem}#headerBadge{height:28px}
+      .page-wrap{padding:1rem 1rem 4rem}
+      .capsules-row{gap:0.8rem}
+      .contact-cap{width:110px;padding:2rem 0.6rem;min-height:120px}
+      .contact-cap .cap-icon{width:32px;height:32px}
+      .contact-cap .cap-label{font-size:0.75rem}
+      .contact-cap .cap-back .back-info{font-size:0.75rem}
+    }
+  </style>
+</head>
+<body>
+<div id="cursorGlow"></div>
+<div id="headerMark"></div>
+<header id="header">
+  <div id="headerTitle"><b>XxPuan</b><span class="suffix">'s Value</span></div>
+  <img id="headerBadge" src="assets/goutong.png" alt="联系">
+</header>
+
+<div class="page-wrap">
+  <div class="page">
+    <h1 class="page-title reveal">联系我</h1>
+    <p class="page-sub reveal reveal-d1">不为了什么宏大的目标，只是想在这个浮躁时代，留下一点属于自己的痕迹。</p>
+
+    <div class="capsules-row reveal reveal-d2">
+      <!-- Email — 直接打开邮箱 -->
+      <div class="contact-cap" data-type="email" data-mail="XxPuan@163.com">
+        <div class="cap-icon"><img src="assets/邮箱.png" alt="Email"></div>
+        <div class="cap-label">Email</div>
+        <div class="icon-glow"></div>
+        <div class="cap-back"><div class="back-info">XxPuan@163.com</div><div class="back-label">发送邮件</div></div>
+      </div>
+      <!-- TEL -->
+      <div class="contact-cap" data-type="tel">
+        <div class="cap-icon"><img src="assets/电话.png" alt="TEL"></div>
+        <div class="cap-label">TEL</div>
+        <div class="icon-glow"></div>
+        <div class="cap-back"><div class="back-info">***-***-****</div><div class="back-label">拨打电话</div></div>
+      </div>
+      <!-- TikTok — QR -->
+      <div class="contact-cap" data-type="qr">
+        <div class="cap-icon"><img src="assets/抖音.png" alt="TikTok"></div>
+        <div class="cap-label">TikTok.CN</div>
+        <div class="icon-glow"></div>
+        <div class="cap-back">
+          <div class="qr-placeholder"><span>二维码</span></div>
+          <div class="back-label">抖音搜索</div>
+        </div>
+      </div>
+      <!-- WeChat — QR -->
+      <div class="contact-cap" data-type="qr">
+        <div class="cap-icon"><img src="assets/微信.png" alt="WeChat"></div>
+        <div class="cap-label">WeChat.CN</div>
+        <div class="icon-glow"></div>
+        <div class="cap-back">
+          <div class="qr-placeholder"><span>二维码</span></div>
+          <div class="back-label">添加微信</div>
+        </div>
+      </div>
+      <!-- QQ — QR -->
+      <div class="contact-cap" data-type="qr">
+        <div class="cap-icon"><img src="assets/QQ.png" alt="QQ"></div>
+        <div class="cap-label">QQ.CN</div>
+        <div class="icon-glow"></div>
+        <div class="cap-back">
+          <div class="qr-placeholder"><span>二维码</span></div>
+          <div class="back-label">QQ联系</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="particlesContainer"></div>
+
+<a href="index.html" class="float-back">
+  <img src="assets/返回.png" alt="返回" class="float-back-icon">返回首页
+</a>
+
+<footer><div class="footer-inner"><span>© 2026 XxPuan's Value</span></div></footer>
+
+<script>
+;(function(){
+  'use strict'
+
+  const glow=document.getElementById('cursorGlow');let mx=0,my=0,gx=0,gy=0
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY})
+  function anim(){gx+=(mx-gx)*.02;gy+=(my-gy)*.02;glow.style.transform=`translate(${gx-450}px,${gy-450}px)`;requestAnimationFrame(anim)}
+  anim()
+  document.querySelectorAll('img').forEach(i=>{i.addEventListener('contextmenu',e=>e.preventDefault());i.addEventListener('dragstart',e=>e.preventDefault())})
+
+  const observer=new IntersectionObserver(e=>{
+    e.forEach(i=>{if(i.isIntersecting)i.target.classList.add('visible');observer.unobserve(i.target)})
+  },{threshold:.1})
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el))
+
+  const caps=document.querySelectorAll('.contact-cap')
+  const pc=document.getElementById('particlesContainer')
+  const colors=['#7C3AED','#A855F7','#C084FC','#D8B4FE','#E9D5FF','#9333EA']
+
+  // --- 鼠标扭曲（未点击的胶囊） ---
+  caps.forEach(cap=>{
+    cap.addEventListener('mousemove',e=>{
+      if(cap.classList.contains('clicked')) return
+      const r=cap.getBoundingClientRect()
+      const cx=(e.clientX-r.left)/r.width-.5
+      const cy=(e.clientY-r.top)/r.height-.5
+      cap.style.transform=`translateY(-4px) scale(1.02) rotate(${cx*2}deg) skew(${cy*0.5}deg)`
+    })
+    cap.addEventListener('mouseleave',()=>{
+      if(cap.classList.contains('clicked')) return
+      cap.style.transform=''
+    })
+  })
+
+  // --- 粒子爆炸 ---
+  function burstParticles(x,y,count=30){
+    for(let i=0;i<count;i++){
+      const p=document.createElement('div')
+      p.className='particle'
+      const angle=Math.random()*Math.PI*2
+      const dist=60+Math.random()*120
+      p.style.cssText=`left:${x}px;top:${y}px;background:${colors[Math.floor(Math.random()*colors.length)]};--px:${Math.cos(angle)*dist}px;--py:${Math.sin(angle)*dist}px;width:${4+Math.random()*5}px;height:${4+Math.random()*5}px`
+      pc.appendChild(p)
+      setTimeout(()=>p.remove(),900)
+    }
+  }
+
+  // --- 胶囊点击 ---
+  caps.forEach(cap=>{
+    cap.addEventListener('click',()=>{
+      // 已点击过的忽略
+      if(cap.classList.contains('clicked')) return
+      cap.classList.add('clicked')
+
+      const type=cap.dataset.type
+      const r=cap.getBoundingClientRect()
+      const cx=r.left+r.width/2
+      const cy=r.top+r.height/2
+
+      // 粒子消散 → 翻转显示背面（所有胶囊统一流程）
+      burstParticles(cx,cy)
+      cap.style.transition='all .5s cubic-bezier(.22,1,.36,1)'
+      cap.style.transform='scale(0.6)'
+      cap.style.opacity='0'
+
+      setTimeout(()=>{
+        cap.style.transition='all .6s cubic-bezier(.22,1,.36,1)'
+        cap.style.transform='scale(1)'
+        cap.style.opacity='1'
+        // 隐藏正面
+        const icon=cap.querySelector('.cap-icon')
+        const label=cap.querySelector('.cap-label')
+        const glow=cap.querySelector('.icon-glow')
+        if(icon)icon.style.display='none'
+        if(label)label.style.display='none'
+        if(glow)glow.style.display='none'
+        // 显示背面
+        const back=cap.querySelector('.cap-back')
+        if(back)back.classList.add('show')
+        // Email 额外拉起系统邮箱
+        if(type==='email'){
+          const mail=cap.dataset.mail
+          window.open(`mailto:${mail}`)
+        }
+      },550)
+    })
+  })
+
+  document.addEventListener('touchmove',e=>e.preventDefault(),{passive:false})
+})()
+</script>
+</body>
+</html>

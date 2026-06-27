@@ -1,0 +1,42 @@
+<div class="page">
+  <h1 class="page-title">博客</h1>
+  <p class="page-sub">记录技术、思考与生活</p>
+
+  <% if (page.posts.length) { %>
+    <div class="posts-list">
+      <% page.posts.each(function(post) { %>
+        <article class="post-card">
+          <time class="post-date" datetime="<%= date(post.date, 'YYYY-MM-DD') %>">
+            <%= date(post.date, 'YYYY 年 MM 月 DD 日') %>
+          </time>
+          <h2 class="post-title">
+            <a href="./<%= post.path %>"><%= post.title %></a>
+          </h2>
+          <% if (post.tags && post.tags.length) { %>
+            <div class="post-tags">
+              <% post.tags.each(function(tag) { %>
+                <a class="tag" href="./<%= tag.path %>"><%= tag.name %></a>
+              <% }) %>
+            </div>
+          <% } %>
+          <% if (post.excerpt) { %>
+            <div class="post-excerpt"><%= post.excerpt %></div>
+          <% } %>
+          <a class="post-readmore" href="./<%= post.path %>">阅读全文 →</a>
+        </article>
+      <% }) %>
+    </div>
+
+    <% if (page.total > 1) { %>
+      <nav class="pagination">
+        <% if (page.prev) { %><a class="prev" href="<%- url_for(page.prev_link) %>">← 上一页</a><% } %>
+        <span class="page-num"><%= page.current %> / <%= page.total %></span>
+        <% if (page.next) { %><a class="next" href="<%- url_for(page.next_link) %>">下一页 →</a><% } %>
+      </nav>
+    <% } %>
+  <% } else { %>
+    <div class="empty-state">
+      <p>还没有文章，即将上线</p>
+    </div>
+  <% } %>
+</div>

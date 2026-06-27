@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= page.title ? page.title + ' · ' : '' %><%= config.title %></title>
+  <link rel="stylesheet" href="./css/style.css">
+  <%- open_graph() %>
+</head>
+<body>
+  <div id="cursorGlow"></div>
+
+  <header id="header">
+    <a id="headerTitle" href="./index.html"><b>XxPuan</b><span class="suffix">'s Value</span></a>
+    <nav>
+      <a href="./index.html">首页</a>
+      <a href="./archives/">归档</a>
+      <a href="./tags/">标签</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <%- body %>
+  </main>
+
+  <footer id="footer">
+    <div class="footer-inner">
+      <span>© <%= date(new Date(), 'YYYY') %> <%= config.title %></span>
+      <a href="../../index.html">主站首页</a>
+    </div>
+  </footer>
+
+  <script>
+    const glow=document.getElementById('cursorGlow');let mx=0,my=0,gx=0,gy=0
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY})
+    function anim(){gx+=(mx-gx)*.02;gy+=(my-gy)*.02;glow.style.transform=`translate(${gx-450}px,${gy-450}px)`;requestAnimationFrame(anim)}
+    anim()
+  </script>
+</body>
+</html>

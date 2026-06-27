@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>博客 · XxPuan's Value</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,500;1,700&display=swap" rel="stylesheet">
+  <style>
+    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2')format('woff2');font-weight:400;font-display:swap}
+    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2')format('woff2');font-weight:500;font-display:swap}
+    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Bold.woff2')format('woff2');font-weight:700;font-display:swap}
+    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Black.woff2')format('woff2');font-weight:800;font-display:swap}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--primary-rgb:124,58,237;--primary:#7C3AED;--primary-light:#A855F7;--bg:#08080E;--bc15:#F1F1F6;--bc13:#D4D4E0;--bc12:#B8B8CC;--bc10:#8888A0;--bc8:#5A5A70;--header-h:80px;--lem:1rem}
+    html{font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--bc15);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+    body{min-height:100vh;position:relative}
+    a{color:inherit;text-decoration:none}
+    img{-webkit-user-drag:none;user-select:none}
+
+    #cursorGlow{position:fixed;top:0;left:0;width:900px;height:900px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(124,58,237,.2),rgba(168,85,247,.1) 35%,transparent 68%);transform:translate(-50%,-50%)}
+    #cursorGlow::after{content:'';position:absolute;top:50%;left:50%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.1),transparent 55%);transform:translate(-50%,-50%)}
+
+    #headerMark{flex-shrink:0;height:var(--header-h)}
+    #header{position:fixed;top:0;left:0;z-index:100;width:100%;height:var(--header-h);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,14,.55);backdrop-filter:blur(24px)saturate(1.4);border-bottom:1px solid rgba(255,255,255,.04);box-shadow:0 1px 0 rgba(124,58,237,.08)inset,0 0 60px rgba(124,58,237,.04)}
+    #header::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(124,58,237,.35)25%,rgba(168,85,247,.5)50%,rgba(124,58,237,.35)75%,transparent 95%);opacity:.8}
+    #header::after{content:'';position:absolute;bottom:-1px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.15),transparent)}
+    #headerTitle{font-size:16px;font-weight:500;color:var(--bc15);display:flex;align-items:center}
+    #headerTitle b{font-size:22px;font-weight:800;margin-right:2px}
+    #headerTitle .suffix{font-size:16px;font-weight:500;color:var(--bc12);letter-spacing:.01em}
+    #headerBadge{height:36px;width:auto;opacity:.85;transition:opacity .3s}
+    #headerBadge:hover{opacity:1}
+
+    #progressTrack{position:fixed;top:var(--header-h);left:32px;bottom:0;width:3px;z-index:50;background:rgba(255,255,255,.04)}
+    #progressFill{position:absolute;top:0;left:0;width:100%;height:0%;background:linear-gradient(180deg,var(--primary-light),var(--primary));box-shadow:0 0 8px rgba(168,85,247,.3),0 0 20px rgba(124,58,237,.15);transition:height .1s linear}
+    #progressGlow{position:absolute;top:0;left:-4px;width:11px;height:100%;background:linear-gradient(180deg,transparent 0%,rgba(168,85,247,.08) 50%,transparent 100%);filter:blur(4px);pointer-events:none}
+
+    .float-back{position:fixed;bottom:2.5rem;right:2.5rem;z-index:99;display:inline-flex;align-items:center;gap:8px;padding:0.65rem 1.2rem 0.65rem 1rem;border-radius:999px;background:#fff;color:var(--primary);font-size:0.9rem;font-weight:700;text-decoration:none;border:none;box-shadow:0 4px 20px rgba(124,58,237,.15);transition:all .3s;cursor:pointer}
+    .float-back:hover{background:var(--primary-light);color:#fff;transform:translateY(-3px);box-shadow:0 8px 28px rgba(124,58,237,.25)}
+    .float-back .float-back-icon{width:20px;height:20px;object-fit:contain}
+    .float-back:hover .float-back-icon{filter:brightness(10)}
+
+    .page-wrap{display:flex;min-height:calc(100vh - var(--header-h))}
+    .page{flex:1;padding:3rem 4rem 5rem 4rem;max-width:960px;margin:0 auto}
+
+    .page-header{margin-bottom:2.5rem}
+    .page-header h1{font-size:clamp(1.8rem,3vw,2.4rem);font-weight:700;margin-bottom:.4rem}
+    .page-header .sub{color:var(--bc10);font-size:.95rem}
+
+    /* ===== 时间线博客列表 ===== */
+    .blog-timeline{
+      position:relative;
+      padding-left:100px;
+    }
+    /* SVG 曲线连接线 */
+    .timeline-svg{
+      position:absolute;left:80px;top:0;height:100%;width:30px;
+      pointer-events:none;z-index:1;
+    }
+    .timeline-svg path{
+      fill:none;
+      stroke:url(#curveGrad);
+      stroke-width:2;
+      stroke-linecap:round;
+      opacity:.5;
+    }
+
+    /* 每个博文条目 */
+    .blog-entry{
+      position:relative;
+      margin-bottom:3rem;
+      display:grid;
+      grid-template-columns:80px 1fr;
+      gap:2rem;
+    }
+    .blog-entry:last-child{margin-bottom:0}
+
+    /* 日期（艺术字体） */
+    .blog-date{
+      font-family:'Playfair Display',Georgia,'Times New Roman',serif;
+      font-style:italic;
+      text-align:right;
+      padding-top:.3rem;
+      position:relative;
+      z-index:2;
+    }
+    .blog-date .day{
+      display:block;
+      font-size:2.2rem;
+      font-weight:700;
+      line-height:1;
+      background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,.18));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .blog-date .month{
+      display:block;
+      font-size:.9rem;
+      font-weight:500;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--primary-light);
+      margin-top:2px;
+    }
+    .blog-date .year{
+      display:block;
+      font-size:.65rem;
+      color:var(--bc8);
+      letter-spacing:.04em;
+      margin-top:0;
+    }
+    /* 日期上的圆点 */
+    .blog-date .dot{
+      position:absolute;right:-14px;top:.6rem;
+      width:10px;height:10px;
+      border-radius:50%;
+      background:var(--primary-light);
+      box-shadow:0 0 8px rgba(168,85,247,.4);
+      z-index:3;
+    }
+
+    /* 文章卡片（液态玻璃） */
+    .blog-card{
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:16px;
+      padding:1.5rem 1.8rem;
+      background:rgba(255,255,255,.04);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      box-shadow:0 4px 24px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.06);
+      transition:all .35s cubic-bezier(.22,1,.36,1);
+      cursor:pointer;
+      position:relative;z-index:2;
+    }
+    .blog-card:hover{
+      border-color:rgba(124,58,237,.2);
+      background:rgba(255,255,255,.06);
+      transform:translateY(-4px) translateX(6px);
+      box-shadow:0 8px 32px rgba(124,58,237,.08),inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .blog-card h3{
+      font-size:1.15rem;font-weight:600;color:var(--bc13);
+      margin-bottom:.3rem;transition:color .3s;
+    }
+    .blog-card:hover h3{color:var(--bc15)}
+    .blog-card .card-date-alt{
+      font-size:12px;color:var(--bc8);margin-bottom:.6rem;
+    }
+    .blog-card p{
+      font-size:14px;color:var(--bc10);line-height:1.8;
+    }
+    .blog-card .card-tags{
+      display:flex;gap:6px;margin-top:.8rem;flex-wrap:wrap;
+    }
+    .blog-card .card-tags span{
+      font-size:11px;font-weight:600;letter-spacing:.04em;
+      color:var(--primary-light);
+      border:1px solid rgba(124,58,237,.2);
+      padding:1px 8px;border-radius:4px;
+    }
+
+    /* ===== 页脚 ===== */
+    footer{padding:2rem 4rem;border-top:1px solid rgba(255,255,255,.04);text-align:center;color:var(--bc8);font-size:13px}
+    footer .footer-inner{max-width:960px;margin:0 auto}
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .reveal-d1{transition-delay:.08s}.reveal-d2{transition-delay:.16s}
+
+    @media screen and (max-width:767px){
+      #header{padding:0 1rem}#headerBadge{height:28px}
+      #progressTrack{left:0;width:2px}
+      .page{padding:2rem 1.5rem 4rem}
+      .blog-timeline{padding-left:0}
+      .timeline-svg{display:none}
+      .blog-entry{grid-template-columns:1fr;gap:.5rem}
+      .blog-date{text-align:left;padding-left:1rem}
+      .blog-date .dot{left:-6px;right:auto}
+      footer{padding:2rem 1.5rem}
+    }
+  </style>
+</head>
+<body>
+<div id="cursorGlow"></div>
+<div id="headerMark"></div>
+
+<header id="header">
+  <div id="headerTitle"><b>XxPuan</b><span class="suffix">'s Value</span></div>
+  <img id="headerBadge" src="assets/boke.png" alt="博客">
+</header>
+<div id="progressTrack"><div id="progressFill"></div><div id="progressGlow"></div></div>
+
+<div class="page-wrap">
+  <div class="page">
+    <div class="page-header reveal reveal-d1">
+      <h1>博客</h1>
+      <p class="sub">记录技术、思考与生活</p>
+    </div>
+
+    <!-- 时间线博客列表 -->
+    <div class="blog-timeline reveal reveal-d2">
+      <!-- SVG 曲线 -->
+      <svg class="timeline-svg" viewBox="0 0 30 1000" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(168,85,247,.3)"/>
+            <stop offset="50%" stop-color="rgba(124,58,237,.5)"/>
+            <stop offset="100%" stop-color="rgba(168,85,247,.15)"/>
+          </linearGradient>
+        </defs>
+        <path d="M15,0 C5,60 25,120 15,180 C5,240 25,300 15,360 C5,420 25,480 15,540 C5,600 25,660 15,720 C5,780 25,840 15,900 C5,960 25,980 15,1000" vector-effect="non-scaling-stroke"/>
+      </svg>
+
+      <!-- 示例文章1 -->
+      <div class="blog-entry reveal">
+        <div class="blog-date">
+          <span class="dot"></span>
+          <span class="day">27</span>
+          <span class="month">Jun</span>
+          <span class="year">2026</span>
+        </div>
+        <div class="blog-card">
+          <h3>你好，世界</h3>
+          <div class="card-date-alt">2026 年 6 月 27 日</div>
+          <p>这是我的第一篇博客。不知不觉，个人网站已经搭起来了。从首页设计到简历页面，再到沟通页面的粒子效果，一步步走过来还挺有成就感的。</p>
+          <div class="card-tags"><span>杂记</span></div>
+        </div>
+      </div>
+
+      <!-- 示例文章2 -->
+      <div class="blog-entry reveal reveal-d1">
+        <div class="blog-date">
+          <span class="dot"></span>
+          <span class="day">01</span>
+          <span class="month">Jul</span>
+          <span class="year">2026</span>
+        </div>
+        <div class="blog-card">
+          <h3>STM32 + NanoEdge AI 实战记录</h3>
+          <div class="card-date-alt">2026 年 7 月 1 日</div>
+          <p>在 STM32F103 上部署 NanoEdge AI 引擎，实现齿轮箱故障的实时边缘推理。从模型训练到 MCU 端部署，踩了不少坑，记录一下。</p>
+          <div class="card-tags"><span>STM32</span><span>AI</span><span>毕设</span></div>
+        </div>
+      </div>
+
+      <!-- 占位文章3（草稿示例） -->
+      <div class="blog-entry reveal reveal-d2">
+        <div class="blog-date">
+          <span class="dot"></span>
+          <span class="day">--</span>
+          <span class="month">TBD</span>
+          <span class="year">2026</span>
+        </div>
+        <div class="blog-card" style="opacity:.5">
+          <h3>更多文章即将到来</h3>
+          <div class="card-date-alt">待定</div>
+          <p>狼人杀面杀助手开发记录、嵌入式学习笔记、鸿蒙应用开发心得……</p>
+          <div class="card-tags"><span>待定</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<a href="index.html" class="float-back">
+  <img src="assets/返回.png" alt="返回" class="float-back-icon">返回首页
+</a>
+
+<footer><div class="footer-inner"><span>© 2026 XxPuan's Value</span></div></footer>
+
+<script>
+;(function(){
+  'use strict'
+  const glow=document.getElementById('cursorGlow');let mx=0,my=0,gx=0,gy=0
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY})
+  function anim(){gx+=(mx-gx)*.02;gy+=(my-gy)*.02;glow.style.transform=`translate(${gx-450}px,${gy-450}px)`;requestAnimationFrame(anim)}
+  anim()
+  document.querySelectorAll('img').forEach(i=>{i.addEventListener('contextmenu',e=>e.preventDefault());i.addEventListener('dragstart',e=>e.preventDefault())})
+  const observer=new IntersectionObserver(e=>{e.forEach(i=>{if(i.isIntersecting)i.target.classList.add('visible');observer.unobserve(i.target)})},{threshold:.15})
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el))
+  const fill=document.getElementById('progressFill')
+  function update(){const s=window.scrollY;const d=document.documentElement.scrollHeight-window.innerHeight;fill.style.height=(d>0?Math.min(100,(s/d)*100):0)+'%'}
+  window.addEventListener('scroll',update,{passive:true});update()
+})()
+</script>
+</body>
+</html>
