@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>XxPuan's Value</title>
-  <link rel="icon" href="assets/LOGO.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,500;1,700&display=swap" rel="stylesheet">
@@ -172,7 +171,7 @@
     .hero-bio-intro p{
       margin-bottom:0.9rem;
     }
-    /* 后半部分缩小 + 低不透明�?*/
+    /* 后半部分缩小 + 低不透明度 */
     /* ===== 沉浸光感胶囊按钮 ===== */
     .hero-bio-actions{
       display:flex;
@@ -219,7 +218,7 @@
       filter:brightness(0.9);
     }
 
-    /* 特殊胶囊：查看简历（白底紫字�?*/
+    /* 特殊胶囊：查看简历（白底紫字） */
     .hero-capsule.primary{
       background:#fff;
       color:var(--primary);
@@ -255,7 +254,7 @@
       box-shadow:0 0 8px rgba(168,85,247,.08), 0 0 20px rgba(124,58,237,.06);
     }
 
-    /* ===== 右侧：照�?Spotlight (4/10) ===== */
+    /* ===== 右侧：照片 Spotlight (4/10) ===== */
     .hero-photo-wrap{
       position:relative;
       padding-left:2.5rem;
@@ -309,7 +308,7 @@
     }
     /* 鼠标悬停扭曲 */
     .hero-photo-wrap:hover .hero-photo-color{
-      /* JS 动态控制，hover 时激�?transform 过渡 */
+      /* JS 动态控制，hover 时激活 transform 过渡 */
       transition:transform .08s ease-out;
     }
 
@@ -372,7 +371,7 @@
     .reveal.visible{opacity:1;transform:translateY(0)}
     .reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}.reveal-d4{transition-delay:.4s}.reveal-d5{transition-delay:.5s}
 
-    /* ===== 响应�?===== */
+    /* ===== 响应式 ===== */
     @media screen and (max-width:767px){
       #header{padding:0 1rem}
       section{padding:4rem 1.5rem}
@@ -428,20 +427,22 @@
 
       <div class="hero-bio reveal reveal-d3">
         <div class="hero-bio-intro">
-          <p>你好，见字如�?/p>
-          <p>十分有缘，我们能够在这里相遇。我出生于江苏，00 后�?/p>
-          <p>我是一个比较敏感的人，经历的不多不少，过的不紧不慢，有些生活感悟，有些无病呻吟。很感谢你能够从浩瀚网络银河中来到这里，倾听一个陌生人的碎碎念�?/p>
+          <p>你好，见字如面</p>
+          <p>十分有缘，我们能够在这里相遇。我出生于江苏，00 后。</p>
+          <p>我是一个比较敏感的人，经历的不多不少，过的不紧不慢，有些生活感悟，有些无病呻吟。很感谢你能够从浩瀚网络银河中来到这里，倾听一个陌生人的碎碎念。</p>
         </div>
         <div class="hero-bio-actions reveal reveal-d4">
           <a class="hero-capsule primary" href="resume.html">
-            查看简�?          </a>
+            查看简历
+          </a>
           <a class="hero-capsule" href="blog.html">
             <span class="icon"><img src="assets/博客.png" alt="博客"></span>
             博客
           </a>
           <a class="hero-capsule" href="contact.html">
-            <span class="icon"><img src="assets/沟�?png" alt="沟�?></span>
-            沟�?          </a>
+            <span class="icon"><img src="assets/沟通.png" alt="沟通"></span>
+            沟通
+          </a>
         </div>
       </div>
     </div>
@@ -451,7 +452,7 @@
       <div class="line"></div>
     </div>
 
-    <!-- 右侧 4/10：照�?Spotlight -->
+    <!-- 右侧 4/10：照片 Spotlight -->
     <div class="hero-photo-wrap reveal reveal-d3" id="photoWrap">
       <div class="hero-photo-frame">
         <img class="hero-photo-base" src="assets/XxPuan.jpg" alt="XxPuan" width="3120" height="4160">
@@ -470,16 +471,16 @@
 <section id="about">
   <div class="section-inner">
     <span class="section-label reveal">/ 关于</span>
-    <h2 class="section-title reveal reveal-d1">更多了解�?/h2>
+    <h2 class="section-title reveal reveal-d1">更多了解我</h2>
     <div class="about-grid">
       <div class="about-text">
-        <p class="reveal reveal-d2">物联网专业出身的我，从大一开始接触单片机，从 51 �?STM32，从传感器数据采集到边缘AI推理，一步步深入嵌入式世界�?/p>
-        <p class="reveal reveal-d2">我相�?<strong>最好的技术是让人感觉不到技术存在的技�?/strong>。无论是鸿蒙App的设计，还是STM32上的AI模型部署，目标都是让产品"自然"地融入使用场景�?/p>
-        <p class="reveal reveal-d3">课余爱打狼人杀，于是自己动手做了面杀助手；觉得个人网站应该有一隅之地，于是有了这里�?/p>
+        <p class="reveal reveal-d2">物联网专业出身的我，从大一开始接触单片机，从 51 到 STM32，从传感器数据采集到边缘AI推理，一步步深入嵌入式世界。</p>
+        <p class="reveal reveal-d2">我相信 <strong>最好的技术是让人感觉不到技术存在的技术</strong>。无论是鸿蒙App的设计，还是STM32上的AI模型部署，目标都是让产品"自然"地融入使用场景。</p>
+        <p class="reveal reveal-d3">课余爱打狼人杀，于是自己动手做了面杀助手；觉得个人网站应该有一隅之地，于是有了这里。</p>
       </div>
       <div class="about-tags reveal reveal-d3">
         <span>STM32 / ARM</span><span>NanoEdge AI</span><span>C / C++</span>
-        <span>HarmonyOS / ArkTS</span><span>Flask / Python</span><span>物联网协�?/span>
+        <span>HarmonyOS / ArkTS</span><span>Flask / Python</span><span>物联网协议</span>
         <span>边缘计算</span><span>Git</span><span>嵌入式Linux</span><span>电路设计</span>
       </div>
     </div>
@@ -490,24 +491,24 @@
 <section id="projects">
   <div class="section-inner">
     <span class="section-label reveal">/ 项目</span>
-    <h2 class="section-title reveal reveal-d1">做过�?& 正在做的</h2>
+    <h2 class="section-title reveal reveal-d1">做过的 & 正在做的</h2>
     <div class="projects-grid">
       <div class="project-card reveal">
-        <span class="tag">毕设 · 已提�?/span>
+        <span class="tag">毕设 · 已提交</span>
         <h3>工业设备智能预警系统</h3>
-        <p>STM32F103 + NanoEdge AI 实时振动分析，识别正�?/ 轴承故障 / 齿轮磨损 / 不平衡四种状态，MCU 端完成全部推理�?/p>
+        <p>STM32F103 + NanoEdge AI 实时振动分析，识别正常 / 轴承故障 / 齿轮磨损 / 不平衡四种状态，MCU 端完成全部推理。</p>
         <div class="tech"><span>STM32F103</span><span>NanoEdge AI</span><span>C</span><span>边缘计算</span></div>
       </div>
       <div class="project-card reveal reveal-d1">
         <span class="tag">鸿蒙 App · 开发中</span>
         <h3>狼人杀面杀助手</h3>
-        <p>鸿蒙 App 主持 + Flask 投屏端，局域网实现角色分配、淘汰管理、发言计时，告别实体卡牌和人工主持�?/p>
+        <p>鸿蒙 App 主持 + Flask 投屏端，局域网实现角色分配、淘汰管理、发言计时，告别实体卡牌和人工主持。</p>
         <div class="tech"><span>ArkTS</span><span>HarmonyOS NEXT</span><span>Flask</span><span>pywebview</span></div>
       </div>
       <div class="project-card reveal reveal-d2">
-        <span class="tag">网站 · 进行�?/span>
+        <span class="tag">网站 · 进行中</span>
         <h3>个人网站 XxPuan's Value</h3>
-        <p>你现在看到的这个网站。从零搭建的个人主页，展示技能树、项目经历与学习轨迹�?/p>
+        <p>你现在看到的这个网站。从零搭建的个人主页，展示技能树、项目经历与学习轨迹。</p>
         <div class="tech"><span>HTML / CSS</span><span>GitHub Pages</span><span>HarmonyOS Sans</span></div>
       </div>
     </div>
@@ -518,20 +519,20 @@
 <section id="contact">
   <div class="section-inner">
     <span class="section-label reveal">/ 联系</span>
-    <h2 class="section-title reveal reveal-d1">找到�?/h2>
+    <h2 class="section-title reveal reveal-d1">找到我</h2>
     <div class="contact-grid">
       <div class="contact-info">
-        <p class="reveal reveal-d2">不为了什么宏大的目标，只是想在这个浮躁的时代留下一点属于自己的痕迹。如果你有共鸣，或者想聊聊物联网、嵌入式、桌游——欢迎找到我�?/p>
+        <p class="reveal reveal-d2">不为了什么宏大的目标，只是想在这个浮躁的时代留下一点属于自己的痕迹。如果你有共鸣，或者想聊聊物联网、嵌入式、桌游——欢迎找到我。</p>
         <div class="contact-links reveal reveal-d3">
-          <a href="#">✉️ 邮箱（建设中�?/a>
+          <a href="#">✉️ 邮箱（建设中）</a>
           <a href="https://github.com/XxPuan" target="_blank" rel="noreferrer">🐙 GitHub: XxPuan</a>
           <a href="#">📱 微信（联系获取）</a>
         </div>
       </div>
       <div class="contact-card reveal reveal-d2">
         <h4>✉️ 写信给我</h4>
-        <p>项目协作、友链交换、技术讨论，或只是认真地说几句话�?br>都可以�?/p>
-        <p style="color:var(--bc8);font-size:14px;">邮箱地址即将开�?· 建设�?/p>
+        <p>项目协作、友链交换、技术讨论，或只是认真地说几句话。<br>都可以。</p>
+        <p style="color:var(--bc8);font-size:14px;">邮箱地址即将开放 · 建设中</p>
       </div>
     </div>
   </div>
@@ -610,4 +611,3 @@
 </script>
 </body>
 </html>
-
