@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>博客编辑器 · XxPuan's Value</title>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--primary:#7C3AED;--primary-light:#A855F7;--bg:#08080E;--bc15:#F1F1F6;--bc13:#D4D4E0;--bc12:#B8B8CC;--bc10:#8888A0;--bc8:#5A5A70}
+    body{
+      font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+      background:var(--bg);color:var(--bc15);padding:2rem;min-height:100vh;
+    }
+    h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+    .sub{color:var(--bc8);font-size:.85rem;margin-bottom:2rem}
+
+    .editor-wrap{
+      max-width:900px;margin:0 auto;
+    }
+
+    /* ===== 工具栏 ===== */
+    .toolbar{
+      display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+      padding:.6rem .8rem;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:12px 12px 0 0;
+      border-bottom:none;
+    }
+    .toolbar button,.toolbar select{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+      color:var(--bc12);
+      padding:4px 10px;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:13px;
+      transition:all .2s;
+      font-family:inherit;
+    }
+    .toolbar button:hover,.toolbar select:hover{
+      background:rgba(124,58,237,.12);
+      color:var(--bc15);
+    }
+    .toolbar select{
+      padding:4px 6px;
+    }
+    .toolbar .sep{
+      width:1px;height:20px;
+      background:rgba(255,255,255,.08);
+      margin:0 2px;
+    }
+
+    /* ===== 表单 ===== */
+    .field{
+      margin-bottom:1rem;
+    }
+    .field label{
+      display:block;font-size:13px;font-weight:600;
+      color:var(--bc10);margin-bottom:6px;
+    }
+    .field input[type="text"],.field input[type="date"]{
+      width:100%;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:8px;
+      padding:.7rem 1rem;
+      font-family:inherit;font-size:14px;
+      color:var(--bc13);
+      outline:none;
+    }
+    .field input:focus{
+      border-color:rgba(124,58,237,.3);
+    }
+    .field .title-row{
+      display:flex;gap:1rem;
+    }
+    .field .title-row input{flex:1}
+
+    /* ===== 富文本编辑器 ===== */
+    .editor-content{
+      min-height:300px;
+      padding:1rem 1.2rem;
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:0 0 12px 12px;
+      color:var(--bc12);
+      font-size:15px;
+      line-height:1.9;
+      outline:none;
+      overflow-y:auto;
+    }
+    .editor-content:focus{
+      border-color:rgba(124,58,237,.2);
+    }
+    .editor-content img{
+      max-width:100%;border-radius:8px;margin:.5rem 0;
+    }
+
+    /* ===== 操作按钮 ===== */
+    .actions{
+      display:flex;gap:1rem;margin-top:1.5rem;
+    }
+    .btn{
+      padding:.7rem 1.5rem;
+      border-radius:999px;
+      border:none;
+      font-family:inherit;
+      font-size:14px;font-weight:600;
+      cursor:pointer;
+      transition:all .3s;
+    }
+    .btn-primary{
+      background:linear-gradient(135deg,var(--primary),var(--primary-light));
+      color:#fff;
+      box-shadow:0 4px 16px rgba(124,58,237,.2);
+    }
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 24px rgba(124,58,237,.3);
+    }
+    .btn-outline{
+      background:transparent;
+      border:1px solid rgba(255,255,255,.1);
+      color:var(--bc12);
+    }
+    .btn-outline:hover{
+      border-color:var(--primary-light);
+      color:var(--bc15);
+    }
+
+    /* ===== 预览/输出 ===== */
+    .output-wrap{margin-top:2rem;display:none}
+    .output-wrap.show{display:block}
+    .output-wrap h3{font-size:1rem;font-weight:600;margin-bottom:.5rem;color:var(--bc13)}
+    .output-box{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:12px;
+      padding:1rem;
+      white-space:pre-wrap;
+      word-break:break-all;
+      font-family:'Courier New',monospace;
+      font-size:13px;
+      color:var(--primary-light);
+      max-height:400px;
+      overflow:auto;
+      line-height:1.6;
+    }
+    .copy-btn{
+      margin-top:.5rem;
+      padding:.5rem 1.2rem;
+      border-radius:999px;
+      border:1px solid rgba(124,58,237,.2);
+      background:rgba(124,58,237,.06);
+      color:var(--primary-light);
+      font-family:inherit;font-size:13px;font-weight:600;
+      cursor:pointer;
+      transition:all .3s;
+    }
+    .copy-btn:hover{
+      background:rgba(124,58,237,.12);
+    }
+
+    .date-hint{color:var(--bc8);font-size:12px;margin-top:.3rem}
+
+    @media screen and (max-width:767px){
+      body{padding:1rem}
+      .field .title-row{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+
+<div class="editor-wrap">
+  <h1>📝 博客编辑器</h1>
+  <p class="sub">填写内容后点击「生成 HTML 代码」，复制粘贴到 blog.html 中</p>
+
+  <!-- 日期 -->
+  <div class="field">
+    <label>📅 发布日期</label>
+    <div class="title-row">
+      <input type="date" id="postDate" value="">
+      <select id="postTags" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:.7rem 1rem;font-family:inherit;font-size:14px;color:var(--bc13);outline:none;min-width:120px">
+        <option value="杂记">杂记</option>
+        <option value="STM32">STM32</option>
+        <option value="AI">AI</option>
+        <option value="毕设">毕设</option>
+        <option value="鸿蒙">鸿蒙</option>
+        <option value="嵌入式">嵌入式</option>
+        <option value="生活">生活</option>
+        <option value="其他">其他</option>
+      </select>
+    </div>
+    <div class="date-hint">时间线左侧将显示「日 / 英文月 / 年」格式</div>
+  </div>
+
+  <!-- 标题 -->
+  <div class="field">
+    <label>📌 文章标题</label>
+    <input type="text" id="postTitle" placeholder="输入文章标题...">
+  </div>
+
+  <!-- 摘要 -->
+  <div class="field">
+    <label>📋 摘要（显示在博客列表的简介文字，1~2 句话）</label>
+    <input type="text" id="postExcerpt" placeholder="简短介绍一下这篇文章...">
+  </div>
+
+  <!-- 富文本编辑器 -->
+  <div class="field">
+    <label>✍️ 正文内容</label>
+    <div class="toolbar">
+      <button onclick="execCmd('bold')" title="加粗"><b>B</b></button>
+      <button onclick="execCmd('italic')" title="斜体"><i>I</i></button>
+      <button onclick="execCmd('underline')" title="下划线"><u>U</u></button>
+      <span class="sep"></span>
+      <button onclick="execCmd('insertOrderedList')" title="有序列表">① 列表</button>
+      <button onclick="execCmd('insertUnorderedList')" title="无序列表">• 列表</button>
+      <span class="sep"></span>
+      <button onclick="execCmd('formatBlock','<h2>')" title="二级标题">H2</button>
+      <button onclick="execCmd('formatBlock','<h3>')" title="三级标题">H3</button>
+      <span class="sep"></span>
+      <select onchange="execCmd('fontSize',this.value)" title="字号">
+        <option value="3">正常</option>
+        <option value="4">大</option>
+        <option value="5">更大</option>
+        <option value="1">小</option>
+        <option value="2">较小</option>
+      </select>
+      <button onclick="addImage()" title="添加图片">🖼 图片</button>
+      <button onclick="addCode()" title="插入代码块">&lt;/&gt; 代码</button>
+    </div>
+    <div class="editor-content" id="editor" contenteditable="true"></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="generateHTML()">⚡ 生成 HTML 代码</button>
+    <button class="btn btn-outline" onclick="resetEditor()">↺ 清空</button>
+  </div>
+
+  <!-- ===== 输出区域 ===== -->
+  <div class="output-wrap" id="outputWrap">
+    <h3>📋 生成的代码 — 复制下面内容到 blog.html</h3>
+    <div class="output-box" id="outputBox"></div>
+    <button class="copy-btn" onclick="copyCode()">📋 复制代码</button>
+  </div>
+</div>
+
+<script>
+// 设置默认日期为今天
+document.getElementById('postDate').valueAsDate = new Date()
+
+function execCmd(command, value) {
+  document.execCommand(command, false, value || null)
+  document.getElementById('editor').focus()
+}
+
+// 添加图片
+function addImage() {
+  const url = prompt('输入图片 URL 地址：')
+  if (url) {
+    execCmd('insertImage', url)
+  }
+}
+
+// 添加代码块
+function addCode() {
+  const code = prompt('粘贴代码：')
+  if (code) {
+    const el = document.getElementById('editor')
+    const pre = document.createElement('pre')
+    const codeEl = document.createElement('code')
+    codeEl.textContent = code
+    pre.appendChild(codeEl)
+    el.appendChild(pre)
+    // 在末尾加个换行
+    el.appendChild(document.createElement('br'))
+  }
+}
+
+// 格式化日期
+function formatDate(dateStr) {
+  const d = new Date(dateStr)
+  const day = String(d.getDate()).padStart(2, '0')
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  const month = months[d.getMonth()]
+  const year = d.getFullYear()
+  return { day, month, year, full: `${year}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` }
+}
+
+// 获取正文纯文本摘要
+function getPlainText() {
+  const el = document.getElementById('editor')
+  return el.innerText.trim().slice(0, 100)
+}
+
+// 生成卡片和文章的完整 HTML
+function generateHTML() {
+  const dateVal = document.getElementById('postDate').value
+  if (!dateVal) { alert('请选择日期'); return }
+  const title = document.getElementById('postTitle').value.trim()
+  if (!title) { alert('请输入标题'); return }
+  const tags = document.getElementById('postTags').value
+  const excerpt = document.getElementById('postExcerpt').value.trim() || getPlainText()
+  const fd = formatDate(dateVal)
+  const contentHTML = document.getElementById('editor').innerHTML.trim()
+  if (!contentHTML) { alert('请输入正文内容'); return }
+
+  // 转义标题用于 slug
+  const slug = title.replace(/[^\w\u4e00-\u9fa5]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'post'
+
+  const code = `\
+    <!-- ===== ${fd.full} ${title} ===== -->
+    <div class="blog-entry reveal">
+      <div class="blog-date">
+        <span class="dot"></span>
+        <span class="day">${fd.day}</span>
+        <span class="month">${fd.month}</span>
+        <span class="year">${fd.year}</span>
+      </div>
+      <div class="blog-card" onclick="location.href='posts/${slug}.html'">
+        <h3>${title}</h3>
+        <div class="card-date-alt">${fd.full}</div>
+        <p>${excerpt}</p>
+        <div class="card-tags"><span>${tags}</span></div>
+      </div>
+    </div>`
+
+  // 生成文章详情页 HTML
+  const postHTML = `\
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title} · XxPuan's Value</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,500;1,700&display=swap" rel="stylesheet">
+  <style>
+    @font-face{font-family:'HarmonyOS Sans';src:url('../assets/fonts/HarmonyOS_Sans_Regular.woff2')format('woff2');font-weight:400;font-display:swap}
+    @font-face{font-family:'HarmonyOS Sans';src:url('../assets/fonts/HarmonyOS_Sans_Medium.woff2')format('woff2');font-weight:500;font-display:swap}
+    @font-face{font-family:'HarmonyOS Sans';src:url('../assets/fonts/HarmonyOS_Sans_Bold.woff2')format('woff2');font-weight:700;font-display:swap}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--primary-rgb:124,58,237;--primary:#7C3AED;--primary-light:#A855F7;--bg:#08080E;--bc15:#F1F1F6;--bc13:#D4D4E0;--bc12:#B8B8CC;--bc10:#8888A0;--bc8:#5A5A70;--header-h:80px;--lem:1rem}
+    html{font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--bc15);-webkit-font-smoothing:antialiased}
+    body{min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    #cursorGlow{position:fixed;top:0;left:0;width:900px;height:900px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(124,58,237,.2),rgba(168,85,247,.1) 35%,transparent 68%);transform:translate(-50%,-50%)}
+    #cursorGlow::after{content:'';position:absolute;top:50%;left:50%;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.1),transparent 55%);transform:translate(-50%,-50%)}
+    #headerMark{height:var(--header-h)}
+    #header{position:fixed;top:0;left:0;z-index:100;width:100%;height:var(--header-h);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,14,.55);backdrop-filter:blur(24px)saturate(1.4);border-bottom:1px solid rgba(255,255,255,.04);box-shadow:0 1px 0 rgba(124,58,237,.08)inset,0 0 60px rgba(124,58,237,.04)}
+    #header::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(124,58,237,.35)25%,rgba(168,85,247,.5)50%,rgba(124,58,237,.35)75%,transparent 95%);opacity:.8}
+    #header::after{content:'';position:absolute;bottom:-1px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.15),transparent)}
+    #headerTitle{font-size:16px;font-weight:500;color:var(--bc15);display:flex;align-items:center}
+    #headerTitle b{font-size:22px;font-weight:800;margin-right:2px}
+    #headerTitle .suffix{font-size:16px;font-weight:500;color:var(--bc12);letter-spacing:.01em}
+    main{max-width:800px;margin:0 auto;padding:7rem 2rem 5rem;position:relative;z-index:1}
+    article h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;margin-bottom:.3rem;line-height:1.3}
+    .post-meta{color:var(--bc8);font-size:14px;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.05)}
+    .post-meta a{color:var(--primary-light)}
+    .post-content{font-size:16px;color:var(--bc12);line-height:2}
+    .post-content h2{font-size:1.4rem;font-weight:700;color:var(--bc15);margin:2.5rem 0 .8rem}
+    .post-content h3{font-size:1.2rem;font-weight:600;color:var(--bc13);margin:2rem 0 .6rem}
+    .post-content p{margin-bottom:1.2rem}
+    .post-content a{color:var(--primary-light);border-bottom:1px solid rgba(124,58,237,.2)}
+    .post-content img{max-width:100%;border-radius:12px;margin:1.2rem 0}
+    .post-content blockquote{border-left:3px solid var(--primary);padding:.8rem 1.2rem;margin:1.2rem 0;background:rgba(124,58,237,.04);border-radius:0 8px 8px 0;color:var(--bc10)}
+    .post-content pre{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:1rem;overflow-x:auto;margin:1.2rem 0}
+    .post-content code{font-size:14px;background:rgba(255,255,255,.04);padding:2px 6px;border-radius:4px;color:var(--primary-light)}
+    .post-content pre code{background:none;padding:0}
+    .post-content ul,.post-content ol{padding-left:1.5rem;margin-bottom:1rem}
+    .back-link{display:inline-flex;align-items:center;gap:6px;color:var(--bc10);font-size:14px;margin-bottom:2rem;transition:color .3s}
+    .back-link:hover{color:var(--primary-light)}
+    footer{padding:2rem;border-top:1px solid rgba(255,255,255,.04);text-align:center;color:var(--bc8);font-size:13px}
+    .float-back{position:fixed;bottom:2.5rem;right:2.5rem;z-index:99;display:inline-flex;align-items:center;gap:8px;padding:0.65rem 1.2rem 0.65rem 1rem;border-radius:999px;background:#fff;color:var(--primary);font-size:0.9rem;font-weight:700;text-decoration:none;border:none;box-shadow:0 4px 20px rgba(124,58,237,.15);transition:all .3s}
+    .float-back:hover{background:var(--primary-light);color:#fff;transform:translateY(-3px);box-shadow:0 8px 28px rgba(124,58,237,.25)}
+    @media screen and (max-width:767px){#header{padding:0 1rem}main{padding:6rem 1.5rem 3rem}}
+  </style>
+</head>
+<body>
+<div id="cursorGlow"></div>
+<div id="headerMark"></div>
+<header id="header"><div id="headerTitle"><b>XxPuan</b><span class="suffix">'s Value</span></div></header>
+<main>
+  <a class="back-link" href="../blog.html">← 返回博客</a>
+  <article>
+    <h1>${title}</h1>
+    <div class="post-meta">${fd.full} · <a href="#">#${tags}</a></div>
+    <div class="post-content">
+      ${contentHTML}
+    </div>
+  </article>
+</main>
+<a href="../index.html" class="float-back"><img src="../assets/返回.png" alt="返回" class="float-back-icon" style="width:20px;height:20px">返回首页</a>
+<footer><div class="footer-inner" style="max-width:800px;margin:0 auto;text-align:center">© 2026 XxPuan's Value</div></footer>
+<script>
+  const g=document.getElementById('cursorGlow');let mx=0,my=0,gx=0,gy=0
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY})
+  function a(){gx+=(mx-gx)*.02;gy+=(my-gy)*.02;g.style.transform='translate('+(gx-450)+'px,'+(gy-450)+'px)';requestAnimationFrame(a)}
+  a()
+</script>
+</body>
+</html>`
+
+  // 显示结果
+  const outputBox = document.getElementById('outputBox')
+  outputBox.textContent = 
+    '═══ 步骤 1：复制下面这段，粘贴到 blog.html 的时间线区域 ═══\n\n' +
+    code + '\n\n' +
+    '═══════════════════════════════════════════════\n\n' +
+    '═══ 步骤 2：在 xxpuan-site/posts/ 目录下新建 ' + slug + '.html 文件，粘贴下面内容 ═══\n\n' +
+    postHTML
+
+  document.getElementById('outputWrap').classList.add('show')
+  // 滚动到输出区域
+  document.getElementById('outputWrap').scrollIntoView({behavior:'smooth', block:'start'})
+}
+
+function copyCode() {
+  const text = document.getElementById('outputBox').textContent
+  navigator.clipboard.writeText(text).then(() => {
+    alert('✅ 已复制！请按提示粘贴到对应文件')
+  }).catch(() => {
+    // fallback
+    const range = document.createRange()
+    range.selectNode(document.getElementById('outputBox'))
+    window.getSelection().removeAllRanges()
+    window.getSelection().addRange(range)
+    document.execCommand('copy')
+    alert('✅ 已复制！')
+  })
+}
+
+function resetEditor() {
+  document.getElementById('postTitle').value = ''
+  document.getElementById('postExcerpt').value = ''
+  document.getElementById('editor').innerHTML = ''
+  document.getElementById('outputWrap').classList.remove('show')
+  document.getElementById('postDate').valueAsDate = new Date()
+}
+</script>
+</body>
+</html>
