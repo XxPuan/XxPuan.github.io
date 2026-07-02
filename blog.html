@@ -196,8 +196,8 @@
       <p class="sub">记录技术、思考与生活</p>
     </div>
 
-    <!-- 时间线博客列表 -->
-    <div class="blog-timeline reveal reveal-d2">
+    <!-- 时间线博客列表（由 JS 动态渲染） -->
+    <div id="blogTimeline" class="blog-timeline reveal reveal-d2">
       <!-- SVG 曲线 -->
       <svg class="timeline-svg" viewBox="0 0 30 1000" preserveAspectRatio="none">
         <defs>
@@ -209,63 +209,99 @@
         </defs>
         <path d="M15,0 C5,60 25,120 15,180 C5,240 25,300 15,360 C5,420 25,480 15,540 C5,600 25,660 15,720 C5,780 25,840 15,900 C5,960 25,980 15,1000" vector-effect="non-scaling-stroke"/>
       </svg>
-
-
-      <!-- 2026-07-02 天气 小雨 -->
-      <div class="blog-entry reveal">
-        <div class="blog-date">
-          <span class="dot"></span>
-          <span class="day">02</span>
-          <span class="month">Jul</span>
-          <span class="year">2026</span>
-        </div>
-        <div class="blog-card" onclick="location.href='posts/tian-qi-xiao-yu.html'">
-          <h3>天气 小雨</h3>
-          <div class="card-date-alt">2026-07-02</div>
-          <p>又和妈妈吵架了</p>
-          <div class="card-tags"><span>杂记</span></div>
-        </div>
-      </div>
-
-
-      <!-- 2026-06-28 我的未来 -->
-      <div class="blog-entry reveal">
-        <div class="blog-date">
-          <span class="dot"></span>
-          <span class="day">28</span>
-          <span class="month">Jun</span>
-          <span class="year">2026</span>
-        </div>
-        <div class="blog-card">
-          <h3>我的未来</h3>
-          <div class="card-date-alt">2026-06-28</div>
-          <p>矛盾</p>
-          <div class="card-tags"><span>杂记</span><span>暂不可查看</span></div>
-        </div>
-      </div>
-
-
-      <!-- 2026-06-15 我们没有下学期了 -->
-      <div class="blog-entry reveal reveal-d1">
-        <div class="blog-date">
-          <span class="dot"></span>
-          <span class="day">15</span>
-          <span class="month">Jun</span>
-          <span class="year">2026</span>
-        </div>
-        <div class="blog-card" onclick="location.href='posts/wo-men-mei-you-xia-xue-qi-liao.html'">
-          <h3>我们没有下学期了</h3>
-          <div class="card-date-alt">2026 年 6 月 15 日</div>
-          <p>九宫格</p>
-          <div class="card-tags"><span>杂记</span></div>
-        </div>
-      </div>
-      
-
     </div>
 
   </div>
 </div>
+
+<script>
+// ===== 博文数据 =====
+// 新增博文：在这里加一条记录即可，页面自动渲染
+const blogPosts = [
+  {
+    file: 'tian-qi-xiao-yu.html',
+    date: '2026-07-02',
+    title: '天气 小雨',
+    summary: '又和妈妈吵架了',
+    tags: ['杂记']
+  },
+  {
+    file: 'wo-de-wei-lai.html',
+    date: '2026-06-28',
+    title: '我的未来',
+    summary: '矛盾',
+    tags: ['杂记', '暂不可查看'],
+    disabled: true  // true = 不可点击
+  },
+  {
+    file: 'wo-men-mei-you-xia-xue-qi-liao.html',
+    date: '2026-06-15',
+    title: '我们没有下学期了',
+    summary: '九宫格',
+    tags: ['杂记']
+  },
+  {
+    file: '',  // 无对应文件，仅作演示
+    date: '2026-06-10',
+    title: '你好，世界',
+    summary: '这是我的第一篇博客。不知不觉，个人网站已经搭起来了。从首页设计到简历页面，再到沟通页面的粒子效果，一步步走过来还挺有成就感的。',
+    tags: ['其它'],
+    disabled: true
+  }
+]
+
+// 月份缩写
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+// 渲染所有博文
+function renderPosts() {
+  const container = document.getElementById('blogTimeline')
+  // 保留第一个子元素（SVG）
+  const svg = container.querySelector('.timeline-svg')
+  container.innerHTML = ''
+  container.appendChild(svg)
+
+  blogPosts.forEach(post => {
+    const [y, m, d] = post.date.split('-')
+    const monthAbbr = MONTHS[parseInt(m, 10) - 1]
+    const dateLabel = `${y} 年 ${parseInt(m, 10)} 月 ${parseInt(d, 10)} 日`
+    const href = post.file ? `posts/${post.file}` : ''
+    const clickAttr = post.disabled || !post.file ? '' : ` onclick="location.href='${href}'"`
+    const cursorStyle = (post.disabled || !post.file) ? ' style="cursor:default"' : ''
+
+    const entry = document.createElement('div')
+    entry.className = 'blog-entry reveal'
+    entry.innerHTML = `
+      <div class="blog-date">
+        <span class="dot"></span>
+        <span class="day">${parseInt(d, 10)}</span>
+        <span class="month">${monthAbbr}</span>
+        <span class="year">${y}</span>
+      </div>
+      <div class="blog-card"${clickAttr}${cursorStyle}>
+        <h3>${post.title}</h3>
+        <div class="card-date-alt">${dateLabel}</div>
+        <p>${post.summary}</p>
+        <div class="card-tags">${post.tags.map(t => `<span>${t}</span>`).join('')}</div>
+      </div>
+    `
+    container.appendChild(entry)
+  })
+
+  // 绑定所有 .reveal 元素的滚动进入动画
+  const observer = new IntersectionObserver(e => {
+    e.forEach(i => {
+      if (i.isIntersecting) {
+        i.target.classList.add('visible')
+        observer.unobserve(i.target)
+      }
+    })
+  }, { threshold: 0.15 })
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el))
+}
+
+renderPosts()
+</script>
 
 <a href="index.html" class="float-back">
   <img src="assets/返回.png" alt="返回" class="float-back-icon">返回首页
@@ -281,8 +317,6 @@
   function anim(){gx+=(mx-gx)*.02;gy+=(my-gy)*.02;glow.style.transform=`translate(${gx-450}px,${gy-450}px)`;requestAnimationFrame(anim)}
   anim()
   document.querySelectorAll('img').forEach(i=>{i.addEventListener('contextmenu',e=>e.preventDefault());i.addEventListener('dragstart',e=>e.preventDefault())})
-  const observer=new IntersectionObserver(e=>{e.forEach(i=>{if(i.isIntersecting)i.target.classList.add('visible');observer.unobserve(i.target)})},{threshold:.15})
-  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el))
   const fill=document.getElementById('progressFill')
   function update(){const s=window.scrollY;const d=document.documentElement.scrollHeight-window.innerHeight;fill.style.height=(d>0?Math.min(100,(s/d)*100):0)+'%'}
   window.addEventListener('scroll',update,{passive:true});update()
