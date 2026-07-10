@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>状态 · XxPuan's Value</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,500;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Bold.woff2') format('woff2'); font-weight:700; font-display:swap; }
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Black.woff2') format('woff2'); font-weight:800; font-display:swap; }
+
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--bc10:#8888A0;--bc12:#B8B8CC;--bc15:#F1F1F6}
+    html{font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#08080E;color:var(--bc15);-webkit-font-smoothing:antialiased}
+    body{min-height:100vh;overflow-x:hidden;background:transparent}
+    a{color:inherit;text-decoration:none}
+
+    /* ===== 背景图片 ===== */
+    #bgImg{
+      position:fixed;inset:0;z-index:0;
+      background:url('assets/statusground.jpg') center/cover no-repeat;
+    }
+
+    /* ===== 玻璃页眉 ===== */
+    .gs{
+      position:fixed;top:24px;left:50%;transform:translateX(-50%);
+      z-index:100;
+      width:80vw;max-width:1200px;
+      height:60px;
+      border-radius:50px;
+      display:flex;align-items:center;justify-content:flex-start;
+      padding:0 28px;
+      overflow:hidden;
+    }
+    .gs--svg{
+      background:hsl(0 0% 0% / 0);
+      backdrop-filter:var(--gs-filter) saturate(1.3);
+      -webkit-backdrop-filter:var(--gs-filter) saturate(1.3);
+      box-shadow:
+        0 0 1.5px 1px rgba(255,255,255,.15) inset,
+        0 0 10px 4px rgba(255,255,255,.07) inset,
+        0 4px 16px rgba(17,17,26,.06),
+        0 8px 24px rgba(17,17,26,.05),
+        0 16px 56px rgba(17,17,26,.05);
+    }
+    .gs--fallback{
+      background:rgba(255,255,255,.08);
+      backdrop-filter:blur(18px) saturate(1.8) brightness(1.15);
+      -webkit-backdrop-filter:blur(18px) saturate(1.8) brightness(1.15);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 8px 32px rgba(31,38,135,.15),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(255,255,255,.12);
+    }
+
+    .gs__svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;z-index:-1}
+    .gs__content{position:relative;z-index:1;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;border-radius:inherit;padding:0 4px}
+    .gs__title{display:flex;align-items:center;gap:5px}
+    .gs__title b{font-size:21px;font-weight:800;color:#fff}
+    .gs__title .s{font-size:15px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.01em}
+    .gs__center{
+      position:absolute;left:50%;transform:translateX(-50%);
+      font-family:'Playfair Display',Georgia,'Times New Roman',serif;
+      font-style:italic;
+      font-size:clamp(0.9rem,1.4vw,1.3rem);
+      font-weight:800;
+      letter-spacing:.18em;
+      color:#fff;
+      user-select:none;
+    }
+    .gs__right{
+      font-size:clamp(0.7rem,1vw,0.9rem);
+      font-weight:700;
+      color:#fff;
+      letter-spacing:.06em;
+      cursor:pointer;
+      transition:color .3s ease;
+      text-decoration:none;
+      margin-left:auto;
+    }
+    .gs__right:hover{
+      color:rgba(255,255,255,.7);
+    }
+
+    /* ===== 内容区 ===== */
+    .page-wrap{
+      position:relative;z-index:3;
+      min-height:100vh;padding-top:130px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+    }
+
+    /* ===== 三卡片网格（毛玻璃） ===== */
+    .status-grid{
+      width:calc(100% / 6 * 5);
+      max-width:1100px;
+      display:flex;
+      gap:clamp(16px,2vw,28px);
+      justify-content:center;
+      align-items:stretch;
+    }
+    .status-card{
+      flex:1;
+      min-width:0;
+      border-radius:24px;
+      padding:clamp(20px,2.2vw,32px) clamp(14px,1.8vw,24px);
+
+      /* 毛玻璃材质 */
+      background:rgba(255,255,255,.04);
+      backdrop-filter:blur(28px) saturate(1.15);
+      -webkit-backdrop-filter:blur(28px) saturate(1.15);
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow:0 8px 40px rgba(0,0,0,.25),
+                 0 2px 12px rgba(0,0,0,.15);
+
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      transition:transform .4s ease,box-shadow .4s ease,border-color .4s ease,background .4s ease;
+      cursor:default;
+      position:relative;
+      overflow:hidden;
+      aspect-ratio:3/4;
+    }
+    .status-card:hover{
+      transform:translateY(-6px);
+      box-shadow:0 16px 56px rgba(0,0,0,.35),0 4px 20px rgba(0,0,0,.2);
+      border-color:rgba(255,255,255,.12);
+      background:rgba(255,255,255,.055);
+    }
+
+    /* 卡片顶部装饰光晕 */
+    .status-card .card-glow{
+      position:absolute;
+      top:-40%;left:-20%;
+      width:140%;height:80%;
+      background:radial-gradient(ellipse,rgba(124,58,237,.06),transparent 70%);
+      pointer-events:none;
+    }
+
+    /* ===== 卡片信息层级 ===== */
+
+    /* 顶部：标签行 */
+    .card-tag{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:clamp(14px,1.8vw,22px);
+    }
+    .card-tag-dot{
+      width:8px;height:8px;
+      border-radius:50%;
+      flex-shrink:0;
+      box-shadow:0 0 8px currentColor;
+    }
+    .card-tag-text{
+      font-family:'Source Han Serif CN','思源宋体 CN','Noto Serif SC',Georgia,'Times New Roman',serif;
+      font-weight:800;
+      font-size:clamp(1.2rem,2.2vw,1.8rem);
+      letter-spacing:.12em;
+      color:#fff;
+      display:inline-block;
+      transform:scaleY(1.8);
+      line-height:1;
+    }
+
+    /* 全称 */
+    .card-fullname{
+      font-family:'HarmonyOS Sans','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;
+      font-size:clamp(0.85rem,1.15vw,1.05rem);
+      font-weight:500;
+      color:#fff;
+      letter-spacing:.04em;
+      line-height:1.45;
+      margin-bottom:auto;
+      min-height:2.6em;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    /* 倒计时核心区 */
+    .card-countdown{
+      margin-top:clamp(14px,1.5vw,20px);margin-bottom:clamp(4px,0.5vw,8px);
+      display:flex;
+      flex-wrap:nowrap;
+      justify-content:center;
+      align-items:flex-start;
+      gap:clamp(2px,.4vw,6px);
+    }
+    .countdown-unit{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      min-width:clamp(28px,4vw,48px);
+    }
+    .countdown-num{
+      font-size:clamp(1.4rem,2.8vw,2.5rem);
+      font-weight:800;
+      line-height:1.1;
+      background:linear-gradient(135deg,rgba(255,255,255,.92) 20%,rgba(255,255,255,.5) 80%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      text-shadow:none;
+      filter:drop-shadow(0 0 10px rgba(124,58,237,.2));
+    }
+    .countdown-label{
+      font-size:clamp(0.45rem,.65vw,0.6rem);
+      color:#fff;
+      letter-spacing:.08em;
+      font-weight:500;
+      margin-top:1px;
+    }
+    /* 分隔符 */
+    .countdown-sep{
+      display:flex;
+      align-items:flex-start;
+      padding-top:clamp(1px,.2vw,3px);
+      font-size:clamp(0.85rem,1.5vw,1.4rem);
+      font-weight:300;
+      color:#fff;
+    }
+
+    /* ===== 圆形进度环 ===== */
+    .card-progress{
+      position:relative;
+      width:clamp(80px,9vw,105px);
+      height:clamp(80px,9vw,105px);
+      margin-top:clamp(2px,.3vw,4px);
+      flex-shrink:0;
+    }
+    .card-progress svg{
+      width:100%;height:100%;
+      transform:rotate(-90deg);
+      overflow:visible;
+    }
+    .card-progress .bg-circle{
+      fill:none;
+      stroke:rgba(255,255,255,.08);
+      stroke-width:4;
+    }
+    .card-progress .fg-circle{
+      fill:none;
+      stroke:var(--ring-color,#A855F7);
+      stroke-width:4;
+      stroke-linecap:round;
+      transition:stroke-dashoffset .5s ease;
+      filter:drop-shadow(0 0 6px var(--ring-color,#A855F7)) drop-shadow(0 0 12px var(--ring-color,#A855F7));
+    }
+    .card-progress .pct-text{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:clamp(0.6rem,.9vw,0.85rem);
+      font-weight:600;
+      color:rgba(255,255,255,.5);
+    }
+
+    /* 底部：考试日期 */
+    .card-date{
+      font-size:clamp(0.55rem,.7vw,0.65rem);
+      color:#fff;
+      letter-spacing:.06em;
+      margin-top:auto;
+      padding-top:clamp(6px,.8vw,10px);
+      border-top:1px solid rgba(255,255,255,.1);
+      width:100%;
+      margin-bottom:clamp(6px,.7vw,10px);
+    }
+
+    @media screen and (max-width:767px){
+      .gs{width:calc(100% - 24px);height:52px;padding:0 16px}
+  .gs__title b{font-size:17px}
+      .gs__title .s{font-size:13px}
+      .gs__center{font-size:clamp(0.7rem,2.5vw,0.9rem)}
+      .gs__right{font-size:clamp(0.55rem,2vw,0.75rem)}
+      .page-wrap{padding-top:110px;padding-left:1rem;padding-right:1rem}
+
+      .status-grid{
+        width:calc(100% - 2rem);
+        flex-direction:column;
+        align-items:center;
+        gap:16px;
+      }
+      .status-card{
+        width:100%;
+        max-width:360px;
+        aspect-ratio:auto;
+        min-height:260px;
+      }
+    }
+  /* ===== 管理后台 ===== */
+    #adminToggle{
+      position:fixed;bottom:24px;right:24px;z-index:200;
+      width:44px;height:44px;border-radius:50%;
+      background:rgba(255,255,255,.08);backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;font-size:20px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:all .3s ease;
+      box-shadow:0 4px 16px rgba(0,0,0,.3);
+    }
+    #adminToggle:hover{background:rgba(255,255,255,.15);transform:scale(1.1)}
+    #adminToggle.active{background:rgba(124,58,237,.3);border-color:#A855F7}
+
+    #adminPanel{
+      position:fixed;bottom:80px;right:24px;z-index:200;
+      width:clamp(300px,32vw,420px);
+      max-height:70vh;overflow-y:auto;
+      background:rgba(15,15,30,.95);backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:16px;
+      padding:clamp(16px,2vw,24px);
+      display:none;
+      box-shadow:0 16px 48px rgba(0,0,0,.4);
+    }
+    #adminPanel.open{display:block}
+    #adminPanel h3{
+      font-size:clamp(0.8rem,1.1vw,1rem);
+      font-weight:700;
+      color:#fff;
+      margin-bottom:clamp(12px,1.5vw,16px);
+      letter-spacing:.06em;
+    }
+    .admin-card-group{
+      margin-bottom:clamp(14px,1.8vw,20px);
+      padding:clamp(10px,1.2vw,14px);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:12px;
+      background:rgba(255,255,255,.02);
+    }
+    .admin-card-group .group-title{
+      font-size:clamp(0.65rem,.85vw,0.75rem);
+      font-weight:600;
+      color:rgba(255,255,255,.4);
+      margin-bottom:10px;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+    }
+    .admin-field{
+      margin-bottom:8px;
+    }
+    .admin-field label{
+      display:block;
+      font-size:clamp(0.55rem,.7vw,0.65rem);
+      color:rgba(255,255,255,.5);
+      margin-bottom:3px;
+    }
+    .admin-field input{
+      width:100%;
+      padding:6px 10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.05);
+      color:#fff;
+      font-size:clamp(0.6rem,.8vw,0.7rem);
+      font-family:'HarmonyOS Sans',sans-serif;
+      outline:none;
+      transition:border-color .3s;
+    }
+    .admin-field input:focus{border-color:#A855F7}
+    .admin-field input[type=color]{
+      width:100%;height:36px;padding:2px;
+      cursor:pointer;
+    }
+    .admin-row{
+      display:flex;gap:8px;
+    }
+    .admin-row .admin-field{flex:1}
+    #adminSave{
+      width:100%;
+      padding:10px;
+      border-radius:10px;
+      border:none;
+      background:linear-gradient(135deg,#7C3AED,#A855F7);
+      color:#fff;
+      font-size:clamp(0.7rem,.9vw,0.8rem);
+      font-weight:600;
+      cursor:pointer;
+      transition:opacity .3s;
+      letter-spacing:.06em;
+    }
+    #adminSave:hover{opacity:.85}
+    #adminReset{
+      width:100%;
+      padding:8px;margin-top:8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.1);
+      background:transparent;
+      color:rgba(255,255,255,.4);
+      font-size:clamp(0.55rem,.7vw,0.65rem);
+      cursor:pointer;
+      transition:color .3s;
+    }
+    #adminReset:hover{color:#fff}
+  </style>
+</head>
+<body>
+
+<!-- 管理后台按钮 -->
+<button id="adminToggle" title="管理卡片">⚙</button>
+
+<div id="adminPanel">
+  <h3>卡片管理</h3>
+  <div id="adminCards"></div>
+  <button id="adminSave">保存</button>
+  <button id="adminReset">恢复默认</button>
+</div>
+
+<div id="bgImg"></div>
+
+<div class="gs" id="glassSurface">
+  <svg class="gs__svg" id="glassSvg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="gsFilter" colorInterpolationFilters="sRGB" x="0%" y="0%" width="100%" height="100%">
+        <feImage id="feMap" x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" id="feRed" xChannelSelector="R" yChannelSelector="G" result="dispRed"/>
+        <feColorMatrix in="dispRed" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" id="feGreen" xChannelSelector="R" yChannelSelector="G" result="dispGreen"/>
+        <feColorMatrix in="dispGreen" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" id="feBlue" xChannelSelector="R" yChannelSelector="G" result="dispBlue"/>
+        <feColorMatrix in="dispBlue" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+        <feBlend in="red" in2="green" mode="screen" result="rg"/>
+        <feBlend in="rg" in2="blue" mode="screen" result="output"/>
+        <feGaussianBlur in="output" stdDeviation="0.7"/>
+      </filter>
+    </defs>
+  </svg>
+  <div class="gs__content">
+    <div class="gs__title"><b>XxPuan</b><span class="s">'s Value</span></div>
+    <div class="gs__center">COUNTDOWN</div>
+    <a href="index.html" class="gs__right">返回主页</a>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="status-grid" id="statusGrid">
+
+    <!-- 卡片 1：A -->
+    <div class="status-card">
+      <div class="card-glow"></div>
+      <div class="card-tag">
+        <span class="card-tag-text">国考</span>
+      </div>
+      <div class="card-fullname">中央机关及其直属机构<br>考试录用公务员</div>
+      <div class="card-countdown" id="cd0">
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd0d">00</span>
+          <span class="countdown-label">天</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd0h">00</span>
+          <span class="countdown-label">时</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd0m">00</span>
+          <span class="countdown-label">分</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd0s">00</span>
+          <span class="countdown-label">秒</span>
+        </div>
+      </div>
+      <div class="card-date">2026.11.28 (日)</div>
+      <div class="card-progress" data-exam="2026-11-28T09:00:00+08:00">
+        <svg viewBox="0 0 36 36">
+          <circle class="bg-circle" cx="18" cy="18" r="15.5"/>
+          <circle class="fg-circle" id="pr0" cx="18" cy="18" r="15.5" stroke-dasharray="97.4" stroke-dashoffset="97.4"/>
+        </svg>
+        <span class="pct-text" id="pt0">0%</span>
+      </div>
+    </div>
+
+    <!-- 卡片 2：B -->
+    <div class="status-card">
+      <div class="card-glow"></div>
+      <div class="card-tag">
+        <span class="card-tag-text">省考</span>
+      </div>
+      <div class="card-fullname">江苏省公务员<br>录用考试</div>
+      <div class="card-countdown" id="cd1">
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd1d">00</span>
+          <span class="countdown-label">天</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd1h">00</span>
+          <span class="countdown-label">时</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd1m">00</span>
+          <span class="countdown-label">分</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd1s">00</span>
+          <span class="countdown-label">秒</span>
+        </div>
+      </div>
+      <div class="card-date">2026.12.06 (日)</div>
+      <div class="card-progress" data-exam="2026-12-06T09:00:00+08:00">
+        <svg viewBox="0 0 36 36">
+          <circle class="bg-circle" cx="18" cy="18" r="15.5"/>
+          <circle class="fg-circle" id="pr1" cx="18" cy="18" r="15.5" stroke-dasharray="97.4" stroke-dashoffset="97.4"/>
+        </svg>
+        <span class="pct-text" id="pt1">0%</span>
+      </div>
+    </div>
+
+    <!-- 卡片 3：C -->
+    <div class="status-card">
+      <div class="card-glow"></div>
+      <div class="card-tag">
+        <span class="card-tag-text">考研</span>
+      </div>
+      <div class="card-fullname">全国硕士研究生<br>招生考试</div>
+      <div class="card-countdown" id="cd2">
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd2d">00</span>
+          <span class="countdown-label">天</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd2h">00</span>
+          <span class="countdown-label">时</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd2m">00</span>
+          <span class="countdown-label">分</span>
+        </div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-unit">
+          <span class="countdown-num" id="cd2s">00</span>
+          <span class="countdown-label">秒</span>
+        </div>
+      </div>
+      <div class="card-date">2026.12.19 (六)</div>
+      <div class="card-progress" data-exam="2026-12-19T08:30:00+08:00">
+        <svg viewBox="0 0 36 36">
+          <circle class="bg-circle" cx="18" cy="18" r="15.5"/>
+          <circle class="fg-circle" id="pr2" cx="18" cy="18" r="15.5" stroke-dasharray="97.4" stroke-dashoffset="97.4"/>
+        </svg>
+        <span class="pct-text" id="pt2">0%</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict'
+  var glow=document.createElement('div')
+  glow.style.cssText='position:fixed;top:0;left:0;width:800px;height:800px;border-radius:50%;pointer-events:none;z-index:1;background:radial-gradient(circle,rgba(124,58,237,.12),rgba(168,85,247,.06) 40%,transparent 70%)'
+  document.body.appendChild(glow)
+  var mx=0,my=0,gx=0,gy=0
+  document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY})
+  ;(function anim(){gx+=(mx-gx)*.03;gy+=(my-gy)*.03;glow.style.transform='translate('+(gx-400)+'px,'+(gy-400)+'px)';requestAnimationFrame(anim)})()
+  var gs=document.getElementById('glassSurface')
+  window.addEventListener('scroll',function(){gs.style.background=window.scrollY>30?'rgba(255,255,255,.035)':''},{passive:true})
+  var isChromium=!(/Safari/.test(navigator.userAgent)&&!/Chrome/.test(navigator.userAgent))&&!/Firefox/.test(navigator.userAgent)
+  var td=document.createElement('div');td.style.backdropFilter='url(#gsFilter)'
+  var supportsSvg=td.style.backdropFilter!==''&&isChromium
+  gs.classList.add(supportsSvg?'gs--svg':'gs--fallback')
+  if(supportsSvg)gs.style.setProperty('--gs-filter','url(#gsFilter)')
+  var distortionScale=-180,redOffset=0,greenOffset=10,blueOffset=20
+  var borderWidth=.07,brightness=50,opacity=.93,blurAmt=11,borderRadius=50,mixBlendMode='difference'
+  function genMap(el,w,h){
+    var e=Math.min(w,h)*borderWidth*.5
+    return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><defs><linearGradient id="rg" x1="100%" y1="0%" x2="0%" y2="0%"><stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="red"/></linearGradient><linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="blue"/></linearGradient></defs><rect fill="black" width="'+w+'" height="'+h+'"/><rect rx="'+borderRadius+'" width="'+w+'" height="'+h+'" fill="url(#rg)"/><rect rx="'+borderRadius+'" width="'+w+'" height="'+h+'" fill="url(#bg)" style="mix-blend-mode:'+mixBlendMode+'"/><rect x="'+e+'" y="'+e+'" width="'+(w-e*2)+'" height="'+(h-e*2)+'" rx="'+borderRadius+'" fill="hsl(0 0% '+brightness+'% / '+opacity+')" style="filter:blur('+blurAmt+'px)"/></svg>')
+  }
+  function updateGS(){
+    if(!supportsSvg)return
+    var m=document.getElementById('feMap')
+    if(m){var r=gs.getBoundingClientRect();if(r.width>1)m.setAttribute('href',genMap(gs,r.width,r.height))}
+    var r=document.getElementById('feRed'),g=document.getElementById('feGreen'),b=document.getElementById('feBlue')
+    if(r)r.setAttribute('scale',distortionScale+redOffset)
+    if(g)g.setAttribute('scale',distortionScale+greenOffset)
+    if(b)b.setAttribute('scale',distortionScale+blueOffset)
+  }
+  updateGS()
+  var rt
+  window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(updateGS,150)})
+  if(window.ResizeObserver)new ResizeObserver(function(){clearTimeout(rt);rt=setTimeout(updateGS,100)}).observe(gs)
+
+  // ===== 默认卡片数据 =====
+  var DEFAULT_DATA=[
+    {tag:'国考',fullname:'中央机关及其直属机构<br>考试录用公务员',date:'2026-11-28T09:00:00+08:00',displayDate:'2026.11.28 (日)',color:'#EF4444',fontColor:'#fff'},
+    {tag:'省考',fullname:'江苏省公务员<br>录用考试',date:'2026-12-06T09:00:00+08:00',displayDate:'2026.12.06 (日)',color:'#3B82F6',fontColor:'#fff'},
+    {tag:'考研',fullname:'全国硕士研究生<br>招生考试',date:'2026-12-19T08:30:00+08:00',displayDate:'2026.12.19 (六)',color:'#A855F7',fontColor:'#fff'}
+  ]
+
+  // ===== 数据加载 =====
+  function loadData(){
+    var saved=localStorage.getItem('statusCards')
+    if(saved){
+      try{
+        var data=JSON.parse(saved)
+        // 验证日期格式，非法则恢复默认
+        for(var i=0;i<data.length;i++){
+          if(isNaN(new Date(data[i].date).getTime())){
+            localStorage.removeItem('statusCards')
+            return JSON.parse(JSON.stringify(DEFAULT_DATA))
+          }
+        }
+        return data
+      }catch(e){
+        localStorage.removeItem('statusCards')
+      }
+    }
+    return JSON.parse(JSON.stringify(DEFAULT_DATA))
+  }
+  var cardData=loadData()
+
+  // ===== 应用到 DOM =====
+  function applyData(data){
+    var cards=document.querySelectorAll('.status-card')
+    cards.forEach(function(card,i){
+      if(!data[i])return
+      var d=data[i]
+      var tagEl=card.querySelector('.card-tag-text')
+      var nameEl=card.querySelector('.card-fullname')
+      var dateEl=card.querySelector('.card-date')
+      var dotEl=card.querySelector('.card-tag-dot')
+      var progEl=card.querySelector('.card-progress')
+      if(tagEl)tagEl.textContent=d.tag
+      if(nameEl)nameEl.innerHTML=d.fullname
+      if(dateEl)dateEl.textContent=d.displayDate
+      if(dotEl){dotEl.style.color=d.color;dotEl.style.background=d.color}
+      if(progEl){progEl.style.setProperty('--ring-color',d.color);progEl.dataset.exam=d.date}
+      // 字体颜色
+      card.style.setProperty('--card-font-color',d.fontColor)
+    })
+  }
+  applyData(cardData)
+
+  // ===== 管理后台生成表单 =====
+  function buildAdminForm(data){
+    var container=document.getElementById('adminCards')
+    if(!container)return
+    var html=''
+    var names=['考研','国考','省考']
+    data.forEach(function(d,i){
+      html+='<div class="admin-card-group" data-idx="'+i+'">'
+      html+='<div class="group-title">卡片 '+(i+1)+' &mdash; '+d.tag+'</div>'
+      html+='<div class="admin-field"><label>标签</label><input class="af-tag" value="'+d.tag.replace(/"/g,'&quot;')+'"></div>'
+      html+='<div class="admin-field"><label>全称</label><input class="af-fullname" value="'+d.fullname.replace(/<br>/g,' ').replace(/"/g,'&quot;')+'"></div>'
+      html+='<div class="admin-row">'
+      html+='<div class="admin-field"><label>截止时间</label><input class="af-date" type="datetime-local" value="'+d.date.substring(0,16)+'"></div>'
+      html+='<div class="admin-field"><label>显示日期</label><input class="af-display" value="'+d.displayDate.replace(/"/g,'&quot;')+'"></div>'
+      html+='</div>'
+      html+='<div class="admin-row">'
+      html+='<div class="admin-field"><label>圆环颜色</label><input class="af-color" type="color" value="'+d.color+'"></div>'
+      html+='<div class="admin-field"><label>字体颜色</label><input class="af-font" type="color" value="'+d.fontColor+'"></div>'
+      html+='</div>'
+      html+='</div>'
+    })
+    container.innerHTML=html
+  }
+  buildAdminForm(cardData)
+
+  // ===== 管理后台保存 =====
+  document.getElementById('adminSave').addEventListener('click',function(){
+    var groups=document.querySelectorAll('#adminCards .admin-card-group')
+    var newData=[]
+    groups.forEach(function(g){
+      var idx=parseInt(g.dataset.idx)
+      var orig=cardData[idx]||{}
+      newData.push({
+        tag:g.querySelector('.af-tag').value,
+        fullname:g.querySelector('.af-fullname').value,
+        date:g.querySelector('.af-date').value+':00+08:00',
+        displayDate:g.querySelector('.af-display').value,
+        color:g.querySelector('.af-color').value,
+        fontColor:g.querySelector('.af-font').value
+      })
+    })
+    localStorage.setItem('statusCards',JSON.stringify(newData))
+    location.reload()
+  })
+
+  // ===== 管理后台恢复默认 =====
+  document.getElementById('adminReset').addEventListener('click',function(){
+    localStorage.removeItem('statusCards')
+    location.reload()
+  })
+
+  // ===== 管理后台开关（仅本地可用） =====
+  var isLocal=location.protocol==='file:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'
+  var toggleBtn=document.getElementById('adminToggle')
+  var panel=document.getElementById('adminPanel')
+  if(!isLocal&&toggleBtn){toggleBtn.style.display='none'}
+  if(toggleBtn&&panel){
+    toggleBtn.addEventListener('click',function(){
+      var isOpen=panel.classList.toggle('open')
+      toggleBtn.classList.toggle('active',isOpen)
+    })
+  }
+
+// ===== ElectricBorder 原生引擎 =====
+  var ebStates=[]
+  var ebRand=function(x){return(Math.sin(x*12.9898)*43758.5453)%1}
+  function ebN2d(x,y){
+    var i=Math.floor(x),j=Math.floor(y),fx=x-i,fy=y-j
+    var a=ebRand(i+j*57),b=ebRand(i+1+j*57),c=ebRand(i+(j+1)*57),d=ebRand(i+1+(j+1)*57)
+    var ux=fx*fx*(3-2*fx),uy=fy*fy*(3-2*fy)
+    return a*(1-ux)*(1-uy)+b*ux*(1-uy)+c*(1-ux)*uy+d*ux*uy
+  }
+  function ebOct(x,octaves,lac,gain,amp,freq,time,seed,flat){
+    var y=0,a=amp,f=freq
+    for(var i=0;i<octaves;i++){var oa=i===0?a*flat:a;y+=oa*ebN2d(f*x+seed*100,time*f*.3);f*=lac;a*=gain}
+    return y
+  }
+  function ebCorner(cx,cy,r,sa,al,pct){var a=sa+pct*al;return{x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)}}
+  function ebRndRectP(t,l,tp,w,h,r){
+    var sw=w-2*r,sh=h-2*r,ca=Math.PI*r/2,peri=2*sw+2*sh+4*ca,d=t*peri,acc=0
+    if(d<=acc+sw)return{x:l+r+(d-acc)/sw*sw,y:tp}
+    acc+=sw;if(d<=acc+ca)return ebCorner(l+w-r,tp+r,r,-Math.PI/2,Math.PI/2,(d-acc)/ca)
+    acc+=ca;if(d<=acc+sh)return{x:l+w,y:tp+r+(d-acc)/sh*sh}
+    acc+=sh;if(d<=acc+ca)return ebCorner(l+w-r,tp+h-r,r,0,Math.PI/2,(d-acc)/ca)
+    acc+=ca;if(d<=acc+sw)return{x:l+w-r-(d-acc)/sw*sw,y:tp+h}
+    acc+=sw;if(d<=acc+ca)return ebCorner(l+r,tp+h-r,r,Math.PI/2,Math.PI/2,(d-acc)/ca)
+    acc+=ca;if(d<=acc+sh)return{x:l,y:tp+h-r-(d-acc)/sh*sh}
+    acc+=sh;return ebCorner(l+r,tp+r,r,Math.PI,Math.PI/2,(d-acc)/ca)
+  }
+  function createElectricBorder(hostEl,color,speed,chaos,br){
+    var origOv=hostEl.style.overflow;hostEl.style.overflow='visible'
+
+    // === 诊断: 插入一个简单的可见彩色边框（调试用 + 兜底） ===
+    var dbg=document.createElement('div')
+    dbg.style.cssText='position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:5;border:3px solid '+color+';opacity:0.85;box-sizing:border-box;mix-blend-mode:screen'
+    hostEl.appendChild(dbg)
+
+    var g1=document.createElement('div');g1.style.cssText='position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;border:2px solid '+color+';filter:blur(1px);opacity:.6;box-sizing:border-box'
+    var g2=document.createElement('div');g2.style.cssText='position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:3;border:2px solid '+color+';filter:blur(4px);opacity:.4;box-sizing:border-box'
+    var gbg=document.createElement('div');gbg.style.cssText='position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;filter:blur(32px);opacity:.3;background:linear-gradient(-30deg,'+color+',transparent,'+color+')'
+    hostEl.appendChild(g1);hostEl.appendChild(g2);hostEl.appendChild(gbg)
+    var cc=document.createElement('div');cc.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:4'
+    var ca=document.createElement('canvas');ca.style.cssText='display:block'
+    cc.appendChild(ca);hostEl.appendChild(cc)
+    var ctx=ca.getContext('2d');if(!ctx)return function(){}
+    var off=36,O=10,lac=1.6,gn=0.7,amp=chaos,freq=10,flat=0,dsc=55
+    var raf=0,time=0,lastT=0,dpr=Math.min(devicePixelRatio||1,2)
+    function resize(){
+      var rect=hostEl.getBoundingClientRect()
+      var w=rect.width+off*2,h2=rect.height+off*2
+      dpr=Math.min(devicePixelRatio||1,2)
+      ca.width=w*dpr;ca.height=h2*dpr
+      ca.style.width=w+'px';ca.style.height=h2+'px'
+      return{w:w,h:h2}
+    }
+    var dims=resize()
+    var ro=new ResizeObserver(function(){dims=resize()});ro.observe(hostEl)
+    var stopped=false
+    function draw(tm){
+      if(stopped)return
+      if(!lastT)lastT=tm
+      time+=(tm-lastT)/1e3*speed;lastT=tm
+      var w=dims.w,h=dims.h
+      ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,ca.width,ca.height);ctx.scale(dpr,dpr)
+      ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.lineCap='round';ctx.lineJoin='round'
+      var L=off,WW=w-2*L,HH=h-2*L,mxR=Math.min(WW,HH)/2,R=Math.min(br||24,mxR)
+      var cnt=Math.floor((2*(WW+HH)+2*Math.PI*R)/2)
+      ctx.beginPath()
+      for(var i=0;i<=cnt;i++){
+        var pr=i/cnt,pt=ebRndRectP(pr,L,L,WW,HH,R)
+        var nx=ebOct(pr*8,O,lac,gn,amp,freq,time,0,flat)*dsc
+        var ny=ebOct(pr*8,O,lac,gn,amp,freq,time,1,flat)*dsc
+        i===0?ctx.moveTo(pt.x+nx,pt.y+ny):ctx.lineTo(pt.x+nx,pt.y+ny)
+      }
+      ctx.closePath();ctx.stroke()
+      raf=requestAnimationFrame(draw)
+    }
+    raf=requestAnimationFrame(draw)
+    return function cleanup(){
+      stopped=true;if(raf)cancelAnimationFrame(raf)
+      ro.disconnect();hostEl.style.overflow=origOv
+      if(dbg.parentNode)hostEl.removeChild(dbg)
+      if(g1.parentNode)hostEl.removeChild(g1)
+      if(g2.parentNode)hostEl.removeChild(g2)
+      if(gbg.parentNode)hostEl.removeChild(gbg)
+      if(cc.parentNode)hostEl.removeChild(cc)
+    }
+  }
+
+  // ===== 倒计时 + ElectricBorder 触发 =====
+  var SEVENTY_TWO_HOURS=259200000
+  ;(function countdown(){
+    var YEAR_MS=365*24*3600*1000,CIRC=2*Math.PI*15.5
+    function pad(n){return String(Math.max(0,n)).padStart(2,'0')}
+    function tick(){
+      var now=Date.now()
+      ;[0,1,2].forEach(function(i){
+        var d=cardData[i]
+        if(!d)return
+        var diff=new Date(d.date)-now
+        if(diff>0){
+          var el=function(id){return document.getElementById('cd'+i+id)}
+          if(el('d'))el('d').textContent=pad(Math.floor(diff/86400000))
+          if(el('h'))el('h').textContent=pad(Math.floor((diff%86400000)/3600000))
+          if(el('m'))el('m').textContent=pad(Math.floor((diff%3600000)/60000))
+          if(el('s'))el('s').textContent=pad(Math.floor((diff%60000)/1000))
+
+          var pct=Math.max(0,Math.min(1,1-diff/YEAR_MS))
+          var pr=document.getElementById('pr'+i),pt=document.getElementById('pt'+i)
+          if(pr)pr.setAttribute('stroke-dashoffset',CIRC*(1-pct))
+          if(pt)pt.textContent=Math.round(pct*100)+'%'
+
+          // ElectricBorder: <72h 激活（仅考前有效）
+          if(!ebStates[i])ebStates[i]={active:false,cleanup:null}
+          var st=ebStates[i]
+          if(diff<SEVENTY_TWO_HOURS&&!st.active&&st.el){
+            console.log('EB trigger card '+i+' color='+d.color+' diffHours='+(diff/3600000).toFixed(1))
+            st.cleanup=createElectricBorder(st.el,d.color,1.5,0.18,24)
+            st.active=true
+            // 紧急样式: 倒计时变红色荧光
+            var numEls=document.querySelectorAll('#cd'+i+'d,#cd'+i+'h,#cd'+i+'m,#cd'+i+'s')
+            numEls.forEach(function(el){
+              el.style.color='#ff3333'
+              el.style.background='none'
+              el.style.webkitTextFillColor='#ff3333'
+              el.style.filter='drop-shadow(0 0 8px rgba(255,0,0,.6)) drop-shadow(0 0 20px rgba(255,0,0,.3))'
+            })
+            console.log('EB CREATED for card '+i)
+            // 红色荧光倒计时
+            document.querySelectorAll('.status-card').forEach(function(c,ci){
+              if(ci===i){
+                c.querySelectorAll('.countdown-num').forEach(function(el){
+                  el.style.background='none'
+                  el.style.webkitTextFillColor='#ff2222'
+                  el.style.filter='drop-shadow(0 0 6px rgba(255,30,30,.7)) drop-shadow(0 0 18px rgba(255,0,0,.35))'
+                })
+              }
+            })
+          }else if(diff>=SEVENTY_TWO_HOURS&&st.active&&st.cleanup){
+            // 恢复原样式
+            var numEls=document.querySelectorAll('#cd'+i+'d,#cd'+i+'h,#cd'+i+'m,#cd'+i+'s')
+            numEls.forEach(function(el){
+              el.style.color=''
+              el.style.background=''
+              el.style.webkitTextFillColor=''
+              el.style.filter=''
+            })
+            // 恢复原倒计时样式
+            document.querySelectorAll('.status-card').forEach(function(c,ci){
+              if(ci===i){
+                c.querySelectorAll('.countdown-num').forEach(function(el){
+                  el.style.background=''
+                  el.style.webkitTextFillColor=''
+                  el.style.filter=''
+                })
+              }
+            })
+            st.cleanup();st.cleanup=null;st.active=false
+          }
+        }else{
+          // 考后清理: 移除 ElectricBorder
+          if(!ebStates[i])ebStates[i]={active:false,cleanup:null}
+          var st=ebStates[i]
+          if(st.active&&st.cleanup){
+            st.cleanup();st.cleanup=null;st.active=false
+            console.log('EB REMOVED for card '+i+' (exam passed)')
+          }
+        }
+      })
+    }
+
+    // 初始化: 绑定卡片元素到 ebStates
+    var cards=document.querySelectorAll('.status-card')
+    ;[0,1,2].forEach(function(i){
+      if(!ebStates[i])ebStates[i]={active:false,cleanup:null}
+      ebStates[i].el=cards[i]
+    })
+
+    tick()
+    setInterval(tick,1000)
+  })()
+})()
+</script>
+
+</body>
+</html>

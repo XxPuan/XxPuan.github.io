@@ -1,0 +1,47 @@
+/* =============================================================================
+ * Liquid Glass —— 玻璃分层样式（配合 liquid-glass.js）
+ * 宿主元素加 class="liquid-glass"，自身负责 宽高 / 定位 / border-radius。
+ * JS 会注入 .lg-refract / .lg-tint / .lg-edge / .lg-content 四层。
+ * ========================================================================== */
+
+.liquid-glass {
+ position: relative; /* 若要拖动，改成 fixed/absolute 并给 left/top */
+ isolation: isolate;
+}
+
+/* 折射层：承载 backdrop-filter；不支持 url() 滤镜时降级为这层的普通模糊 */
+.liquid-glass > .lg-refract {
+ position: absolute; inset: 0; z-index: 0; border-radius: inherit;
+ -webkit-backdrop-filter: blur(2px);
+ backdrop-filter: blur(2px);
+}
+
+/* 玻璃润饰：极淡的整体提亮 */
+.liquid-glass > .lg-tint {
+ position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none;
+ background: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.02));
+}
+
+/* 边缘 rim 高光（描边）。物理高光由 SVG 负责，这层只做细描边补充；
+ specular='css' 时加强，'none' 时减弱 —— 由 JS 切 class 控制 */
+.liquid-glass > .lg-edge {
+ position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none;
+ border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.liquid-glass.lg-spec-css > .lg-edge {
+ border-color: rgba(255, 255, 255, 0.5);
+ box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.55),
+ inset -1px -1px 1px rgba(255, 255, 255, 0.12);
+}
+.liquid-glass.lg-spec-none > .lg-edge {
+ border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* 内容层：放在最上面，正常交互 */
+.liquid-glass > .lg-content {
+ position: relative; z-index: 2; width: 100%; height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+ .liquid-glass { will-change: auto; }
+}
