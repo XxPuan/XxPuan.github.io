@@ -6,29 +6,53 @@
 <title>博客编辑器 - XxPuan</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--p:#7C3AED;--pl:#A855F7;--bg:#08080E;--c15:#F1F1F6;--c13:#D4D4E0;--c12:#B8B8CC;--c10:#8888A0;--c8:#5A5A70}
-body{font-family:'HarmonyOS Sans','Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--c15);padding:2rem;min-height:100vh}
+:root{--p-rgb:218,175,75;--p:#DAAF4B;--pl:#F0D060;--da:#e7e7a9;--db:#e5e37e;--dc:#559155;--bg:#08080E;--c15:#F1F1F6;--c13:#E8E8F2;--c12:#D0D0E0;--c10:#AAAAAA;--c8:#787890}
+body{font-family:'HarmonyOS Sans','Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--c15);padding:2rem;min-height:100vh;position:relative}
+body::before{
+  content:'';position:fixed;inset:0;
+  pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 700px 700px at 18% 28%, color-mix(in srgb,var(--da) 38%,transparent), transparent 65%),
+    radial-gradient(ellipse 600px 600px at 78% 18%, color-mix(in srgb,var(--db) 30%,transparent), transparent 65%),
+    radial-gradient(ellipse 800px 800px at 45% 82%, color-mix(in srgb,var(--dc) 28%,transparent), transparent 65%);
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 400px 400px at 60% 40%, color-mix(in srgb,var(--da) 15%,transparent), transparent 60%),
+    radial-gradient(ellipse 450px 450px at 30% 70%, color-mix(in srgb,var(--db) 12%,transparent), transparent 60%);
+  animation:drifting 12s ease-in-out infinite alternate;
+}
+@keyframes drifting{
+  0%{transform:translate(0,0)}
+  33%{transform:translate(15px,-10px)}
+  50%{transform:translate(-10px,15px)}
+  100%{transform:translate(10px,-5px)}
+}
 h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
 .sub{color:var(--c8);font-size:.85rem;margin-bottom:2rem}
 .wrap{max-width:900px;margin:0 auto}
 .fd{margin-bottom:1rem}
 .fd label{display:block;font-size:13px;font-weight:600;color:var(--c10);margin-bottom:6px}
 .fd input[type=text],.fd input[type=date]{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:.7rem 1rem;font-family:inherit;font-size:14px;color:var(--c13);outline:none}
-.fd input:focus{border-color:rgba(124,58,237,.3)}
+.fd input:focus{border-color:rgba(218,175,75,.3)}
 .fd .tr{display:flex;gap:1rem}
 .fd .tr input{flex:1}
 .tb{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:.6rem .8rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:12px 12px 0 0;border-bottom:none}
 .tb button,.tb select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:var(--c12);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:13px;transition:all .2s;font-family:inherit}
-.tb button:hover,.tb select:hover{background:rgba(124,58,237,.12);color:var(--c15)}
+.tb button:hover,.tb select:hover{background:rgba(218,175,75,.12);color:var(--c15)}
 .tb select{padding:4px 6px}
 .tb .sp{width:1px;height:20px;background:rgba(255,255,255,.08);margin:0 4px}
 .ed{min-height:300px;padding:1rem 1.2rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:0 0 12px 12px;color:var(--c12);font-size:15px;line-height:1.9;outline:none;overflow-y:auto}
-.ed:focus{border-color:rgba(124,58,237,.2)}
+.ed:focus{border-color:rgba(218,175,75,.2)}
 .ed img{max-width:100%;border-radius:8px;margin:.5rem 0}
+.ed .img-grid{display:grid;gap:8px;margin:1.2rem 0}
+.ed .img-grid img{width:100%;height:auto;border-radius:8px}
 .act{display:flex;gap:1rem;margin-top:1.5rem}
 .btn{padding:.7rem 1.5rem;border-radius:999px;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s}
-.btn-p{background:linear-gradient(135deg,var(--p),var(--pl));color:#fff;box-shadow:0 4px 16px rgba(124,58,237,.2)}
-.btn-p:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(124,58,237,.3)}
+.btn-p{background:linear-gradient(135deg,var(--p),var(--pl));color:#fff;box-shadow:0 4px 16px rgba(218,175,75,.2)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(218,175,75,.3)}
 .btn-o{background:transparent;border:1px solid rgba(255,255,255,.1);color:var(--c12)}
 .btn-o:hover{border-color:var(--pl);color:var(--c15)}
 .dh{color:var(--c8);font-size:12px;margin-top:.3rem}
@@ -42,12 +66,12 @@ h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
 .modal-body{flex:1;overflow:auto;padding:1.2rem 1.5rem}
 .modal-tab{display:flex;gap:8px;margin-bottom:1rem}
 .modal-tab button{padding:.4rem 1rem;border-radius:999px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:var(--c10);font-family:inherit;font-size:13px;cursor:pointer;transition:all .2s}
-.modal-tab button.sel{border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.08);color:var(--pl)}
-.modal-tab button:hover{border-color:rgba(124,58,237,.2)}
+.modal-tab button.sel{border-color:rgba(218,175,75,.3);background:rgba(218,175,75,.08);color:var(--pl)}
+.modal-tab button:hover{border-color:rgba(218,175,75,.2)}
 .modal-code{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem;white-space:pre-wrap;word-break:break-all;font-family:'Courier New',monospace;font-size:13px;color:var(--pl);max-height:350px;overflow:auto;line-height:1.6;user-select:all}
 .modal-foot{padding:.8rem 1.5rem;border-top:1px solid rgba(255,255,255,.04);display:flex;gap:.8rem;justify-content:flex-end}
-.modal-foot .cp-btn{padding:.5rem 1.2rem;border-radius:999px;border:1px solid rgba(124,58,237,.2);background:rgba(124,58,237,.06);color:var(--pl);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s}
-.modal-foot .cp-btn:hover{background:rgba(124,58,237,.12)}
+.modal-foot .cp-btn{padding:.5rem 1.2rem;border-radius:999px;border:1px solid rgba(218,175,75,.2);background:rgba(218,175,75,.06);color:var(--pl);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s}
+.modal-foot .cp-btn:hover{background:rgba(218,175,75,.12)}
 .modal-foot .done-btn{padding:.5rem 1.2rem;border-radius:999px;border:none;background:linear-gradient(135deg,var(--p),var(--pl));color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s}
 .modal-foot .done-btn:hover{transform:translateY(-1px)}
 .step-label{font-size:12px;color:var(--c8);margin-bottom:.3rem}
@@ -82,6 +106,7 @@ h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
 <!-- 正文 -->
 <div class="fd">
 <label>正文内容</label>
+<div class="fd"><label>图片基础路径（自动加在图片前面）</label><input type="text" id="imgBase" value="../assets/blog-images/" style="font-size:13px;color:var(--c10)"></div>
 <div class="tb">
 <button onclick="x('bold')"><b>B</b></button>
 <button onclick="x('italic')"><i>I</i></button>
@@ -94,7 +119,8 @@ h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
 <button onclick="x('formatBlock','<h3>')">H3</button>
 <span class="sp"></span>
 <select onchange="x('fontSize',this.value)"><option value="3">正常</option><option value="4">大</option><option value="5">更大</option></select>
-<button onclick="img()">加图</button>
+<button onclick="si()">插图</button>
+<button onclick="gg()">图集</button>
 <button onclick="cd()">加码</button>
 </div>
 <div class="ed" id="ed" contenteditable="true"></div>
@@ -103,6 +129,34 @@ h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
 <div class="act">
 <button class="btn btn-p" onclick="gen()">生成 HTML</button>
 <button class="btn btn-o" onclick="rst()">清空</button>
+</div>
+
+<!-- 图集弹窗 -->
+<div class="modal" id="galleryModal">
+  <div class="modal-inner" style="max-width:600px">
+    <div class="modal-head">
+      <h3>图集排版</h3>
+      <button class="modal-close" onclick="cgm()">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="fd">
+        <label>图片文件路径（每行一个，相对于基础路径）</label>
+        <textarea id="galleryUrls" rows="6" style="width:100%;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:.7rem 1rem;font-family:inherit;font-size:13px;color:var(--c13);outline:none;resize:vertical" placeholder="pic1.jpg&#10;pic2.jpg&#10;pic3.jpg"></textarea>
+      </div>
+      <div class="fd">
+        <label>列数</label>
+        <div style="display:flex;gap:8px">
+          <label style="display:flex;align-items:center;gap:4px;color:var(--c12);font-size:14px"><input type="radio" name="gc" value="1" style="accent-color:#DAAF4B"> 1列</label>
+          <label style="display:flex;align-items:center;gap:4px;color:var(--c12);font-size:14px"><input type="radio" name="gc" value="2" style="accent-color:#DAAF4B"> 2列</label>
+          <label style="display:flex;align-items:center;gap:4px;color:var(--c12);font-size:14px"><input type="radio" name="gc" value="3" checked style="accent-color:#DAAF4B"> 3列</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="cp-btn" onclick="ig()">插入图集</button>
+      <button class="done-btn" onclick="cgm()">取消</button>
+    </div>
+  </div>
 </div>
 
 <!-- 弹出窗口 -->
@@ -117,7 +171,7 @@ h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
         <button class="sel" id="t1" onclick="sw(1)">步骤1: blog.html 数组条目</button>
         <button id="t2" onclick="sw(2)">步骤2: posts/ 文章页面</button>
       </div>
-      <div class="step-label">步骤1：追加到 blog.html 的 <code style="background:rgba(255,255,255,.04);padding:1px 5px;border-radius:4px;color:#A855F7">blogPosts</code> 数组末尾<br>步骤2：另存为 <code style="background:rgba(255,255,255,.04);padding:1px 5px;border-radius:4px;color:#A855F7">posts/&lt;文件名&gt;</code></div>
+      <div class="step-label">步骤1：追加到 blog.html 的 <code style="background:rgba(255,255,255,.04);padding:1px 5px;border-radius:4px;color:#F0D060">blogPosts</code> 数组末尾<br>步骤2：另存为 <code style="background:rgba(255,255,255,.04);padding:1px 5px;border-radius:4px;color:#F0D060">posts/&lt;文件名&gt;</code></div>
       <div class="modal-code" id="mc1"></div>
       <div class="modal-code" id="mc2" style="display:none"></div>
     </div>
@@ -136,9 +190,74 @@ document.getElementById('pd').valueAsDate=new Date();
 
 function x(c,v){document.execCommand(c,false,v||null);document.getElementById('ed').focus()}
 
-function img(){
-  var u=prompt('图片地址:');
-  if(u)x('insertImage',u)
+// 插入单图（自动加基础路径前缀）
+function si(){
+  var base=document.getElementById('imgBase').value.trim();
+  var u=prompt('图片文件名或完整URL:');
+  if(u){
+    // 如果不是完整URL，加上基础路径
+    if(u.indexOf('://')===-1 && u.indexOf('/')!==0 && base){
+      u=base.replace(/\/+$/,'')+'/'+u.replace(/^\/+/,'');
+    }
+    x('insertImage',u);
+    // 光标后加个p标签防止后续内容紧贴图片
+    var sel=window.getSelection();
+    if(sel&&sel.rangeCount){
+      var r=sel.getRangeAt(0);
+      var p=document.createElement('p');
+      r.insertNode(p);
+      r.setStartAfter(p);
+      r.collapse(true);
+    }
+  }
+}
+
+// 打开图集弹窗
+function gg(){document.getElementById('galleryModal').classList.add('s')}
+function cgm(){document.getElementById('galleryModal').classList.remove('s')}
+
+// 插入图集
+function ig(){
+  var base=document.getElementById('imgBase').value.trim();
+  var ta=document.getElementById('galleryUrls');
+  var urls=ta.value.trim().split('\n').map(function(s){return s.trim()}).filter(function(s){return s});
+  if(!urls.length){alert('请输入至少一张图片');return}
+  var cols=document.querySelector('input[name="gc"]:checked').value;
+  var e=document.getElementById('ed');
+
+  // 创建图集容器
+  var wrapper=document.createElement('div');
+  wrapper.className='img-grid cols-'+cols;
+  wrapper.style.cssText='display:grid;grid-template-columns:repeat('+cols+',1fr);gap:8px;margin:1.2rem 0';
+
+  urls.forEach(function(url){
+    if(url.indexOf('://')===-1 && url.indexOf('/')!==0 && base){
+      url=base.replace(/\/+$/,'')+'/'+url.replace(/^\/+/,'');
+    }
+    var img=document.createElement('img');
+    img.src=url;
+    img.style.cssText='width:100%;height:auto;border-radius:8px;display:block';
+    wrapper.appendChild(img);
+  });
+
+  // 插入到当前光标位置或末尾
+  var sel=window.getSelection();
+  if(sel&&sel.rangeCount){
+    var r=sel.getRangeAt(0);
+    r.insertNode(wrapper);
+    var p=document.createElement('p');
+    r.setStartAfter(wrapper);
+    r.insertNode(p);
+    r.setStartAfter(p);
+    r.collapse(true);
+  } else {
+    e.appendChild(wrapper);
+    e.appendChild(document.createElement('br'));
+  }
+
+  cgm();
+  ta.value='';
+  e.focus();
 }
 
 function cd(){
@@ -184,7 +303,7 @@ function gen(){
 
   var c1='  {\n    file: \''+sl+'.html\',\n    date: \''+ff+'\',\n    title: \''+t.replace(/'/g,"\\'")+'\',\n    summary: \''+e.replace(/'/g,"\\'")+'\',\n    tags: [\''+g+'\']\n  },';
 
-  var c2='<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>'+t+' - XxPuan</title>\n<style>\n*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}\n:root{--p:#7C3AED;--pl:#A855F7;--bg:#08080E;--c15:#F1F1F6;--c13:#D4D4E0;--c12:#B8B8CC;--c10:#8888A0;--c8:#5A5A70;--hh:80px}\nhtml{font-family:"HarmonyOS Sans","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--c15);-webkit-font-smoothing:antialiased}\nbody{min-height:100vh}\na{color:inherit;text-decoration:none}\n#hm{height:var(--hh)}\n#h{position:fixed;top:0;left:0;z-index:100;width:100%;height:var(--hh);padding:0 2rem;display:flex;align-items:center;background:rgba(8,8,14,.55);backdrop-filter:blur(24px)saturate(1.4);border-bottom:1px solid rgba(255,255,255,.04)}\n#ht{font-size:16px;font-weight:500;color:var(--c15);display:flex;align-items:center}\n#ht b{font-size:22px;font-weight:800;margin-right:2px}\nmain{max-width:800px;margin:0 auto;padding:7rem 2rem 5rem;position:relative;z-index:1}\narticle h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;margin-bottom:.3rem}\n.pm{color:var(--c8);font-size:14px;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.05)}\n.pc{font-size:16px;color:var(--c12);line-height:2}\n.pc h2{font-size:1.4rem;font-weight:700;color:var(--c15);margin:2.5rem 0 .8rem}\n.pc h3{font-size:1.2rem;font-weight:600;color:var(--c13);margin:2rem 0 .6rem}\n.pc p{margin-bottom:1.2rem}\n.pc a{color:var(--pl);border-bottom:1px solid rgba(124,58,237,.2)}\n.pc img{max-width:100%;border-radius:12px;margin:1.2rem 0}\n.pc blockquote{border-left:3px solid var(--p);padding:.8rem 1.2rem;margin:1.2rem 0;background:rgba(124,58,237,.04);border-radius:0 8px 8px 0}\n.pc pre{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:1rem;overflow-x:auto;margin:1.2rem 0}\n.pc code{font-size:14px;background:rgba(255,255,255,.04);padding:2px 6px;border-radius:4px;color:var(--pl)}\n.pc pre code{background:none;padding:0}\n.pc ul,.pc ol{padding-left:1.5rem;margin-bottom:1rem}\n.bk{display:inline-flex;align-items:center;gap:6px;color:var(--c10);font-size:14px;margin-bottom:2rem}\n.bk:hover{color:var(--pl)}\nfooter{padding:2rem;border-top:1px solid rgba(255,255,255,.04);text-align:center;color:var(--c8);font-size:13px}\n@media(max-width:767px){#h{padding:0 1rem}main{padding:6rem 1.5rem 3rem}}\n</style>\n</head>\n<body>\n<div id="hm"></div>\n<header id="h"><div id="ht"><b>XxPuan</b></div></header>\n<main>\n<a class="bk" href="../blog.html">[返回]</a>\n<article>\n<h1>'+t+'</h1>\n<div class="pm">'+ff+' | #'+g+'</div>\n<div class="pc">'+c+'</div>\n</article>\n</main>\n<footer>(c) 2026 XxPuan</footer>\n</body>\n</html>';
+  var c2='<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1">\n<title>'+t+' - XxPuan</title>\n<style>\n*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}\n:root{--p-rgb:218,175,75;--p:#DAAF4B;--pl:#F0D060;--da:#e7e7a9;--db:#e5e37e;--dc:#559155;--bg:#08080E;--c15:#F1F1F6;--c13:#E8E8F2;--c12:#D0D0E0;--c10:#AAAAAA;--c8:#787890;--hh:80px}\nhtml{font-family:"HarmonyOS Sans","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--c15);-webkit-font-smoothing:antialiased}\nbody{min-height:100vh}\na{color:inherit;text-decoration:none}\n#hm{height:var(--hh)}\n#h{position:fixed;top:0;left:0;z-index:100;width:100%;height:var(--hh);padding:0 2rem;display:flex;align-items:center;background:rgba(8,8,14,.55);backdrop-filter:blur(24px)saturate(1.4);border-bottom:1px solid rgba(255,255,255,.04)}\n#ht{font-size:16px;font-weight:500;color:var(--c15);display:flex;align-items:center}\n#ht b{font-size:22px;font-weight:800;margin-right:2px}\nmain{max-width:800px;margin:0 auto;padding:7rem 2rem 5rem;position:relative;z-index:1}\narticle h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;margin-bottom:.3rem}\n.pm{color:var(--c8);font-size:14px;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.05)}\n.pc{font-size:16px;color:var(--c12);line-height:2}\n.pc h2{font-size:1.4rem;font-weight:700;color:var(--c15);margin:2.5rem 0 .8rem}\n.pc h3{font-size:1.2rem;font-weight:600;color:var(--c13);margin:2rem 0 .6rem}\n.pc p{margin-bottom:1.2rem}\n.pc a{color:var(--pl);border-bottom:1px solid rgba(218,175,75,.2)}\n.pc img{max-width:100%;border-radius:12px;margin:1.2rem 0}\n.pc blockquote{border-left:3px solid var(--p);padding:.8rem 1.2rem;margin:1.2rem 0;background:rgba(218,175,75,.04);border-radius:0 8px 8px 0}\n.pc pre{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:1rem;overflow-x:auto;margin:1.2rem 0}\n.pc code{font-size:14px;background:rgba(255,255,255,.04);padding:2px 6px;border-radius:4px;color:var(--pl)}\n.pc pre code{background:none;padding:0}\n.pc ul,.pc ol{padding-left:1.5rem;margin-bottom:1rem}\n.bk{display:inline-flex;align-items:center;gap:6px;color:var(--c10);font-size:14px;margin-bottom:2rem}\n.bk:hover{color:var(--pl)}\n.pc .img-grid{display:grid;gap:8px;margin:1.2rem 0}\n.pc .img-grid.cols-1{grid-template-columns:1fr}\n.pc .img-grid.cols-2{grid-template-columns:repeat(2,1fr)}\n.pc .img-grid.cols-3{grid-template-columns:repeat(3,1fr)}\n.pc .img-grid img{width:100%;height:auto;border-radius:8px;transition:transform .3s;cursor:pointer}\n.pc .img-grid img:hover{transform:scale(1.02)}\nfooter{padding:2rem;border-top:1px solid rgba(255,255,255,.04);text-align:center;color:var(--c8);font-size:13px}\n@media(max-width:767px){#h{padding:0 1rem}main{padding:6rem 1.5rem 3rem}}\n</style>\n</head>\n<body>\n<div id="hm"></div>\n<header id="h"><div id="ht"><b>XxPuan</b></div></header>\n<main>\n<a class="bk" href="../blog.html">[返回]</a>\n<article>\n<h1>'+t+'</h1>\n<div class="pm">'+ff+' | #'+g+'</div>\n<div class="pc">'+c+'</div>\n</article>\n</main>\n<footer>(c) 2026 XxPuan</footer>\n</body>\n</html>';
 
   document.getElementById('mc1').textContent=c1;
   document.getElementById('mc2').textContent=c2;

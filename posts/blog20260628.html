@@ -6,24 +6,46 @@
     <title>我的未来 - XxPuan</title>
     <style>
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-        :root{--p:#7C3AED;--pl:#A855F7;--bg:#08080E;--c15:#F1F1F6;--c13:#D4D4E0;--c12:#B8B8CC;--c10:#8888A0;--c8:#5A5A70;--hh:80px}
+        :root{--p:#DAAF4B;--pl:#F0D060;--p-rgb:218,175,75;--bg:#08080E;--c15:#F1F1F6;--c13:#E8E8F2;--c12:#D0D0E0;--c10:#AAAAAA;--c8:#787890;--hh:80px;--da:#e7e7a9;--db:#e5e37e;--dc:#559155}
         html{font-family:"HarmonyOS Sans","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--c15);-webkit-font-smoothing:antialiased}
-        body{min-height:100vh}
+        body{min-height:100vh;position:relative}
+        body::before{
+          content:'';position:fixed;inset:0;
+          pointer-events:none;z-index:0;
+          background:
+            radial-gradient(ellipse 700px 700px at 18% 28%, color-mix(in srgb,var(--da) 38%,transparent), transparent 65%),
+            radial-gradient(ellipse 600px 600px at 78% 18%, color-mix(in srgb,var(--db) 30%,transparent), transparent 65%),
+            radial-gradient(ellipse 800px 800px at 45% 82%, color-mix(in srgb,var(--dc) 28%,transparent), transparent 65%);
+        }
+        body::after{
+          content:'';position:fixed;inset:0;
+          pointer-events:none;z-index:0;
+          background:
+            radial-gradient(ellipse 400px 400px at 60% 40%, color-mix(in srgb,var(--da) 15%,transparent), transparent 60%),
+            radial-gradient(ellipse 450px 450px at 30% 70%, color-mix(in srgb,var(--db) 12%,transparent), transparent 60%);
+          animation:drifting 12s ease-in-out infinite alternate;
+        }
+        @keyframes drifting{
+          0%{transform:translate(0,0)}
+          33%{transform:translate(15px,-10px)}
+          50%{transform:translate(-10px,15px)}
+          100%{transform:translate(10px,-5px)}
+        }
         a{color:inherit;text-decoration:none}
         #hm{height:var(--hh)}
-        #h{position:fixed;top:0;left:0;z-index:100;width:100%;height:var(--hh);padding:0 2rem;display:flex;align-items:center;background:rgba(8,8,14,.55);backdrop-filter:blur(24px)saturate(1.4);border-bottom:1px solid rgba(255,255,255,.04)}
+        #h{position:fixed;top:0;left:0;z-index:100;width:100%;height:var(--hh);padding:0 2rem;display:flex;align-items:center;background:rgba(255,255,255,.035);backdrop-filter:blur(22px)saturate(1.8)brightness(1.12);-webkit-backdrop-filter:blur(22px)saturate(1.8)brightness(1.12);border-bottom:1px solid rgba(255,255,255,.08)}
         #ht{font-size:16px;font-weight:500;color:var(--c15);display:flex;align-items:center}
         #ht b{font-size:22px;font-weight:800;margin-right:2px}
         main{max-width:800px;margin:0 auto;padding:7rem 2rem 5rem;position:relative;z-index:1}
         article h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;margin-bottom:.3rem}
         .pm{color:var(--c8);font-size:14px;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.05)}
-        .pc{font-size:16px;color:var(--c12);line-height:2}
+        .pc{font-size:17px;color:var(--c12);line-height:2}
         .pc h2{font-size:1.4rem;font-weight:700;color:var(--c15);margin:2.5rem 0 .8rem}
         .pc h3{font-size:1.2rem;font-weight:600;color:var(--c13);margin:2rem 0 .6rem}
         .pc p{margin-bottom:1.2rem}
-        .pc a{color:var(--pl);border-bottom:1px solid rgba(124,58,237,.2)}
+        .pc a{color:var(--pl);border-bottom:1px solid rgba(218,175,75,.2)}
         .pc img{max-width:100%;border-radius:12px;margin:1.2rem 0}
-        .pc blockquote{border-left:3px solid var(--p);padding:.8rem 1.2rem;margin:1.2rem 0;background:rgba(124,58,237,.04);border-radius:0 8px 8px 0}
+        .pc blockquote{border-left:3px solid var(--p);padding:.8rem 1.2rem;margin:1.2rem 0;background:rgba(218,175,75,.04);border-radius:0 8px 8px 0}
         .pc pre{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:1rem;overflow-x:auto;margin:1.2rem 0}
         .pc code{font-size:14px;background:rgba(255,255,255,.04);padding:2px 6px;border-radius:4px;color:var(--pl)}
         .pc pre code{background:none;padding:0}
