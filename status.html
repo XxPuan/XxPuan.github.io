@@ -7,7 +7,7 @@
   <meta http-equiv="Expires" content="0">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>状态 · XxPuan's Value</title>
+  <title>事件 · XxPuan's Value</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,500;1,700&display=swap" rel="stylesheet">
@@ -89,6 +89,21 @@
     .gs__right:hover{
       color:rgba(255,255,255,.7);
     }
+    .gs__nav{
+      display:flex;align-items:center;gap:clamp(8px,1.2vw,18px);
+      margin-left:auto;
+    }
+    .gs__nav-item{
+      font-size:clamp(0.65rem,.9vw,0.85rem);
+      font-weight:500;
+      color:#fff;
+      letter-spacing:.04em;
+      cursor:pointer;
+      transition:opacity .25s ease;
+      text-decoration:none;
+    }
+    .gs__nav-item:hover{opacity:.6}
+
 
     /* ===== 内容区 ===== */
     .page-wrap{
@@ -285,6 +300,7 @@
       .gs__title .s{font-size:13px}
       .gs__center{font-size:clamp(0.7rem,2.5vw,0.9rem)}
       .gs__right{font-size:clamp(0.55rem,2vw,0.75rem)}
+      .gs__nav-item{font-size:clamp(0.55rem,1.8vw,0.7rem);padding:3px 6px}
       .page-wrap{padding-top:110px;padding-left:1rem;padding-right:1rem}
 
       .status-grid{
@@ -439,8 +455,11 @@
   </svg>
   <div class="gs__content">
     <div class="gs__title"><b>XxPuan</b><span class="s">'s Value</span></div>
-    <div class="gs__center">COUNTDOWN</div>
-    <a href="index.html" class="gs__right">返回主页</a>
+    <nav class="gs__nav">
+      <a href="status.html" class="gs__nav-item">事件</a>
+      <a href="" class="gs__nav-item">理财</a>
+      <a href="index.html" class="gs__nav-item">返回主页</a>
+    </nav>
   </div>
 </div>
 

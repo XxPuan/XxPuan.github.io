@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>理财 · XxPuan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Black.woff2') format('woff2');font-weight:800;font-display:swap}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --red:#ef4444;--green:#22c55e;
+  --k-up:#fbbf24;--k-down:#ec4899;
+}
+html{font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0f0c29;color:#fff;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;overflow-x:hidden;position:relative;
+  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 650px 650px at 18% 22%,rgba(99,102,241,.15),transparent 60%),
+             radial-gradient(ellipse 500px 500px at 78% 15%,rgba(168,85,247,.12),transparent 60%),
+             radial-gradient(ellipse 700px 700px at 45% 85%,rgba(59,130,246,.10),transparent 60%);
+}
+a{color:inherit;text-decoration:none}
+
+/* ===== 玻璃页眉 ===== */
+.gs{position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:100;width:80vw;max-width:1200px;height:60px;border-radius:50px;display:flex;align-items:center;padding:0 28px;overflow:hidden}
+.gs--svg{background:hsl(0 0% 0%/0);backdrop-filter:var(--gs-filter) saturate(1.3);-webkit-backdrop-filter:var(--gs-filter) saturate(1.3);box-shadow:0 0 1.5px 1px rgba(255,255,255,.15) inset,0 0 10px 4px rgba(255,255,255,.07) inset,0 4px 16px rgba(17,17,26,.06),0 8px 24px rgba(17,17,26,.05),0 16px 56px rgba(17,17,26,.05)}
+.gs--fallback{background:rgba(255,255,255,.08);backdrop-filter:blur(18px) saturate(1.8) brightness(1.15);-webkit-backdrop-filter:blur(18px) saturate(1.8) brightness(1.15);border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 32px rgba(31,38,135,.15),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(255,255,255,.12)}
+.gs__svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;z-index:-1}
+.gs__content{position:relative;z-index:1;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;border-radius:inherit}
+.gs__title{display:flex;align-items:center;gap:5px}
+.gs__title b{font-size:21px;font-weight:800;color:#fff}
+.gs__title .s{font-size:15px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.01em}
+.gs__nav{display:flex;align-items:center;gap:clamp(8px,1.2vw,18px);margin-left:auto}
+.gs__nav-item{font-size:clamp(0.65rem,.9vw,0.85rem);font-weight:500;color:#fff;letter-spacing:.04em;cursor:pointer;transition:opacity .25s ease;text-decoration:none}
+.gs__nav-item:hover{opacity:.6}
+
+/* ===== 主布局 ===== */
+.page-wrap{position:relative;z-index:2;padding-top:105px;padding-left:16px;padding-right:16px;padding-bottom:1.5rem;max-width:1400px;margin:0 auto}
+.layout{display:grid;grid-template-columns:1fr 300px;gap:16px;min-height:calc(100vh - 130px)}
+
+/* ===== 左侧图表 ===== */
+.chart-area{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;flex-direction:column}
+
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px}
+.chart-title-group{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.chart-title-group .label{font-size:14px;color:#94a3b8;font-weight:500}
+.chart-title-group .value{font-size:48px;font-weight:700;color:#fff;letter-spacing:-.02em;white-space:nowrap}
+.chart-title-group .value .sym{font-size:32px;font-weight:600}
+
+.change-badge{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;font-size:14px;font-weight:600;color:#fff}
+.change-badge.up{background:#ef4444}
+.change-badge.down{background:#22c55e}
+
+.period-group{display:flex;gap:4px;margin-top:18px;margin-bottom:10px}
+.period-btn{padding:6px 16px;border-radius:8px;border:none;background:transparent;color:#64748b;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:inherit}
+.period-btn.active{color:#fff;background:rgba(255,255,255,.12)}
+.period-btn:hover:not(.active){color:#94a3b8}
+
+/* ===== Canvas 图表 ===== */
+.chart-wrap{flex:1;position:relative;min-height:300px}
+#chartCanvas{width:100%;height:100%;display:block;position:absolute;top:0;left:0}
+
+.chart-tooltip{
+  position:absolute;pointer-events:none;z-index:10;display:none;
+  background:rgba(15,12,41,.95);border:1px solid rgba(255,255,255,.15);
+  border-radius:10px;padding:10px 14px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);min-width:110px;
+}
+.chart-tooltip.show{display:block}
+.chart-tooltip .tt-date{font-size:11px;color:#64748b;margin-bottom:3px}
+.chart-tooltip .tt-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;line-height:1.6}
+.chart-tooltip .tt-row .tt-label{color:#64748b}
+.chart-tooltip .tt-row .tt-val{font-weight:600}
+
+/* ===== 右侧面板（空占位） ===== */
+.panel-area{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center}
+.panel-area .placeholder{color:#64748b;font-size:13px;text-align:center;line-height:1.8}
+
+/* ===== 底部栏（空占位） ===== */
+.bottom-bar{grid-column:1/-1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);text-align:center;color:#64748b;font-size:13px;min-height:64px;display:flex;align-items:center;justify-content:center}
+
+/* ===== 响应式 ===== */
+@media screen and (max-width:767px){
+  .gs{width:calc(100% - 24px);height:52px;padding:0 16px}
+  .gs__title b{font-size:17px}.gs__title .s{font-size:13px}
+  .page-wrap{padding-top:95px;padding-left:10px;padding-right:10px}
+  .layout{grid-template-columns:1fr}
+  .panel-area{min-height:120px}
+  .chart-title-group .value{font-size:32px}.chart-title-group .value .sym{font-size:22px}
+  .chart-wrap{min-height:220px}
+  .gs__nav-item{font-size:clamp(0.55rem,1.8vw,0.7rem)}
+}
+@media screen and (min-width:768px) and (max-width:1024px){
+  .layout{grid-template-columns:1fr 240px}
+}
+</style>
+</head>
+<body>
+
+<div class="gs" id="glassSurface">
+  <svg class="gs__svg" id="glassSvg" xmlns="http://www.w3.org/2000/svg">
+    <defs><filter id="gsFilter" colorInterpolationFilters="sRGB" x="0%" y="0%" width="100%" height="100%">
+      <feImage id="feMap" x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map"/>
+      <feDisplacementMap in="SourceGraphic" in2="map" id="feRed" xChannelSelector="R" yChannelSelector="G" result="dispRed"/>
+      <feColorMatrix in="dispRed" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+      <feDisplacementMap in="SourceGraphic" in2="map" id="feGreen" xChannelSelector="R" yChannelSelector="G" result="dispGreen"/>
+      <feColorMatrix in="dispGreen" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+      <feDisplacementMap in="SourceGraphic" in2="map" id="feBlue" xChannelSelector="R" yChannelSelector="G" result="dispBlue"/>
+      <feColorMatrix in="dispBlue" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+      <feBlend in="red" in2="green" mode="screen" result="rg"/>
+      <feBlend in="rg" in2="blue" mode="screen" result="output"/>
+      <feGaussianBlur in="output" stdDeviation="0.7"/>
+    </filter></defs>
+  </svg>
+  <div class="gs__content">
+    <div class="gs__title"><b>XxPuan</b><span class="s">'s Value</span></div>
+    <nav class="gs__nav">
+      <a href="status.html" class="gs__nav-item">事件</a>
+      <a href="finance.html" class="gs__nav-item">理财</a>
+      <a href="index.html" class="gs__nav-item">返回主页</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="layout">
+
+    <!-- 左侧图表 -->
+    <div class="chart-area">
+      <div class="chart-header">
+        <div class="chart-title-group">
+          <span class="label">当前收益</span>
+          <span class="value"><span class="sym">¥</span><span id="profitAmt">0.00</span></span>
+          <span class="change-badge" id="changeBadge">▲ +0.00%</span>
+        </div>
+      </div>
+      <div class="period-group" id="periodGroup">
+        <button class="period-btn" data-p="year">年</button>
+        <button class="period-btn" data-p="month">月</button>
+        <button class="period-btn active" data-p="day">日</button>
+      </div>
+      <div class="chart-wrap" id="chartWrap">
+        <canvas id="chartCanvas"></canvas>
+        <div class="chart-tooltip" id="chartTooltip"></div>
+      </div>
+    </div>
+
+    <!-- 右侧面板（预留） -->
+    <div class="panel-area">
+      <div class="placeholder">
+        <div>📊 交易面板</div>
+        <div style="margin-top:6px;font-size:12px;color:#64748b">即将开放</div>
+      </div>
+    </div>
+
+    <!-- 底部栏（预留） -->
+    <div class="bottom-bar">
+      <span>⚡ 快捷交易对栏 · 即将开放</span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict'
+
+var STORAGE_KEY='***'
+var data={accounts:[],dailyIncome:{}}
+var raw=localStorage.getItem(STORAGE_KEY)
+if(raw){try{var d=JSON.parse(raw);if(d.accounts)data.accounts=d.accounts;if(d.dailyIncome)data.dailyIncome=d.dailyIncome}catch(e){}}
+
+var currentPeriod='day'
+var candleData=[]
+var costLine=0
+var chartMargin={top:24,bottom:28,left:60,right:16}
+
+function calcCostLine(){
+  var p=0,l=0
+  data.accounts.forEach(function(a){
+    if(a.type==='deposit')p+=Number(a.amount)||0
+    else l+=Number(a.amount)||0
+  })
+  costLine=p-l
+  return costLine
+}
+
+function buildOHLC(period){
+  calcCostLine()
+  var dates=Object.keys(data.dailyIncome).sort()
+  if(dates.length===0){
+    dates=[];var now=new Date()
+    for(var i=60;i>=0;i--){var d=new Date(now);d.setDate(d.getDate()-i);dates.push(d.toISOString().slice(0,10))}
+  }
+  var cum=costLine,rawData={}
+  dates.forEach(function(ds){
+    var inc=data.dailyIncome[ds];if(inc)cum+=Number(inc.amount)||0;rawData[ds]=cum
+  })
+  var groups={}
+  dates.forEach(function(ds){
+    var y=ds.slice(0,4),m=ds.slice(5,7),d=ds.slice(8,10)
+    var key=''
+    if(period==='year')key=y
+    else if(period==='month')key=y+'-'+m
+    else key=ds
+    if(!groups[key])groups[key]={dates:[],values:[]}
+    groups[key].dates.push(ds);groups[key].values.push(rawData[ds])
+  })
+  candleData=[]
+  Object.keys(groups).sort().forEach(function(k){
+    var g=groups[k]
+    candleData.push({date:k,label:fmtLabel(k,period),open:g.values[0],close:g.values[g.values.length-1],high:Math.max.apply(null,g.values),low:Math.min.apply(null,g.values)})
+  })
+  if(candleData.length===0)candleData.push({date:'today',label:'今日',open:costLine,close:costLine,high:costLine,low:costLine})
+}
+
+function fmtLabel(key,period){
+  if(period==='year')return key.substring(2)+'年'
+  if(period==='month'){var p=key.split('-');return parseInt(p[1])+'月'}
+  return key.slice(5)
+}
+
+function fmtMoney(n,sign){
+  if(n==null||isNaN(n))return sign?'¥0.00':'0.00'
+  var s=n<0?'-':'',v=Math.abs(n)
+  s+=sign?'¥':'';s+=v.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})
+  return s
+}
+
+function updateHeader(){
+  if(candleData.length===0)return
+  var last=candleData[candleData.length-1]
+  var prev=candleData.length>1?candleData[candleData.length-2]:null
+  document.getElementById('profitAmt').textContent=fmtMoney(last.close,false)
+  var change=0
+  if(prev&&prev.close!==0)change=(last.close-prev.close)/Math.abs(prev.close)*100
+  var badge=document.getElementById('changeBadge')
+  var isUp=change>=0
+  badge.className='change-badge '+(isUp?'up':'down')
+  badge.innerHTML=(isUp?'▲ +':'▼ ')+Math.abs(change).toFixed(2)+'%'
+}
+
+function drawChart(){
+  var wrap=document.getElementById('chartWrap')
+  var canvas=document.getElementById('chartCanvas')
+  var ctx=canvas.getContext('2d')
+
+  var dpr=Math.min(devicePixelRatio||1,2)
+  var rect=wrap.getBoundingClientRect()
+  var W=rect.width,H=rect.height
+  canvas.width=W*dpr;canvas.height=H*dpr
+  canvas.style.width=W+'px';canvas.style.height=H+'px'
+  ctx.scale(dpr,dpr)
+  ctx.clearRect(0,0,W,H)
+  if(candleData.length===0)return
+
+  var ml=chartMargin.left,mr=chartMargin.right
+  var mt=chartMargin.top,mb=chartMargin.bottom
+  var cw=W-ml-mr,ch=H-mt-mb
+  if(cw<10||ch<10)return
+
+  var minP=Infinity,maxP=-Infinity
+  candleData.forEach(function(c){if(c.low<minP)minP=c.low;if(c.high>maxP)maxP=c.high})
+  var range=maxP-minP;if(range===0)range=100
+  var pad=range*0.08;minP-=pad;maxP+=pad
+
+  function pY(val){return mt+ch*(1-(val-minP)/(maxP-minP))}
+
+  // Grid
+  var gc=5
+  ctx.strokeStyle='rgba(255,255,255,.05)'
+  ctx.lineWidth=0.5;ctx.setLineDash([3,4])
+  for(var i=0;i<=gc;i++){var y=mt+ch*i/gc;ctx.beginPath();ctx.moveTo(ml,y);ctx.lineTo(W-mr,y);ctx.stroke()}
+  ctx.setLineDash([])
+
+  // Y labels
+  ctx.fillStyle='#64748b';ctx.font='10px HarmonyOS Sans,sans-serif';ctx.textAlign='right'
+  for(var i=0;i<=gc;i++){ctx.fillText(fmtMoney(minP+(maxP-minP)*(1-i/gc),true),ml-6,mt+ch*i/gc+4)}
+
+  // Candles
+  var cnt=candleData.length
+  var sp=cw/cnt
+  var w=Math.max(2,Math.min(sp*0.6,20))
+  candleData.forEach(function(c,i){
+    var cx=ml+sp*(i+0.5),oy=pY(c.open),cy=pY(c.close),hy=pY(c.high),ly=pY(c.low)
+    var up=c.close>=c.open
+    ctx.strokeStyle=up?'rgba(251,191,36,.65)':'rgba(236,72,153,.65)'
+    ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,hy);ctx.lineTo(cx,ly);ctx.stroke()
+    ctx.fillStyle=up?'rgba(251,191,36,.88)':'rgba(236,72,153,.88)'
+    ctx.fillRect(cx-w/2,Math.min(oy,cy),Math.max(1.5,w),Math.max(1,Math.abs(cy-oy)))
+  })
+
+  // Cost line
+  if(costLine>=minP&&costLine<=maxP){
+    var ly=pY(costLine)
+    ctx.strokeStyle='rgba(255,255,255,.35)'
+    ctx.lineWidth=1;ctx.setLineDash([5,4])
+    ctx.beginPath();ctx.moveTo(ml,ly);ctx.lineTo(W-mr,ly);ctx.stroke()
+    ctx.setLineDash([])
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='10px HarmonyOS Sans,sans-serif';ctx.textAlign='left'
+    ctx.fillText('成本 '+fmtMoney(costLine,true),ml+4,ly-4)
+  }
+
+  // X labels
+  var maxL=Math.min(cnt,Math.max(2,Math.floor(W/70)))
+  var st=Math.max(1,Math.floor(cnt/maxL))
+  ctx.fillStyle='#64748b';ctx.font='9px HarmonyOS Sans,sans-serif';ctx.textAlign='center'
+  for(var i=0;i<cnt;i+=st)ctx.fillText(candleData[i].label,ml+sp*(i+0.5),H-mb+14)
+
+  // Tooltip
+  var tt=document.getElementById('chartTooltip')
+  wrap.onmousemove=function(e){
+    var r=wrap.getBoundingClientRect()
+    var mx=e.clientX-r.left
+    var idx=Math.round((mx-ml)/sp-0.5)
+    if(idx<0||idx>=cnt){tt.classList.remove('show');return}
+    var c=candleData[idx]
+    tt.innerHTML=
+      '<div class="tt-date">'+c.label+'</div>'+
+      '<div class="tt-row"><span class="tt-label">开</span><span class="tt-val">'+fmtMoney(c.open,true)+'</span></div>'+
+      '<div class="tt-row"><span class="tt-label">高</span><span class="tt-val">'+fmtMoney(c.high,true)+'</span></div>'+
+      '<div class="tt-row"><span class="tt-label">低</span><span class="tt-val">'+fmtMoney(c.low,true)+'</span></div>'+
+      '<div class="tt-row"><span class="tt-label">收</span><span class="tt-val">'+fmtMoney(c.close,true)+'</span></div>'+
+      '<div class="tt-row" style="border-top:1px solid rgba(255,255,255,.06);padding-top:2px;margin-top:2px"><span class="tt-label">成本</span><span class="tt-val">'+fmtMoney(costLine,true)+'</span></div>'
+    tt.classList.add('show')
+    var tx=e.clientX-r.left+14,ty=e.clientY-r.top-10
+    if(tx+140>W)tx=e.clientX-r.left-150
+    if(ty<0)ty=10;if(ty+120>H)ty=H-130
+    tt.style.left=tx+'px';tt.style.top=ty+'px'
+  }
+  wrap.onmouseleave=function(){tt.classList.remove('show')}
+}
+
+// ===== 周期切换 =====
+document.getElementById('periodGroup').addEventListener('click',function(e){
+  var btn=e.target.closest('.period-btn')
+  if(!btn)return
+  document.querySelectorAll('.period-btn').forEach(function(b){b.classList.remove('active')})
+  btn.classList.add('active')
+  currentPeriod=btn.dataset.p
+  buildOHLC(currentPeriod);updateHeader();drawChart()
+})
+
+// ===== 玻璃页眉 =====
+var gs=document.getElementById('glassSurface')
+var isChromium=!(/Safari/.test(navigator.userAgent)&&!/Chrome/.test(navigator.userAgent))&&!/Firefox/.test(navigator.userAgent)
+var gsTest=document.createElement('div');gsTest.style.backdropFilter='url(#gsFilter)'
+var supportsSvg=gsTest.style.backdropFilter!==''&&isChromium
+gs.classList.add(supportsSvg?'gs--svg':'gs--fallback')
+if(supportsSvg)gs.style.setProperty('--gs-filter','url(#gsFilter)')
+function genMap(el,w,h){
+  var e=Math.min(w,h)*.07*.5
+  return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><defs><linearGradient id="rg" x1="100%" y1="0%" x2="0%" y2="0%"><stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="red"/></linearGradient><linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="blue"/></linearGradient></defs><rect fill="black" width="'+w+'" height="'+h+'"/><rect rx="50" width="'+w+'" height="'+h+'" fill="url(#rg)"/><rect rx="50" width="'+w+'" height="'+h+'" fill="url(#bg)" style="mix-blend-mode:difference"/><rect x="'+e+'" y="'+e+'" width="'+(w-e*2)+'" height="'+(h-e*2)+'" rx="50" fill="hsl(0 0% 50%/0.93)" style="filter:blur(11px)"/></svg>')
+}
+function updateGS(){if(!supportsSvg)return;var m=document.getElementById('feMap');if(m){var r=gs.getBoundingClientRect();if(r.width>1)m.setAttribute('href',genMap(gs,r.width,r.height))}}
+updateGS();window.addEventListener('resize',function(){clearTimeout(window._gsRt);window._gsRt=setTimeout(updateGS,150)})
+
+// ===== 初始化 =====
+buildOHLC(currentPeriod);updateHeader();drawChart()
+
+// ===== 自适应 =====
+window.addEventListener('resize',function(){drawChart()})
+document.addEventListener('visibilitychange',function(){if(!document.hidden)setTimeout(drawChart,200)})
+})()
+</script>
+</body>
+</html>
