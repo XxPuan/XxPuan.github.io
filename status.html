@@ -386,6 +386,21 @@
       transition:border-color .3s;
     }
     .admin-field input:focus{border-color:#A855F7}
+    .admin-field textarea{
+      width:100%;
+      padding:6px 10px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.05);
+      color:#fff;
+      font-size:clamp(0.6rem,.8vw,0.7rem);
+      font-family:'HarmonyOS Sans',sans-serif;
+      outline:none;
+      resize:vertical;
+      transition:border-color .3s;
+      line-height:1.5;
+    }
+    .admin-field textarea:focus{border-color:#A855F7}
     .admin-field input[type=color]{
       width:100%;height:36px;padding:2px;
       cursor:pointer;
@@ -420,6 +435,84 @@
       transition:color .3s;
     }
     #adminReset:hover{color:#fff}
+    #adminExport{
+      width:100%;
+      padding:8px;margin-top:8px;
+      border-radius:10px;
+      border:1px solid rgba(168,85,247,.25);
+      background:rgba(168,85,247,.08);
+      color:rgba(168,85,247,.8);
+      font-size:clamp(0.55rem,.7vw,0.65rem);
+      cursor:pointer;
+      transition:all .3s;
+    }
+    #adminExport:hover{background:rgba(168,85,247,.18);color:#A855F7}
+
+    /* ===== 导出弹窗 ===== */
+    #exportModal{
+      position:fixed;inset:0;z-index:300;
+      display:none;
+      align-items:center;justify-content:center;
+      background:rgba(0,0,0,.6);
+      backdrop-filter:blur(8px);
+    }
+    #exportModal.open{display:flex}
+    #exportModal .modal-box{
+      width:clamp(340px,50vw,560px);
+      max-height:80vh;
+      background:rgba(15,15,30,.97);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:16px;
+      padding:clamp(16px,2.5vw,24px);
+      box-shadow:0 24px 64px rgba(0,0,0,.5);
+      display:flex;flex-direction:column;
+    }
+    #exportModal .modal-title{
+      font-size:clamp(0.8rem,1.1vw,1rem);
+      font-weight:700;color:#fff;
+      margin-bottom:4px;letter-spacing:.06em;
+    }
+    #exportModal .modal-desc{
+      font-size:clamp(0.55rem,.7vw,0.65rem);
+      color:rgba(255,255,255,.35);
+      margin-bottom:12px;
+    }
+    #exportModal pre{
+      background:rgba(0,0,0,.4);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:10px;
+      padding:14px;
+      font-family:'Cascadia Code','Fira Code','JetBrains Mono',monospace;
+      font-size:clamp(0.5rem,.65vw,0.6rem);
+      color:rgba(255,255,255,.8);
+      overflow:auto;
+      white-space:pre-wrap;word-break:break-all;
+      flex:1;min-height:0;
+      line-height:1.6;
+      user-select:all;
+    }
+    #exportModal .modal-actions{
+      display:flex;gap:8px;
+      margin-top:12px;
+    }
+    #exportModal .modal-actions button{
+      flex:1;padding:9px;
+      border-radius:10px;border:none;
+      font-size:clamp(0.65rem,.8vw,0.75rem);
+      font-weight:600;cursor:pointer;
+      transition:all .25s;
+    }
+    #exportModal .btn-copy{
+      background:linear-gradient(135deg,#7C3AED,#A855F7);
+      color:#fff;
+    }
+    #exportModal .btn-copy:hover{opacity:.85}
+    #exportModal .btn-copy.copied{background:linear-gradient(135deg,#22c55e,#16a34a)}
+    #exportModal .btn-close{
+      background:rgba(255,255,255,.06);
+      color:rgba(255,255,255,.5);
+    }
+    #exportModal .btn-close:hover{background:rgba(255,255,255,.1);color:#fff}
   </style>
 </head>
 <body>
@@ -432,6 +525,20 @@
   <div id="adminCards"></div>
   <button id="adminSave">保存</button>
   <button id="adminReset">恢复默认</button>
+  <button id="adminExport">导出数据 → 嵌入文件</button>
+</div>
+
+<!-- ===== 导出弹窗 ===== -->
+<div id="exportModal">
+  <div class="modal-box">
+    <div class="modal-title">导出卡片数据</div>
+    <div class="modal-desc">复制以下代码，替换 status.html 中的 <code>var DEFAULT_DATA=...</code>，然后 Push 到 GitHub 即可持久化</div>
+    <pre id="exportCode"></pre>
+    <div class="modal-actions">
+      <button class="btn-copy" id="exportCopyBtn">复制代码</button>
+      <button class="btn-close" id="exportCloseBtn">关闭</button>
+    </div>
+  </div>
 </div>
 
 <div id="bgImg"></div>
@@ -620,10 +727,31 @@
   if(window.ResizeObserver)new ResizeObserver(function(){clearTimeout(rt);rt=setTimeout(updateGS,100)}).observe(gs)
 
   // ===== 默认卡片数据 =====
-  var DEFAULT_DATA=[
-    {tag:'国考',fullname:'中央机关及其直属机构<br>考试录用公务员',date:'2026-11-28T09:00:00+08:00',displayDate:'2026.11.28 (日)',color:'#EF4444',fontColor:'#fff'},
-    {tag:'省考',fullname:'江苏省公务员<br>录用考试',date:'2026-12-06T09:00:00+08:00',displayDate:'2026.12.06 (日)',color:'#3B82F6',fontColor:'#fff'},
-    {tag:'考研',fullname:'全国硕士研究生<br>招生考试',date:'2026-12-19T08:30:00+08:00',displayDate:'2026.12.19 (六)',color:'#A855F7',fontColor:'#fff'}
+  var DEFAULT_DATA=  [
+    {
+      "tag": "国考",
+      "fullname": "中央机关及其直属机构<br>考试录用公务员",
+      "date": "2026-11-28T09:00:00+08:00",
+      "displayDate": "2026.11.28 (日)",
+      "color": "#ef4444",
+      "fontColor": "#ffffff"
+    },
+    {
+      "tag": "省考",
+      "fullname": "江苏省公务员<br>录用考试",
+      "date": "2026-12-06T09:00:00+08:00",
+      "displayDate": "2026.12.06 (日)",
+      "color": "#3b82f6",
+      "fontColor": "#ffffff"
+    },
+    {
+      "tag": "华图基础班",
+      "fullname": "基础班培训结课考试",
+      "date": "2026-08-15T09:00:00+08:00",
+      "displayDate": "2026.08.15 (六)",
+      "color": "#55f793",
+      "fontColor": "#ffffff"
+    }
   ]
 
   // ===== 数据加载 =====
@@ -680,7 +808,7 @@
       html+='<div class="admin-card-group" data-idx="'+i+'">'
       html+='<div class="group-title">卡片 '+(i+1)+' &mdash; '+d.tag+'</div>'
       html+='<div class="admin-field"><label>标签</label><input class="af-tag" value="'+d.tag.replace(/"/g,'&quot;')+'"></div>'
-      html+='<div class="admin-field"><label>全称</label><input class="af-fullname" value="'+d.fullname.replace(/<br>/g,' ').replace(/"/g,'&quot;')+'"></div>'
+      html+='<div class="admin-field"><label>全称</label><textarea class="af-fullname" rows="2">'+d.fullname.replace(/<br>/g,'\n').replace(/"/g,'&quot;')+'</textarea></div>'
       html+='<div class="admin-row">'
       html+='<div class="admin-field"><label>截止时间</label><input class="af-date" type="datetime-local" value="'+d.date.substring(0,16)+'"></div>'
       html+='<div class="admin-field"><label>显示日期</label><input class="af-display" value="'+d.displayDate.replace(/"/g,'&quot;')+'"></div>'
@@ -704,7 +832,7 @@
       var orig=cardData[idx]||{}
       newData.push({
         tag:g.querySelector('.af-tag').value,
-        fullname:g.querySelector('.af-fullname').value,
+        fullname:g.querySelector('.af-fullname').value.replace(/\n/g,'<br>'),
         date:g.querySelector('.af-date').value+':00+08:00',
         displayDate:g.querySelector('.af-display').value,
         color:g.querySelector('.af-color').value,
@@ -719,6 +847,51 @@
   document.getElementById('adminReset').addEventListener('click',function(){
     localStorage.removeItem('statusCards')
     location.reload()
+  })
+
+  // ===== 管理后台导出数据 =====
+  document.getElementById('adminExport').addEventListener('click',function(){
+    var groups=document.querySelectorAll('#adminCards .admin-card-group')
+    var newData=[]
+    groups.forEach(function(g){
+      var idx=parseInt(g.dataset.idx)
+      var orig=cardData[idx]||{}
+      newData.push({
+        tag:g.querySelector('.af-tag').value,
+        fullname:g.querySelector('.af-fullname').value.replace(/\n/g,'<br>'),
+        date:g.querySelector('.af-date').value+':00+08:00',
+        displayDate:g.querySelector('.af-display').value,
+        color:g.querySelector('.af-color').value,
+        fontColor:g.querySelector('.af-font').value
+      })
+    })
+    var code='  var DEFAULT_DATA='+JSON.stringify(newData,null,2).replace(/^(.)/gm,'  $1')
+    document.getElementById('exportCode').textContent=code
+    document.getElementById('exportModal').classList.add('open')
+  })
+
+  document.getElementById('exportCopyBtn').addEventListener('click',function(){
+    var pre=document.getElementById('exportCode')
+    var btn=this
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(pre.textContent).then(function(){
+        btn.textContent='已复制 ✓';btn.classList.add('copied')
+        setTimeout(function(){btn.textContent='复制代码';btn.classList.remove('copied')},2000)
+      })
+    }else{
+      var sel=window.getSelection(),range=document.createRange()
+      range.selectNodeContents(pre);sel.removeAllRanges();sel.addRange(range)
+      document.execCommand('copy');sel.removeAllRanges()
+      btn.textContent='已复制 ✓';btn.classList.add('copied')
+      setTimeout(function(){btn.textContent='复制代码';btn.classList.remove('copied')},2000)
+    }
+  })
+
+  document.getElementById('exportCloseBtn').addEventListener('click',function(){
+    document.getElementById('exportModal').classList.remove('open')
+  })
+  document.getElementById('exportModal').addEventListener('click',function(e){
+    if(e.target===this)this.classList.remove('open')
   })
 
   // ===== 管理后台开关（仅本地可用） =====
