@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>中国家庭 - XxPuan</title>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--p-rgb:218,175,75;--p:#DAAF4B;--pl:#F0D060;--da:#e7e7a9;--db:#e5e37e;--dc:#559155;--bg:#08080E;--c15:#F0EEE8;--c13:#D4CCC0;--c12:#B8AFA0;--c10:#9A9080;--c8:#6B6358;--hh:80px}
+    html{font-family:"HarmonyOS Sans","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--c15);-webkit-font-smoothing:antialiased}
+    body{min-height:100vh;position:relative}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 700px 700px at 18% 28%,color-mix(in srgb,var(--da) 38%,transparent),transparent 65%),radial-gradient(ellipse 600px 600px at 78% 18%,color-mix(in srgb,var(--db) 30%,transparent),transparent 65%),radial-gradient(ellipse 800px 800px at 45% 82%,color-mix(in srgb,var(--dc) 28%,transparent),transparent 65%)}
+    body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 400px 400px at 60% 40%,color-mix(in srgb,var(--da) 15%,transparent),transparent 60%),radial-gradient(ellipse 450px 450px at 30% 70%,color-mix(in srgb,var(--db) 12%,transparent),transparent 60%);animation:drifting 12s ease-in-out infinite alternate}
+    @keyframes drifting{0%{transform:translate(0,0)}33%{transform:translate(15px,-10px)}50%{transform:translate(-10px,15px)}100%{transform:translate(10px,-5px)}}
+    a{color:inherit;text-decoration:none}
+    #hm{height:var(--hh)}
+    #h{position:fixed;top:0;left:0;z-index:100;width:100%;height:var(--hh);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.035);backdrop-filter:blur(22px)saturate(1.8)brightness(1.12);-webkit-backdrop-filter:blur(22px)saturate(1.8)brightness(1.12);border-bottom:1px solid rgba(255,255,255,.08);box-shadow:0 0 1.5px 1px rgba(255,255,255,.06)inset,0 0 10px 4px rgba(255,255,255,.03)inset,0 4px 16px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.05)}
+    #h::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(218,175,75,.25)25%,rgba(240,208,96,.4)50%,rgba(218,175,75,.25)75%,transparent 95%);opacity:.9}
+    #h::after{content:'';position:absolute;bottom:-1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(218,175,75,.12),transparent)}
+    #ht{font-size:16px;font-weight:500;color:var(--c15);display:flex;align-items:center}
+    #ht b{font-size:22px;font-weight:800;margin-right:2px}
+    main{max-width:800px;margin:0 auto;padding:7rem 2rem 5rem;position:relative;z-index:1}
+    article h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;margin-bottom:.3rem}
+    .pm{color:var(--c8);font-size:14px;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(255,255,255,.05)}
+    .pc{font-size:16px;color:var(--c12);line-height:2}
+    .pc h2{font-size:1.4rem;font-weight:700;color:var(--c15);margin:2.5rem 0 .8rem}
+    .pc h3{font-size:1.2rem;font-weight:600;color:var(--c13);margin:2rem 0 .6rem}
+    .pc p{margin-bottom:1.2rem}
+    .pc a{color:var(--pl);border-bottom:1px solid rgba(218,175,75,.2)}
+    .pc img{max-width:100%;border-radius:12px;margin:1.2rem 0}
+    .pc blockquote{border-left:3px solid var(--p);padding:.8rem 1.2rem;margin:1.2rem 0;background:rgba(218,175,75,.04);border-radius:0 8px 8px 0}
+    .pc pre{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:12px;padding:1rem;overflow-x:auto;margin:1.2rem 0}
+    .pc code{font-size:14px;background:rgba(255,255,255,.04);padding:2px 6px;border-radius:4px;color:var(--pl)}
+    .pc pre code{background:none;padding:0}
+    .pc ul,.pc ol{padding-left:1.5rem;margin-bottom:1rem}
+    .bk{display:inline-flex;align-items:center;gap:6px;color:var(--c10);font-size:14px;margin-bottom:2rem}
+    .bk:hover{color:var(--pl)}
+    .pc .img-grid{display:grid;gap:8px;margin:1.2rem 0}
+    .pc .img-grid.cols-1{grid-template-columns:1fr}
+    .pc .img-grid.cols-2{grid-template-columns:repeat(2,1fr)}
+    .pc .img-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+    .pc .img-grid img{width:100%;height:auto;border-radius:8px;transition:transform .3s;cursor:pointer}
+    .pc .img-grid img:hover{transform:scale(1.02)}
+    footer{padding:2rem;border-top:1px solid rgba(255,255,255,.04);text-align:center;color:var(--c8);font-size:13px}
+    @media(max-width:767px){#h{padding:0 1rem}main{padding:6rem 1.5rem 3rem}}
+  </style>
+</head>
+<body>
+<div id="hm"></div>
+<header id="h"><div id="ht"><b>XxPuan</b></div></header>
+<main>
+  <a class="bk" href="../blog.html">[返回]</a>
+  <article>
+    <h1>中国家庭</h1>
+    <div class="pm">2026-07-27 | #碎碎念</div>
+    <div class="pc">每次谈到中国家庭，争议是难免的<div><br></div><div>孩子们认为，中国家庭是对孩子的天性打压与本性抑制</div><div>家长们则认为，中国家庭是负责和顾家的体现</div><div><br></div><div>从不同的角度出发，确实能得到不同的答案，但笔者二者均不太认可。笔者理想下的中国式家庭，是以亲情为纽带，以理解为基底，予孩子以尊重，予长辈以尊敬。但很可惜，中国很少有家庭能达到这种状态</div><div><br></div><div>笔者今天智齿顶到牙床，已经出血了</div><div>笔者和妈妈说，想找个时间拔牙了</div><div>笔者被责怪了</div><div>嗯……</div><div><br></div><div>被说，“让你平时好好饭后漱口”</div><div>笔者其实很想反驳，智齿顶到牙床是怎么能和漱口联系到一起的，难道水过一遍牙齿，智齿就停止生长了吗？</div><div>但笔者没有说话</div><div><br></div><div>笔者把卫生间门关起来，轻轻叹了口气</div></div>
+  </article>
+</main>
+<footer>(c) 2026 XxPuan</footer>
+</body>
+</html>
