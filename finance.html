@@ -644,11 +644,17 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
     drawPrincipalWave(); drawLoanWave(); drawAvailWave(); drawDailyWave();
   }
 
-  // === 管理面板 ===
+  // === 管理面板（仅本地可用）===
+  var isLocal = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  var adminBtn = document.getElementById('adminBtn');
+  if (!isLocal && adminBtn) { adminBtn.style.display = 'none'; }
+
   var overlay = document.getElementById('adminOverlay');
   var adminBody = document.getElementById('adminBody');
 
-  document.getElementById('adminBtn').addEventListener('click', function(){ overlay.classList.add('open'); renderAdminTab('basic'); });
+  if (adminBtn) {
+    adminBtn.addEventListener('click', function(){ overlay.classList.add('open'); renderAdminTab('basic'); });
+  }
   document.getElementById('adminClose').addEventListener('click', function(){ overlay.classList.remove('open'); });
   overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.classList.remove('open'); });
 
