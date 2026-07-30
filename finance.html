@@ -271,19 +271,29 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
   var DATA_VER = 2;
   var defaultStore = {
     "principal": 300000,
-    "loan": 300000,
-    "dailyProfit": -53793.77,
-    "dailyProfitPct": -100,
-    "totalReturn": -53793.77,
-    "periodReturnPct": -17.931256666666666,
-    "costLine": 300000,
-    "klineBase": 300000,
-    "records": {
-      "in": [],
-      "out": [
-        {"amount": 53793.77, "name": "截止当前累计亏损", "time": "2026-07-29 15:00"}
-      ]
-    }
+          "loan": 300000,
+          "dailyProfit": -6076.74,
+          "dailyProfitPct": -10.149804970761064,
+          "totalReturn": -59870.509999999995,
+          "periodReturnPct": -19.956836666666664,
+          "costLine": 300000,
+          "klineBase": 300000,
+          "records": {
+    "in": [],
+            "out": [
+      {
+        "amount": 53793.77,
+        "name": "截止当前累计亏损",
+        "time": "2026-07-29 15:00"
+      },
+      {
+        "amount": 6076.74,
+        "name": "紫光股份、有研新材当日股票清仓亏损",
+        "time": "2026-07-30 15:00"
+      }
+    ]
+  },
+    "_ver": 2
   };
   function cloneObj(o){return JSON.parse(JSON.stringify(o));}
   var store = loadData();
