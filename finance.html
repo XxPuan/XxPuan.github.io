@@ -16,7 +16,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;margin:0;font-family:'Harmony
 #appWrapper{position:absolute;top:0;left:0;width:1440px;height:1024px;transform-origin:top left}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 600px 600px at 15% 20%,rgba(99,102,241,.18),transparent 65%),radial-gradient(ellipse 500px 500px at 75% 15%,rgba(167,139,250,.15),transparent 65%),radial-gradient(ellipse 700px 700px at 50% 85%,rgba(192,132,252,.10),transparent 65%)}
 body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 350px 350px at 65% 40%,rgba(99,102,241,.08),transparent 55%),radial-gradient(ellipse 400px 400px at 30% 75%,rgba(167,139,250,.06),transparent 55%);animation:drifting 14s ease-in-out infinite alternate}
-@keyframes drifting{0%{transform:translate(0,0)}33%{transform:translate(18px,-10px)}66%{transform:translate(-12px,16px)}100%{transform:translate(14px,-6px)}}
+@keyframes drifting{0%{transform:translate(0,0)}33%{transform:translate(18px,0)}66%{transform:translate(-12px,0)}100%{transform:translate(14px,0)}}
 #lightPillarBg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.5}
 #cursorGlow{position:fixed;top:0;left:0;width:800px;height:800px;border-radius:50%;pointer-events:none;z-index:1;background:radial-gradient(circle,rgba(99,102,241,.08),rgba(167,139,250,.03) 40%,transparent 70%);transform:translate(-50%,-50%)}
 .glass-card{position:absolute;background:var(--glass);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);border:1px solid var(--glass-border);box-shadow:0 8px 40px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.06);z-index:2;overflow:hidden}
@@ -224,11 +224,11 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
 
   var mat = new THREE.ShaderMaterial({
     vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.0);}',
-    fragmentShader:'precision mediump float;uniform float uTime;uniform vec2 uResolution;uniform vec3 uTopColor;uniform vec3 uBottomColor;uniform float uIntensity;uniform float uGlowAmount;uniform float uPillarWidth;uniform float uPillarHeight;uniform float uNoiseIntensity;uniform float uRotCos;uniform float uRotSin;uniform float uPillarRotCos;uniform float uPillarRotSin;uniform float uWaveSin;uniform float uWaveCos;varying vec2 vUv;const int MAX_ITER=40;const int WAVE_ITER=2;void main(){vec2 uv=(vUv*2.0-1.0)*vec2(uResolution.x/uResolution.y,1.0);uv=vec2(uPillarRotCos*uv.x-uPillarRotSin*uv.y,uPillarRotSin*uv.x+uPillarRotCos*uv.y);vec3 ro=vec3(0.0,0.0,-10.0);vec3 rd=normalize(vec3(uv,1.0));vec3 col=vec3(0.0);float t=0.1;for(int i=0;i<MAX_ITER;i++){vec3 p=ro+rd*t;p.xz=vec2(uRotCos*p.x-uRotSin*p.z,uRotSin*p.x+uRotCos*p.z);vec3 q=p;q.y=p.y*uPillarHeight+uTime;float freq=1.0;float amp=1.0;for(int j=0;j<WAVE_ITER;j++){q.xz=vec2(uWaveCos*q.x-uWaveSin*q.z,uWaveSin*q.x+uWaveCos*q.z);q+=cos(q.zxy*freq-uTime*float(j)*2.0)*amp;freq*=2.0;amp*=0.5;}float d=length(cos(q.xz))-0.2;float bound=length(p.xz)-uPillarWidth;float k=4.0;float h=max(k-abs(d-bound),0.0);d=max(d,bound)+h*h*0.0625/k;d=abs(d)*0.15+0.01;float grad=clamp((15.0-p.y)/30.0,0.0,1.0);col+=mix(uBottomColor,uTopColor,grad)/d;t+=d*1.2;if(t>50.0)break;}float wn=uPillarWidth/3.0;col=tanh(col*uGlowAmount/wn);col-=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)/15.0*uNoiseIntensity;gl_FragColor=vec4(col*uIntensity,1.0);}',
+    fragmentShader:'precision mediump float;uniform float uTime;uniform vec2 uResolution;uniform vec3 uTopColor;uniform vec3 uBottomColor;uniform float uIntensity;uniform float uGlowAmount;uniform float uPillarWidth;uniform float uPillarHeight;uniform float uNoiseIntensity;uniform float uRotCos;uniform float uRotSin;uniform float uPillarRotCos;uniform float uPillarRotSin;uniform float uWaveSin;uniform float uWaveCos;varying vec2 vUv;const int MAX_ITER=40;const int WAVE_ITER=2;void main(){vec2 uv=(vUv*2.0-1.0)*vec2(uResolution.x/uResolution.y,1.0);uv=vec2(uPillarRotCos*uv.x-uPillarRotSin*uv.y,uPillarRotSin*uv.x+uPillarRotCos*uv.y);vec3 ro=vec3(0.0,0.0,-10.0);vec3 rd=normalize(vec3(uv,1.0));vec3 col=vec3(0.0);float t=0.1;for(int i=0;i<MAX_ITER;i++){vec3 p=ro+rd*t;p.yz=vec2(uRotCos*p.y-uRotSin*p.z,uRotSin*p.y+uRotCos*p.z);vec3 q=p;q.x=p.x*uPillarHeight+uTime;float freq=1.0;float amp=1.0;for(int j=0;j<WAVE_ITER;j++){q.yz=vec2(uWaveCos*q.y-uWaveSin*q.z,uWaveSin*q.y+uWaveCos*q.z);q+=cos(q.xyz*freq-uTime*float(j)*2.0)*amp;freq*=2.0;amp*=0.5;}float d=length(cos(q.yz))-0.2;float bound=length(p.yz)-uPillarWidth;float k=4.0;float h=max(k-abs(d-bound),0.0);d=max(d,bound)+h*h*0.0625/k;d=abs(d)*0.15+0.01;float grad=clamp((15.0-p.x)/30.0,0.0,1.0);col+=mix(uBottomColor,uTopColor,grad)/d;t+=d*1.2;if(t>50.0)break;}float wn=uPillarWidth/3.0;col=tanh(col*uGlowAmount/wn);col-=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)/15.0*uNoiseIntensity;gl_FragColor=vec4(col*uIntensity,1.0);}',
     uniforms:{
       uTime:{value:0}, uResolution:{value:new THREE.Vector2(W,H)},
       uTopColor:{value:parseC('#7C3AED')}, uBottomColor:{value:parseC('#A855F7')},
-      uIntensity:{value:0.4}, uGlowAmount:{value:0.008}, uPillarWidth:{value:4.0},
+      uIntensity:{value:0.4}, uGlowAmount:{value:0.008}, uPillarWidth:{value:2.5},
       uPillarHeight:{value:0.5}, uNoiseIntensity:{value:0.4},
       uRotCos:{value:1.0}, uRotSin:{value:0.0},
       uPillarRotCos:{value:Math.cos(pillarRotRad)}, uPillarRotSin:{value:Math.sin(pillarRotRad)},
@@ -271,28 +271,33 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
   var DATA_VER = 2;
   var defaultStore = {
     "principal": 300000,
-          "loan": 300000,
-          "dailyProfit": -6076.74,
-          "dailyProfitPct": -10.149804970761064,
-          "totalReturn": -59870.509999999995,
-          "periodReturnPct": -19.956836666666664,
-          "costLine": 300000,
-          "klineBase": 300000,
-          "records": {
-    "in": [],
-            "out": [
-      {
-        "amount": 53793.77,
-        "name": "截止当前累计亏损",
-        "time": "2026-07-29 15:00"
-      },
-      {
-        "amount": 6076.74,
-        "name": "紫光股份、有研新材当日股票清仓亏损",
-        "time": "2026-07-30 15:00"
-      }
-    ]
-  },
+    "loan": 300000,
+    "dailyProfit": -9634.18,
+    "dailyProfitPct": -13.86119411510216,
+    "totalReturn": -69504.69,
+    "periodReturnPct": -23.16823,
+    "costLine": 300000,
+    "klineBase": 300000,
+    "records": {
+      "in": [],
+      "out": [
+        {
+          "amount": 53793.77,
+          "name": "截止当前累计亏损",
+          "time": "2026-07-29 15:00"
+        },
+        {
+          "amount": 6076.74,
+          "name": "紫光股份、有研新材当日股票清仓亏损",
+          "time": "2026-07-30 15:00"
+        },
+        {
+          "amount": 9634.18,
+          "name": "风华高科股票买入亏损",
+          "time": "2026-07-31 15:00"
+        }
+      ]
+    },
     "_ver": 2
   };
   function cloneObj(o){return JSON.parse(JSON.stringify(o));}
@@ -571,7 +576,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
   function renderRecords(mode){
     currentMode = mode;
     var list = document.getElementById('recordList');
-    var data = store.records[mode];
+    // 时间倒序：最新的在最上面
+    var data = store.records[mode].slice().sort(function(a,b){return (b.time||'').localeCompare(a.time||'');});
     if(!data || data.length===0){
       list.innerHTML = '<div class="ri-null"><span>暂无记录</span></div>';
       return;
