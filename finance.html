@@ -349,20 +349,26 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
   function getViewData(view){
     var d = rawDailyData;
     if(view === 'day') return d.slice(-45);
+    // 月视图：按自然月(YYYY-MM)聚合
     if(view === 'month'){
-      var weeks = [], step = 5;
-      for(var i = Math.max(0, d.length - 105); i < d.length; i += step)
-        weeks.push(aggOHLC(d.slice(i, Math.min(i+step, d.length))));
-      return weeks;
+      var months = [], curM = '', bucket = [];
+      d.forEach(function(c){
+        var m = c.d.slice(0,7);
+        if(m !== curM){ if(bucket.length) months.push(aggOHLC(bucket)); curM = m; bucket = [c]; }
+        else bucket.push(c);
+      });
+      if(bucket.length) months.push(aggOHLC(bucket));
+      return months;
     }
-    var months = [], curM = '', bucket = [];
+    // 年视图：按自然年(YYYY)聚合
+    var years = [], curY = '', bucket = [];
     d.forEach(function(c){
-      var m = c.d.slice(0,7);
-      if(m !== curM){ if(bucket.length) months.push(aggOHLC(bucket)); curM = m; bucket = [c]; }
+      var y = c.d.slice(0,4);
+      if(y !== curY){ if(bucket.length) years.push(aggOHLC(bucket)); curY = y; bucket = [c]; }
       else bucket.push(c);
     });
-    if(bucket.length) months.push(aggOHLC(bucket));
-    return months;
+    if(bucket.length) years.push(aggOHLC(bucket));
+    return years;
   }
 
   // 绘制K线
@@ -430,7 +436,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
       ticks.forEach(function(idx){
         var p = show[idx].d;
         if(p.indexOf('~')>0) p = p.split('~')[0];
-        ctx.fillText(p.slice(5), xPos(idx), H-pad.b+3);
+        ctx.fillText(currentView==='year' ? p.slice(0,4) : p.slice(5), xPos(idx), H-pad.b+3);
       });
 
       // 蜡烛
@@ -463,7 +469,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
     }
   }
 
-  // 视图切换（日→单日蜡烛，月→周聚合，年→月聚合）
+  // 视图切换（日→单日蜡烛，月→自然月聚合，年→自然年聚合）
   document.querySelectorAll('.vt-btn').forEach(function(btn){
     btn.addEventListener('click',function(){
       document.querySelectorAll('.vt-btn').forEach(function(b){b.classList.remove('active');});
