@@ -148,6 +148,9 @@ table.post-table{width:100%;border-collapse:collapse;min-width:1120px}
 .cell-main .u{font-weight:600;color:var(--txt);font-size:13.5px;line-height:1.45}
 .cell-main .n{font-size:12px;color:var(--txt3)}
 .cell-id{font-family:'SF Mono',Consolas,Menlo,monospace;font-size:11.5px;color:var(--txt3);white-space:nowrap}
+.id-main{font-family:'SF Mono',Consolas,Menlo,monospace;font-size:11.5px;color:var(--txt3);white-space:nowrap;line-height:1.35}
+.id-sub{font-family:'SF Mono',Consolas,Menlo,monospace;font-size:10px;color:var(--txt3);opacity:.72;white-space:nowrap;margin-top:2px}
+.m-id{margin:-4px 0 10px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline}
 .badge-exam{font-size:10.5px;font-weight:700;padding:2.5px 9px;border-radius:999px;white-space:nowrap}
 .badge-exam.gw{background:rgba(99,102,241,.1);color:var(--accent)}
 .badge-exam.sy{background:var(--ok-bg);color:var(--ok)}
@@ -274,7 +277,7 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
 
   <div class="page-title">
     <h1><span class="glow">求职 · 岗位报考筛选</span></h1>
-    <p>江苏 13 市 · 国考 / 省考 / 事业编 · 自动判定可报考 · 往年报录比 · 支持上传岗位表</p>
+    <p>江苏 13 市 · 国考 / 省考 / 事业编 · 自动判定可报考 · 往年报录比 · 支持上传岗位表<br><span style="font-weight:500;opacity:.75">岗位编号 = 官方代码组合（国考：部门代码+职位代码；省考：地区代码+单位代码+职位代码），可直接在官方岗位表 Excel 中定位</span></p>
   </div>
 
   <!-- ===== 上传区 ===== -->
@@ -314,7 +317,7 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
       <div class="row3">
         <div class="search-box">
           <span class="mag">🔍</span>
-          <input type="text" id="searchInput" placeholder="模糊搜索：岗位编号 / 名称 / 单位 / 专业…" autocomplete="off">
+          <input type="text" id="searchInput" placeholder="模糊搜索：岗位编号 / 官方代码（部门·单位·职位） / 名称 / 专业…" autocomplete="off">
           <button class="clear" id="searchClear">✕</button>
         </div>
         <button class="tool-btn" id="matchToggle">◎ 只看可报考</button>
@@ -351,7 +354,7 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
       <div class="post-table-wrap" id="tableWrap">
         <table class="post-table">
           <thead><tr>
-            <th>岗位编号</th><th>招录单位 / 岗位</th><th>类型</th><th>城市</th>
+            <th title="国考=部门代码+职位代码；省考=地区代码+单位代码+职位代码。可在官方岗位表Excel中逐列Ctrl+F定位">岗位编号</th><th>招录单位 / 岗位</th><th>类型</th><th>城市</th>
             <th style="text-align:center">招录人数</th><th>开考比例</th><th>专业要求</th><th>学历</th>
             <th>政治面貌</th><th>户籍</th><th>可报考</th><th>报录比</th><th>操作</th>
           </tr></thead>
@@ -629,7 +632,7 @@ function filterPosts(){
     if(state.type==='gw'){ if(p.exam!=='gk'&&p.exam!=='sk') return false; if(state.exam&&p.exam!==state.exam) return false; }
     else{ if(p.exam!=='syb') return false; }
     if(state.city!=='all'&&p.city!==state.city) return false;
-    if(kw){var hay=[p.id,p.unit,p.name,p.major,p.city,p.note||''].join(' ').toLowerCase(); if(hay.indexOf(kw)<0) return false;}
+    if(kw){var hay=[p.id,p.unit,p.name,p.major,p.city,p.note||'',p.deptCode||'',p.unitCode||'',p.postCode||'',p.areaCode||''].join(' ').toLowerCase(); if(hay.indexOf(kw)<0) return false;}
     if(state.fEdu&&(p.education||'')!==state.fEdu) return false;
     if(state.fPol){
       if(state.fPol==='不限'&&(p.politics||'')!=='不限'&& (p.politics||'')!=='') return false;
@@ -657,6 +660,16 @@ function renderCities(){
 
 /* ===== 列表 ===== */
 function examLabel(p){if(p.exam==='gk')return'<span class="badge-exam gw">国考</span>';if(p.exam==='sk')return'<span class="badge-exam gw">省考</span>';return'<span class="badge-exam sy">事业编</span>';}
+/* 官方代码分解行：用于在源表Excel中逐列定位 */
+function idSub(p){
+  if(p.exam==='gk'&&(p.deptCode||'')) return '部门'+(p.deptCode||'—')+' · 职位'+(p.postCode||'—');
+  if(p.exam==='sk'&&(p.unitCode||'')) return '地区'+(p.areaCode||'—')+' · 单位'+(p.unitCode||'—')+' · 职位'+(p.postCode||'—');
+  return '';
+}
+function idCell(p){
+  var sub=idSub(p);
+  return '<div class="id-main">'+p.id+'</div>'+(sub?'<div class="id-sub">'+sub+'</div>':'');
+}
 /* 考试类别：A综合管理 / B行政执法 / C乡镇街道（仅省考标注，国考/事业编无此分类） */
 function catOf(p){
   if(p.exam!=='sk') return null;
@@ -726,12 +739,12 @@ function renderList(){
   emptyState.classList.remove('show');
 
   tableBody.innerHTML=matched.map(function(x,i){var p=x.p,m=x.m,rt=ratioInfo(p);
-    return'<tr><td class="cell-id">'+p.id+'</td><td><div class="cell-main"><span class="u">'+p.unit+'</span><span class="n">'+p.name+'</span></div></td><td>'+examLabel(p)+catTag(p)+'</td><td>'+(p.city||'—')+'</td><td class="num"><span class="recruit">'+(p.recruit||1)+'</span></td><td>'+openRatioOf(p)+'</td><td>'+(p.major||'不限')+'</td><td>'+(p.education||'不限')+'</td><td>'+(p.politics||'不限')+'</td><td>'+(p.household||'不限')+hkTag(p)+'</td><td>'+mb(m)+'</td><td>'+(rt.has?'<div class="ratio"><span class="r'+(hot(rt.last)?' hot':'')+'">'+rt.last.ratio+'</span><span class="s">'+rt.last.year+'</span></div>':'<div class="ratio"><span class="none">暂无</span></div>')+compBadge(p)+'</td><td><button class="detail-btn" data-idx="'+i+'">详情</button></td></tr>';
+    return'<tr><td>'+idCell(p)+'</td><td><div class="cell-main"><span class="u">'+p.unit+'</span><span class="n">'+p.name+'</span></div></td><td>'+examLabel(p)+catTag(p)+'</td><td>'+(p.city||'—')+'</td><td class="num"><span class="recruit">'+(p.recruit||1)+'</span></td><td>'+openRatioOf(p)+'</td><td>'+(p.major||'不限')+'</td><td>'+(p.education||'不限')+'</td><td>'+(p.politics||'不限')+'</td><td>'+(p.household||'不限')+hkTag(p)+'</td><td>'+mb(m)+'</td><td>'+(rt.has?'<div class="ratio"><span class="r'+(hot(rt.last)?' hot':'')+'">'+rt.last.ratio+'</span><span class="s">'+rt.last.year+'</span></div>':'<div class="ratio"><span class="none">暂无</span></div>')+compBadge(p)+'</td><td><button class="detail-btn" data-idx="'+i+'">详情</button></td></tr>';
   }).join('');
   tableBody.querySelectorAll('.detail-btn').forEach(function(b){b.addEventListener('click',function(){openDetail(matched[parseInt(b.getAttribute('data-idx'),10)])})});
 
   mobileCards.innerHTML=matched.map(function(x,i){var p=x.p,m=x.m,rt=ratioInfo(p);
-    return'<div class="m-card"><div class="m-card-head"><span class="u">'+p.unit+'</span>'+examLabel(p)+'</div><div class="n">'+p.name+' · <span class="cell-id">'+p.id+'</span></div><div class="grid"><span><span class="k">城市：</span>'+p.city+'</span><span><span class="k">类别：</span>'+(catOf(p)?catOf(p)+'类·'+catName(catOf(p)):'—')+'</span><span><span class="k">招录：</span>'+(p.recruit||1)+' 人</span><span><span class="k">开考：</span>'+(p.openRatio||'3:1（一般）')+'</span><span style="grid-column:1/-1"><span class="k">专业：</span>'+(p.major||'不限')+'</span><span><span class="k">学历：</span>'+(p.education||'不限')+'</span><span><span class="k">政治面貌：</span>'+(p.politics||'不限')+'</span><span><span class="k">户籍：</span>'+(p.household||'不限')+'</span></div><div class="m-card-foot">'+mb(m)+(rt.has?'<span class="ratio'+(hot(rt.last)?' hot':'')+'">报录比 '+rt.last.ratio+'</span>':'<span class="ratio">暂无</span>')+compBadge(p)+'<button class="detail-btn" data-idx="'+i+'">详情 →</button></div></div>';
+    return'<div class="m-card"><div class="m-card-head"><span class="u">'+p.unit+'</span>'+examLabel(p)+'</div><div class="n">'+p.name+'</div><div class="m-id">'+idCell(p)+'</div><div class="grid"><span><span class="k">城市：</span>'+p.city+'</span><span><span class="k">类别：</span>'+(catOf(p)?catOf(p)+'类·'+catName(catOf(p)):'—')+'</span><span><span class="k">招录：</span>'+(p.recruit||1)+' 人</span><span><span class="k">开考：</span>'+(p.openRatio||'3:1（一般）')+'</span><span style="grid-column:1/-1"><span class="k">专业：</span>'+(p.major||'不限')+'</span><span><span class="k">学历：</span>'+(p.education||'不限')+'</span><span><span class="k">政治面貌：</span>'+(p.politics||'不限')+'</span><span><span class="k">户籍：</span>'+(p.household||'不限')+'</span></div><div class="m-card-foot">'+mb(m)+(rt.has?'<span class="ratio'+(hot(rt.last)?' hot':'')+'">报录比 '+rt.last.ratio+'</span>':'<span class="ratio">暂无</span>')+compBadge(p)+'<button class="detail-btn" data-idx="'+i+'">详情 →</button></div></div>';
   }).join('');
   mobileCards.querySelectorAll('.detail-btn').forEach(function(b){b.addEventListener('click',function(){openDetail(matched[parseInt(b.getAttribute('data-idx'),10)])})});
 }
@@ -752,7 +765,8 @@ function openDetail(item){
   var p=item.p,m=item.m,rt=ratioInfo(p);
   $('dmTitle').textContent=p.unit+' · '+p.name;
   $('dmId').textContent=p.id+' · '+p.city+' · '+(p.exam==='gk'?'国考':p.exam==='sk'?'江苏省考':'江苏事业编');
-  var info='<div class="info-grid"><div class="info-cell"><div class="k">岗位编号</div><div class="v">'+p.id+'</div></div><div class="info-cell"><div class="k">所在城市</div><div class="v">'+p.city+'</div></div><div class="info-cell"><div class="k">考试类别</div><div class="v">'+(catOf(p)?catOf(p)+'类（'+catName(catOf(p))+'）':'—')+'</div></div><div class="info-cell"><div class="k">招录人数</div><div class="v">'+(p.recruit||1)+' 人</div></div><div class="info-cell"><div class="k">开考比例</div><div class="v">'+(p.openRatio||'3:1（一般规定，以公告为准）')+'</div></div><div class="info-cell"><div class="k">学历要求</div><div class="v">'+(p.education||'不限')+'</div></div><div class="info-cell"><div class="k">学位要求</div><div class="v">'+(p.degree||'不限')+'</div></div><div class="info-cell" style="grid-column:1/-1"><div class="k">专业要求</div><div class="v">'+(p.major||'不限')+'</div></div><div class="info-cell"><div class="k">政治面貌</div><div class="v">'+(p.politics||'不限')+'</div></div><div class="info-cell"><div class="k">招录对象</div><div class="v">'+(p.object||'不限')+'</div></div><div class="info-cell"><div class="k">户籍限制</div><div class="v">'+(p.household||'不限')+'</div></div><div class="info-cell"><div class="k">基层工作年限</div><div class="v">'+(p.years?p.years+' 年':'无要求')+'</div></div></div>';
+  var info='<div class="info-grid"><div class="info-cell"><div class="k">岗位编号</div><div class="v">'+p.id+'</div></div>'+(p.exam==='gk'&&p.deptCode?'<div class="info-cell"><div class="k">部门代码（单位编号）</div><div class="v">'+p.deptCode+'</div></div><div class="info-cell"><div class="k">职位代码</div><div class="v">'+p.postCode+'</div></div>':'')+(p.exam==='sk'&&p.unitCode?'<div class="info-cell"><div class="k">地区代码</div><div class="v">'+p.areaCode+'</div></div><div class="info-cell"><div class="k">单位代码（单位代号）</div><div class="v">'+p.unitCode+'</div></div><div class="info-cell"><div class="k">职位代码</div><div class="v">'+p.postCode+'</div></div>':'')+'<div class="info-cell"><div class="k">所在城市</div><div class="v">'+p.city+'</div></div><div class="info-cell"><div class="k">考试类别</div><div class="v">'+(catOf(p)?catOf(p)+'类（'+catName(catOf(p))+'）':'—')+'</div></div><div class="info-cell"><div class="k">招录人数</div><div class="v">'+(p.recruit||1)+' 人</div></div><div class="info-cell"><div class="k">开考比例</div><div class="v">'+(p.openRatio||'3:1（一般规定，以公告为准）')+'</div></div><div class="info-cell"><div class="k">学历要求</div><div class="v">'+(p.education||'不限')+'</div></div><div class="info-cell"><div class="k">学位要求</div><div class="v">'+(p.degree||'不限')+'</div></div><div class="info-cell" style="grid-column:1/-1"><div class="k">专业要求</div><div class="v">'+(p.major||'不限')+'</div></div><div class="info-cell"><div class="k">政治面貌</div><div class="v">'+(p.politics||'不限')+'</div></div><div class="info-cell"><div class="k">招录对象</div><div class="v">'+(p.object||'不限')+'</div></div><div class="info-cell"><div class="k">户籍限制</div><div class="v">'+(p.household||'不限')+'</div></div><div class="info-cell"><div class="k">基层工作年限</div><div class="v">'+(p.years?p.years+' 年':'无要求')+'</div></div></div>';
+  if(idSub(p)) info+='<div class="note-box" style="margin-top:11px;font-size:12px;opacity:.88">🔎 源表定位：打开官方岗位表 Excel，'+((p.exam==='gk')?'按「部门代码 '+p.deptCode+'」筛选出行，再核对「职位代码 '+p.postCode+'」；':'按「地区代码 '+p.areaCode+'」筛选，再核对「单位代码 '+p.unitCode+'」与「职位代码 '+p.postCode+'」；')+'即可找到该岗位所在行。</div>';
   var note=p.note?'<div style="margin-top:11px"><div class="note-box">📌 '+p.note+'</div></div>':'';
   var mHtml='<div class="m-sec"><div class="m-sec-title">可报考判定</div><span class="match-sum '+(m.ok?'ok':'no')+'">'+(m.ok?'✓ 符合你的条件，可报考':'✕ 暂不符合你的报考条件')+'</span><div class="match-list">'+m.reasons.map(function(r){return'<div class="match-item '+(r.ok?'ok':'no')+'"><span class="mk">'+(r.ok?'✓':'✕')+'</span><span class="tx">'+r.k+'：<b>'+r.d+'</b></span></div>';}).join('')+'</div></div>';
   var rtHtml;
@@ -889,6 +903,14 @@ function parseExcel(data, filename){
         if(h.indexOf('报录')>=0||h.indexOf('竞争比')>=0) idx.ratio=i;
       });
 
+      // 官方编号列（精确匹配，避免被上面通用规则误判）
+      hdrs.forEach(function(h,i){
+        var hh=h.replace(/\s/g,'');
+        if(hh==='部门代码') idx.deptCode=i;
+        if(hh==='单位代码') idx.unitCode=i;
+        if(hh==='地区代码') idx.areaCode=i;
+      });
+
       // Determine exam type from filename
       var exam='sk'; // default
       if(filename.indexOf('国考')>=0) exam='gk';
@@ -939,9 +961,16 @@ function parseExcel(data, filename){
           }
         }
 
+        var postCode=idx.code>=0?String(row[idx.code]||'').trim():'';
+        var deptCode=idx.deptCode>=0?String(row[idx.deptCode]||'').trim():'';
+        var unitCode=idx.unitCode>=0?String(row[idx.unitCode]||'').trim():'';
+        var areaCode=idx.areaCode>=0?String(row[idx.areaCode]||'').trim():'';
+        var pid=postCode||('EXP-'+posts.length);
+        if(exam==='gk'&&deptCode&&postCode) pid=deptCode+postCode;
+        else if(areaCode&&unitCode&&postCode) pid=areaCode+unitCode+postCode;
         posts.push({
           exam:exam, city:city||'江苏',
-          id:idx.code>=0?String(row[idx.code]||'').trim():('EXP-'+posts.length),
+          id:pid, deptCode:deptCode, unitCode:unitCode, areaCode:areaCode, postCode:postCode,
           unit:unit, name:name,
           recruit:recruit||1, education:edu||'不限',
           degree:idx.degree>=0?String(row[idx.degree]||'').trim():'',
