@@ -539,8 +539,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
       ['rgba(251,191,36,0.10)','rgba(251,191,36,0.35)','rgba(251,191,36,0.65)','rgba(251,191,36,0.90)','rgba(251,191,36,0.5)'], 300000);
   }
   function drawAvailWave(){
-    drawWaveOnCanvas('availWave', store.totalReturn - store.loan, 3,
-      ['rgba(52,211,153,0.10)','rgba(52,211,153,0.35)','rgba(52,211,153,0.65)','rgba(52,211,153,0.90)','rgba(52,211,153,0.5)'], -300000);
+    drawWaveOnCanvas('availWave', store.principal + store.totalReturn - store.loan, 3,
+      ['rgba(52,211,153,0.10)','rgba(52,211,153,0.35)','rgba(52,211,153,0.65)','rgba(52,211,153,0.90)','rgba(52,211,153,0.5)'], 0);
   }
   function drawDailyWave(){
     drawWaveOnCanvas('dailyWave', store.dailyProfit, 4,
@@ -651,8 +651,8 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
     // 更新卡片
     document.getElementById('principalVal').textContent = '¥' + store.principal.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
     document.getElementById('loanVal').textContent = '￥' + store.loan.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
-    // 可用余额 = 当前收益 - 借款
-    var avail = store.totalReturn - store.loan;
+    // 可用余额 = 净资产 = 本金 + 当前收益 - 借款
+    var avail = store.principal + store.totalReturn - store.loan;
     document.getElementById('availVal').textContent = '￥' + avail.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
     var dv = document.getElementById('dailyVal');
     dv.textContent = (store.dailyProfit>=0?'+':'') + '￥' + store.dailyProfit.toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -710,7 +710,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
       '<div class="af-row"><span class="af-label">总收益率%</span><span style="color:#818cf8;font-size:16px;font-weight:600">'+(store.principal>0?(store.totalReturn/store.principal*100).toFixed(2):'0.00')+'%</span><span style="color:rgba(255,255,255,.25);font-size:11px;margin-left:8px">自动=当前收益÷本金</span></div>' +
       '<div class="af-row"><span class="af-label">成本线值</span><input class="af-input" id="afCostLine" value="'+store.costLine+'" placeholder="0"></div>' +
       '<div class="af-row"><span class="af-label">K线起始值</span><input class="af-input" id="afKlineBase" value="'+store.klineBase+'" placeholder="0"></div>' +
-      '<div class="af-row"><span class="af-label" style="color:rgba(255,255,255,.35);font-size:12px">可用余额(自动)</span><span style="color:var(--up);font-size:16px;font-weight:600">¥'+(store.totalReturn-store.loan).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span></div>' +
+      '<div class="af-row"><span class="af-label" style="color:rgba(255,255,255,.35);font-size:12px">可用余额(自动)</span><span style="color:var(--up);font-size:16px;font-weight:600">¥'+(store.principal+store.totalReturn-store.loan).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span></div>' +
       '</div><div class="admin-foot">' +
       '<button class="af-btn af-btn-primary" id="afSaveBasic">保存</button>' +
       '<button class="af-btn af-btn-primary" id="afExportData">导出数据 → 嵌入文件</button>' +
