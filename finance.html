@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1440">
 <title>资产管理 · XxPuan</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2')format('woff2');font-weight:400;font-display:swap}
 @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2')format('woff2');font-weight:500;font-display:swap}
@@ -23,52 +22,8 @@
   --glow-cyan:rgba(0,245,255,.35);--glow-magenta:rgba(255,45,149,.30);
   --glow-purple:rgba(168,85,247,.30);
 }
-html,body{width:100vw;height:100vh;overflow:hidden;margin:0;font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text',sans-serif;-webkit-font-smoothing:antialiased;background:#05060f;color:var(--text-primary)}
+html,body{width:100vw;height:100vh;overflow:hidden;margin:0;font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text',sans-serif;-webkit-font-smoothing:antialiased;background:#05060f url('assets/finance-bg.jpg') center/cover no-repeat fixed;color:var(--text-primary)}
 #appWrapper{position:absolute;top:0;left:0;width:1440px;height:1024px;transform-origin:top left}
-
-/* === 动态AI艺术背景 === */
-#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
-#bgCanvas canvas{width:100%;height:100%;display:block}
-
-/* === 梦幻渐变背景层 === */
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 900px 900px at 15% 20%,rgba(0,200,255,.18),transparent 60%),
-    radial-gradient(ellipse 800px 800px at 85% 15%,rgba(255,40,130,.15),transparent 60%),
-    radial-gradient(ellipse 1000px 1000px at 50% 90%,rgba(140,80,255,.12),transparent 60%),
-    radial-gradient(ellipse 600px 600px at 30% 55%,rgba(0,229,160,.10),transparent 55%);
-}
-body::after{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 500px 500px at 70% 40%,rgba(0,245,255,.08),transparent 50%),
-    radial-gradient(ellipse 550px 550px at 20% 75%,rgba(255,45,149,.07),transparent 50%),
-    radial-gradient(ellipse 450px 450px at 60% 80%,rgba(168,85,247,.06),transparent 50%);
-  animation:auroraDrift 18s ease-in-out infinite alternate;
-}
-@keyframes auroraDrift{
-  0%{transform:translate(0,0) scale(1)}
-  25%{transform:translate(20px,-10px) scale(1.02)}
-  50%{transform:translate(-15px,15px) scale(0.98)}
-  75%{transform:translate(10px,-5px) scale(1.01)}
-  100%{transform:translate(-8px,8px) scale(1)}
-}
-
-/* === 荧光粒子背景 === */
-.bg-orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(60px);animation:orbFloat 12s ease-in-out infinite alternate}
-.bg-orb-1{width:500px;height:500px;top:-120px;left:-80px;background:radial-gradient(circle,rgba(0,200,255,.22),transparent 65%);animation-duration:14s}
-.bg-orb-2{width:450px;height:450px;bottom:-100px;right:-60px;background:radial-gradient(circle,rgba(255,40,130,.18),transparent 65%);animation-duration:16s;animation-delay:-3s}
-.bg-orb-3{width:400px;height:400px;top:35%;left:45%;background:radial-gradient(circle,rgba(140,80,255,.16),transparent 65%);animation-duration:20s;animation-delay:-7s}
-@keyframes orbFloat{
-  0%{transform:translate(0,0) scale(1)}
-  33%{transform:translate(30px,-20px) scale(1.1)}
-  66%{transform:translate(-20px,25px) scale(0.95)}
-  100%{transform:translate(15px,-10px) scale(1.05)}
-}
-
-#lightPillarBg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.35}
-#cursorGlow{position:fixed;top:0;left:0;width:600px;height:600px;border-radius:50%;pointer-events:none;z-index:1;background:radial-gradient(circle,rgba(0,245,255,.06),rgba(168,85,247,.03) 40%,transparent 70%);transform:translate(-50%,-50%);transition:opacity .3s}
 
 /* === iOS 液态玻璃卡片 === */
 .glass-card{
@@ -132,7 +87,7 @@ body::after{
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   box-shadow:0 2px 12px rgba(0,0,0,.15) inset;
 }
-.vt-btn{flex:1;height:35px;border:none;border-radius:17.5px;background:transparent;color:rgba(255,255,255,.4);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .35s cubic-bezier(.4,0,.2,1)}
+.vt-btn{flex:1;height:35px;border:none;border-radius:17.5px;background:transparent;color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .35s cubic-bezier(.4,0,.2,1)}
 .vt-btn.active{
   background:linear-gradient(135deg,rgba(0,245,255,.25),rgba(168,85,247,.25));
   color:#fff;font-weight:700;
@@ -143,19 +98,19 @@ body::after{
 /* === 信息卡片 === */
 .info-card{width:252px;height:180px;border-radius:24px}
 #card1{left:33px;top:817px}
-#card1 .pc-title{position:absolute;left:17px;top:27px;font-size:24px;font-weight:700;line-height:28.13px;color:rgba(255,255,255,.7);letter-spacing:0.5px}
+#card1 .pc-title{position:absolute;left:17px;top:27px;font-size:24px;font-weight:700;line-height:28.13px;color:#fff;letter-spacing:0.5px}
 #card1 .pc-value{position:absolute;left:17px;top:64px;font-size:33px;font-weight:300;line-height:38.68px;color:#fff;letter-spacing:0}
 #card1 .pc-wave{position:absolute;left:56px;top:117px;width:180px;height:54px;z-index:1}
 #card2{left:295px;top:817px}
-#card2 .pc-title{position:absolute;left:19px;top:27px;font-size:24px;font-weight:700;line-height:28.13px;color:rgba(255,255,255,.7);letter-spacing:0.5px}
+#card2 .pc-title{position:absolute;left:19px;top:27px;font-size:24px;font-weight:700;line-height:28.13px;color:#fff;letter-spacing:0.5px}
 #card2 .pc-value{position:absolute;left:19px;top:64px;font-size:33px;font-weight:300;line-height:38.68px;color:#fff;letter-spacing:0}
 #card2 .pc-wave{position:absolute;left:58px;top:117px;width:180px;height:54px;z-index:1}
 #card3{left:557px;top:817px}
-#card3 .pc-title{position:absolute;left:17px;top:27px;font-size:24px;font-weight:700;line-height:28.13px;color:rgba(255,255,255,.7);letter-spacing:0.5px}
+#card3 .pc-title{position:absolute;left:17px;top:27px;font-size:24px;font-weight:700;line-height:28.13px;color:#fff;letter-spacing:0.5px}
 #card3 .pc-value{position:absolute;left:17px;top:64px;font-size:33px;font-weight:300;line-height:38.68px;color:#fff;letter-spacing:0}
 #card3 .pc-wave{position:absolute;left:56px;top:117px;width:180px;height:54px;z-index:1}
 #card4{left:819px;top:817px}
-#card4 .pc-title{position:absolute;left:16px;top:27px;font-size:24px;font-weight:700;line-height:28.13px;color:rgba(255,255,255,.7);letter-spacing:0.5px}
+#card4 .pc-title{position:absolute;left:16px;top:27px;font-size:24px;font-weight:700;line-height:28.13px;color:#fff;letter-spacing:0.5px}
 #card4 .pc-value{position:absolute;left:16px;top:64px;font-size:33px;font-weight:300;line-height:38.68px;color:#fff;letter-spacing:0}
 #card4 .pc-wave{position:absolute;left:55px;top:117px;width:180px;height:54px;z-index:1}
 #card4 .daily-capsule{
@@ -176,7 +131,7 @@ body::after{
 }
 .record-btn{
   position:absolute;top:24px;width:143px;height:35px;border:none;border-radius:17.5px;
-  background:transparent;color:rgba(255,255,255,.4);font-size:12px;font-weight:500;
+  background:transparent;color:#fff;font-size:12px;font-weight:500;
   cursor:pointer;font-family:inherit;transition:all .35s cubic-bezier(.4,0,.2,1);z-index:4;
 }
 .record-btn.active{
@@ -212,9 +167,9 @@ body::after{
 .inflow .ri-badge{background:rgba(255,51,102,.12);color:var(--up);border:1px solid rgba(255,51,102,.18)}
 .outflow .ri-amount{color:var(--down);text-shadow:0 0 8px rgba(0,229,160,.2)}
 .outflow .ri-badge{background:rgba(0,229,160,.12);color:var(--down);border:1px solid rgba(0,229,160,.18)}
-.ri-name{font-size:12px;color:rgba(255,255,255,.50);margin-top:4px}
-.ri-time{font-size:11px;color:rgba(255,255,255,.25);margin-top:2px}
-.ri-null{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.18);font-size:13px;gap:6px}
+.ri-name{font-size:12px;color:#fff;margin-top:4px}
+.ri-time{font-size:11px;color:#fff;margin-top:2px}
+.ri-null{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#fff;font-size:13px;gap:6px}
 
 .reveal{opacity:0;transform:translateY(20px);transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1)}
 .reveal.visible{opacity:1;transform:translateY(0)}
@@ -222,7 +177,7 @@ body::after{
 /* ===== 管理按钮 - 荧光齿轮 ===== */
 #adminBtn{
   position:absolute;left:33px;top:38px;width:36px;height:36px;border-radius:50%;border:none;
-  background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;
+  background:rgba(255,255,255,.06);color:#fff;font-size:18px;cursor:pointer;
   z-index:20;transition:all .4s cubic-bezier(.4,0,.2,1);
   display:flex;align-items:center;justify-content:center;
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
@@ -248,17 +203,17 @@ body::after{
 .admin-head h2{font-size:20px;font-weight:700;color:#fff;letter-spacing:0.5px}
 .admin-close{
   width:32px;height:32px;border-radius:50%;border:none;
-  background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);font-size:16px;cursor:pointer;
+  background:rgba(255,255,255,.06);color:#fff;font-size:16px;cursor:pointer;
   transition:all .3s;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
 }
 .admin-close:hover{background:rgba(255,51,102,.15);color:var(--neon-magenta);box-shadow:0 0 12px rgba(255,45,149,.15)}
 .admin-tabs{display:flex;gap:4px;padding:16px 28px 0}
 .admin-tab{
   padding:8px 18px;border-radius:14px 14px 0 0;border:none;
-  background:transparent;color:rgba(255,255,255,.4);font-size:13px;font-weight:600;
+  background:transparent;color:#fff;font-size:13px;font-weight:600;
   cursor:pointer;font-family:inherit;transition:all .3s;
 }
-.admin-tab:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.03)}
+.admin-tab:hover{color:#fff;background:rgba(255,255,255,.03)}
 .admin-tab.active{
   background:rgba(0,245,255,.08);color:var(--neon-cyan);
   box-shadow:0 0 12px rgba(0,245,255,.08) inset;
@@ -271,7 +226,7 @@ body::after{
 /* 表单 */
 .admin-form{display:flex;flex-direction:column;gap:14px}
 .af-row{display:flex;gap:16px;align-items:center}
-.af-label{width:100px;font-size:13px;color:rgba(255,255,255,.55);flex-shrink:0}
+.af-label{width:100px;font-size:13px;color:#fff;flex-shrink:0}
 .af-input{
   flex:1;height:36px;padding:0 14px;border-radius:12px;
   border:1px solid rgba(255,255,255,.08);
@@ -279,12 +234,12 @@ body::after{
   outline:none;transition:all .3s;
 }
 .af-input:focus{border-color:rgba(0,245,255,.35);box-shadow:0 0 12px rgba(0,245,255,.08);background:rgba(0,245,255,.03)}
-.af-input::placeholder{color:rgba(255,255,255,.18)}
+.af-input::placeholder{color:#fff}
 
 /* 记录表格 */
 .admin-table{width:100%;border-collapse:collapse}
-.admin-table th{padding:8px 10px;text-align:left;font-size:12px;color:rgba(255,255,255,.35);font-weight:500;border-bottom:1px solid rgba(255,255,255,.06)}
-.admin-table td{padding:8px 10px;font-size:13px;color:rgba(255,255,255,.65);border-bottom:1px solid rgba(255,255,255,.04)}
+.admin-table th{padding:8px 10px;text-align:left;font-size:12px;color:#fff;font-weight:500;border-bottom:1px solid rgba(255,255,255,.06)}
+.admin-table td{padding:8px 10px;font-size:13px;color:#fff;border-bottom:1px solid rgba(255,255,255,.04)}
 .admin-table .at-actions{display:flex;gap:6px}
 .at-btn{width:28px;height:28px;border-radius:10px;border:none;font-size:12px;cursor:pointer;transition:all .3s;font-family:inherit;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .at-btn-edit{background:rgba(0,245,255,.10);color:var(--neon-cyan);border:1px solid rgba(0,245,255,.15)}
@@ -307,7 +262,7 @@ body::after{
   box-shadow:0 0 16px rgba(0,245,255,.12);
 }
 .af-btn-primary:hover{background:linear-gradient(135deg,rgba(0,245,255,.35),rgba(168,85,247,.35));box-shadow:0 0 24px rgba(0,245,255,.20)}
-.af-btn-ghost{background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.08)}
+.af-btn-ghost{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.08)}
 .af-btn-ghost:hover{background:rgba(255,255,255,.10);color:#fff}
 .af-btn-danger{background:rgba(255,51,102,.12);color:var(--up);border:1px solid rgba(255,51,102,.18)}
 .af-btn-danger:hover{background:rgba(255,51,102,.22);box-shadow:0 0 12px rgba(255,51,102,.10)}
@@ -326,13 +281,7 @@ body::after{
 </style>
 </head>
 <body>
-<div id="bgCanvas"></div>
-<div id="lightPillarBg"></div>
-<div class="bg-orb bg-orb-1"></div>
-<div class="bg-orb bg-orb-2"></div>
-<div class="bg-orb bg-orb-3"></div>
 <div id="appWrapper">
-<div id="cursorGlow"></div>
 
 <div id="klineArea" class="glass-card reveal">
   <div class="area-header">
@@ -398,306 +347,6 @@ body::after{
 </div>
 
 <script>
-// LightPillar — 背景光柱效果
-(function(){
-  if(typeof THREE==='undefined') return;
-  var container = document.getElementById('lightPillarBg');
-  if(!container) return;
-  var W = window.innerWidth, H = window.innerHeight;
-  var scene = new THREE.Scene();
-  var camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
-  var renderer = new THREE.WebGLRenderer({antialias:false, alpha:true, powerPreference:'low-power', precision:'mediump', stencil:false, depth:false});
-  renderer.setSize(W,H);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
-  container.appendChild(renderer.domElement);
-
-  var parseC = function(h){var c=new THREE.Color(h);return new THREE.Vector3(c.r,c.g,c.b);};
-  var pillarRotRad = 0;
-  var waveSin = Math.sin(0.4), waveCos = Math.cos(0.4);
-
-  var mat = new THREE.ShaderMaterial({
-    vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position,1.0);}',
-    fragmentShader:'precision mediump float;uniform float uTime;uniform vec2 uResolution;uniform vec3 uTopColor;uniform vec3 uBottomColor;uniform float uIntensity;uniform float uGlowAmount;uniform float uPillarWidth;uniform float uPillarHeight;uniform float uNoiseIntensity;uniform float uRotCos;uniform float uRotSin;uniform float uPillarRotCos;uniform float uPillarRotSin;uniform float uWaveSin;uniform float uWaveCos;varying vec2 vUv;const int MAX_ITER=40;const int WAVE_ITER=2;void main(){vec2 uv=(vUv*2.0-1.0)*vec2(uResolution.x/uResolution.y,1.0);uv=vec2(uPillarRotCos*uv.x-uPillarRotSin*uv.y,uPillarRotSin*uv.x+uPillarRotCos*uv.y);vec3 ro=vec3(0.0,0.0,-10.0);vec3 rd=normalize(vec3(uv,1.0));vec3 col=vec3(0.0);float t=0.1;for(int i=0;i<MAX_ITER;i++){vec3 p=ro+rd*t;p.yz=vec2(uRotCos*p.y-uRotSin*p.z,uRotSin*p.y+uRotCos*p.z);vec3 q=p;q.x=p.x*uPillarHeight+uTime;float freq=1.0;float amp=1.0;for(int j=0;j<WAVE_ITER;j++){q.yz=vec2(uWaveCos*q.y-uWaveSin*q.z,uWaveSin*q.y+uWaveCos*q.z);q+=cos(q.xyz*freq-uTime*float(j)*2.0)*amp;freq*=2.0;amp*=0.5;}float d=length(cos(q.yz))-0.2;float bound=length(p.yz)-uPillarWidth;float k=4.0;float h=max(k-abs(d-bound),0.0);d=max(d,bound)+h*h*0.0625/k;d=abs(d)*0.15+0.01;float grad=clamp((15.0-p.x)/30.0,0.0,1.0);col+=mix(uBottomColor,uTopColor,grad)/d;t+=d*1.2;if(t>50.0)break;}float wn=uPillarWidth/3.0;col=tanh(col*uGlowAmount/wn);col-=fract(sin(dot(gl_FragCoord.xy,vec2(12.9898,78.233)))*43758.5453)/15.0*uNoiseIntensity;gl_FragColor=vec4(col*uIntensity,1.0);}',
-    uniforms:{
-      uTime:{value:0}, uResolution:{value:new THREE.Vector2(W,H)},
-      uTopColor:{value:parseC('#00f5ff')}, uBottomColor:{value:parseC('#a855f7')},
-      uIntensity:{value:0.3}, uGlowAmount:{value:0.006}, uPillarWidth:{value:2.8},
-      uPillarHeight:{value:0.5}, uNoiseIntensity:{value:0.4},
-      uRotCos:{value:1.0}, uRotSin:{value:0.0},
-      uPillarRotCos:{value:Math.cos(pillarRotRad)}, uPillarRotSin:{value:Math.sin(pillarRotRad)},
-      uWaveSin:{value:waveSin}, uWaveCos:{value:waveCos}
-    },
-    transparent:true, depthWrite:false, depthTest:false
-  });
-
-  var mesh = new THREE.Mesh(new THREE.PlaneGeometry(2,2), mat);
-  scene.add(mesh);
-
-  var time = 0;
-  function animate(){
-    if(!mat) return;
-    time += 0.016 * 0.25;
-    mat.uniforms.uTime.value = time;
-    mat.uniforms.uRotCos.value = Math.cos(time * 0.3);
-    mat.uniforms.uRotSin.value = Math.sin(time * 0.3);
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-  }
-  animate();
-
-  var resizeTimer = null;
-  window.addEventListener('resize', function(){
-    if(resizeTimer) clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function(){
-      var nw = window.innerWidth, nh = window.innerHeight;
-      renderer.setSize(nw, nh);
-      mat.uniforms.uResolution.value.set(nw, nh);
-    }, 150);
-  });
-})();
-
-// === AI艺术风格动态背景 ===
-(function(){
-  var container = document.getElementById('bgCanvas');
-  if(!container) return;
-  var canvas = document.createElement('canvas');
-  container.appendChild(canvas);
-  var ctx = canvas.getContext('2d');
-  var W, H, dpr;
-
-  function resize(){
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
-    W = window.innerWidth; H = window.innerHeight;
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  // 星云色块
-  var nebulae = [
-    {x:0.12,y:0.18,r:0.5,color:[0,200,255],speed:0.06,phase:0},
-    {x:0.82,y:0.12,r:0.45,color:[255,40,130],speed:0.05,phase:2},
-    {x:0.48,y:0.88,r:0.55,color:[140,80,255],speed:0.04,phase:4},
-    {x:0.28,y:0.45,r:0.4,color:[0,229,160],speed:0.055,phase:1.5},
-    {x:0.72,y:0.55,r:0.35,color:[255,180,0],speed:0.035,phase:3},
-    {x:0.08,y:0.72,r:0.38,color:[80,100,255],speed:0.07,phase:5},
-    {x:0.92,y:0.78,r:0.3,color:[255,80,200],speed:0.045,phase:0.8},
-    {x:0.55,y:0.3,r:0.4,color:[0,245,255],speed:0.04,phase:2.5},
-  ];
-
-  // 粒子
-  var particles = [];
-  for(var i=0;i<120;i++){
-    particles.push({
-      x:Math.random(), y:Math.random(),
-      r:Math.random()*2+0.5,
-      vx:(Math.random()-0.5)*0.0004,
-      vy:(Math.random()-0.5)*0.0003,
-      alpha:Math.random()*0.6+0.2,
-      color:Math.random()>0.6?[0,245,255]:(Math.random()>0.5?[168,85,247]:[255,45,149]),
-      pulse:Math.random()*Math.PI*2
-    });
-  }
-
-  // 连线粒子对
-  var linePairs = [];
-  for(var i=0;i<30;i++){
-    linePairs.push({
-      x1:Math.random(), y1:Math.random(),
-      x2:Math.random(), y2:Math.random(),
-      vx1:(Math.random()-0.5)*0.0002, vy1:(Math.random()-0.5)*0.00015,
-      vx2:(Math.random()-0.5)*0.0002, vy2:(Math.random()-0.5)*0.00015,
-      alpha:Math.random()*0.15+0.05,
-      color:Math.random()>0.5?[0,245,255]:[168,85,247]
-    });
-  }
-
-  // 网格点
-  var gridSpacing = 80;
-
-  var time = 0;
-  function draw(){
-    time += 0.006;
-    ctx.clearRect(0,0,W,H);
-
-    // 底色 - 更有层次的渐变
-    var bgGrad = ctx.createRadialGradient(W*0.25, H*0.35, 0, W*0.5, H*0.5, Math.max(W,H)*0.9);
-    bgGrad.addColorStop(0,'#111540');
-    bgGrad.addColorStop(0.3,'#0d1035');
-    bgGrad.addColorStop(0.6,'#0a0d2a');
-    bgGrad.addColorStop(1,'#060818');
-    ctx.fillStyle = bgGrad;
-    ctx.fillRect(0,0,W,H);
-
-    // 大面积彩色底晕
-    var baseGlow1 = ctx.createRadialGradient(W*0.1, H*0.3, 0, W*0.1, H*0.3, W*0.5);
-    baseGlow1.addColorStop(0,'rgba(0,180,255,0.22)');
-    baseGlow1.addColorStop(0.5,'rgba(0,120,255,0.10)');
-    baseGlow1.addColorStop(1,'rgba(0,80,200,0)');
-    ctx.fillStyle = baseGlow1;
-    ctx.fillRect(0,0,W,H);
-
-    var baseGlow2 = ctx.createRadialGradient(W*0.85, H*0.2, 0, W*0.85, H*0.2, W*0.45);
-    baseGlow2.addColorStop(0,'rgba(255,40,130,0.18)');
-    baseGlow2.addColorStop(0.5,'rgba(200,20,100,0.08)');
-    baseGlow2.addColorStop(1,'rgba(150,10,80,0)');
-    ctx.fillStyle = baseGlow2;
-    ctx.fillRect(0,0,W,H);
-
-    var baseGlow3 = ctx.createRadialGradient(W*0.5, H*0.9, 0, W*0.5, H*0.9, W*0.55);
-    baseGlow3.addColorStop(0,'rgba(130,60,255,0.20)');
-    baseGlow3.addColorStop(0.5,'rgba(100,40,200,0.10)');
-    baseGlow3.addColorStop(1,'rgba(80,20,160,0)');
-    ctx.fillStyle = baseGlow3;
-    ctx.fillRect(0,0,W,H);
-
-    // 大面积星云光晕
-    nebulae.forEach(function(n){
-      var nx = (n.x + Math.sin(time * n.speed + n.phase) * 0.06) * W;
-      var ny = (n.y + Math.cos(time * n.speed * 0.7 + n.phase) * 0.05) * H;
-      var nr = n.r * Math.min(W,H);
-      var pulse = 0.8 + Math.sin(time * 1.2 + n.phase) * 0.2;
-      var grad = ctx.createRadialGradient(nx, ny, 0, nx, ny, nr);
-      var c = n.color;
-      grad.addColorStop(0, 'rgba('+c[0]+','+c[1]+','+c[2]+','+(0.50*pulse)+')');
-      grad.addColorStop(0.25, 'rgba('+c[0]+','+c[1]+','+c[2]+','+(0.28*pulse)+')');
-      grad.addColorStop(0.5, 'rgba('+c[0]+','+c[1]+','+c[2]+','+(0.12*pulse)+')');
-      grad.addColorStop(0.75, 'rgba('+c[0]+','+c[1]+','+c[2]+','+(0.04*pulse)+')');
-      grad.addColorStop(1, 'rgba('+c[0]+','+c[1]+','+c[2]+',0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0,0,W,H);
-    });
-
-    // 极光带
-    ctx.save();
-    ctx.globalAlpha = 0.18;
-    for(var band=0;band<3;band++){
-      ctx.beginPath();
-      var bandY = H * (0.3 + band * 0.25);
-      ctx.moveTo(0, bandY);
-      for(var bx=0;bx<=W;bx+=20){
-        var by = bandY + Math.sin(bx*0.003 + time*2 + band*2)*40 + Math.cos(bx*0.005 + time*1.5)*20;
-        ctx.lineTo(bx, by);
-      }
-      ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
-      var bandColors = [[0,245,255],[168,85,247],[255,45,149]];
-      var bc = bandColors[band];
-      var bandGrad = ctx.createLinearGradient(0, bandY-60, 0, bandY+200);
-      bandGrad.addColorStop(0, 'rgba('+bc[0]+','+bc[1]+','+bc[2]+',0.35)');
-      bandGrad.addColorStop(0.5, 'rgba('+bc[0]+','+bc[1]+','+bc[2]+',0.12)');
-      bandGrad.addColorStop(1, 'rgba('+bc[0]+','+bc[1]+','+bc[2]+',0)');
-      ctx.fillStyle = bandGrad;
-      ctx.fill();
-    }
-    ctx.restore();
-
-    // 网格
-    ctx.strokeStyle = 'rgba(0,245,255,0.08)';
-    ctx.lineWidth = 0.5;
-    var offsetX = (time * 6) % gridSpacing;
-    var offsetY = (time * 3) % gridSpacing;
-    for(var gx = -gridSpacing + offsetX; gx < W + gridSpacing; gx += gridSpacing){
-      ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
-    }
-    for(var gy = -gridSpacing + offsetY; gy < H + gridSpacing; gy += gridSpacing){
-      ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
-    }
-
-    // 网格交点
-    ctx.fillStyle = 'rgba(0,245,255,0.20)';
-    for(var gx2 = -gridSpacing + offsetX; gx2 < W + gridSpacing; gx2 += gridSpacing){
-      for(var gy2 = -gridSpacing + offsetY; gy2 < H + gridSpacing; gy2 += gridSpacing){
-        ctx.beginPath();
-        ctx.arc(gx2, gy2, 1.5, 0, Math.PI*2);
-        ctx.fill();
-      }
-    }
-
-    // 连线
-    linePairs.forEach(function(lp){
-      lp.x1 += lp.vx1; lp.y1 += lp.vy1;
-      lp.x2 += lp.vx2; lp.y2 += lp.vy2;
-      if(lp.x1<0)lp.x1=1;if(lp.x1>1)lp.x1=0;
-      if(lp.y1<0)lp.y1=1;if(lp.y1>1)lp.y1=0;
-      if(lp.x2<0)lp.x2=1;if(lp.x2>1)lp.x2=0;
-      if(lp.y2<0)lp.y2=1;if(lp.y2>1)lp.y2=0;
-      var c = lp.color;
-      ctx.beginPath();
-      ctx.moveTo(lp.x1*W, lp.y1*H);
-      ctx.lineTo(lp.x2*W, lp.y2*H);
-      ctx.strokeStyle = 'rgba('+c[0]+','+c[1]+','+c[2]+','+lp.alpha+')';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-    });
-
-    // 粒子
-    particles.forEach(function(p){
-      p.x += p.vx;
-      p.y += p.vy;
-      if(p.x < 0) p.x = 1; if(p.x > 1) p.x = 0;
-      if(p.y < 0) p.y = 1; if(p.y > 1) p.y = 0;
-      p.pulse += 0.025;
-      var px = p.x * W, py = p.y * H;
-      var pa = p.alpha * (0.5 + Math.sin(p.pulse) * 0.5);
-      var c = p.color;
-      // 光晕
-      ctx.beginPath();
-      ctx.arc(px, py, p.r * 5, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba('+c[0]+','+c[1]+','+c[2]+','+(pa*0.12)+')';
-      ctx.fill();
-      // 核心
-      ctx.beginPath();
-      ctx.arc(px, py, p.r, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba('+c[0]+','+c[1]+','+c[2]+','+pa+')';
-      ctx.fill();
-    });
-
-    // 装饰弧线
-    ctx.save();
-    ctx.globalAlpha = 0.15;
-    for(var arc=0;arc<4;arc++){
-      var arcCx = W * (0.2 + arc * 0.2);
-      var arcCy = H * (0.5 + Math.sin(time + arc) * 0.2);
-      var arcR = 200 + arc * 80 + Math.sin(time * 0.8 + arc) * 30;
-      ctx.beginPath();
-      ctx.arc(arcCx, arcCy, arcR, -Math.PI*0.3 + time*0.1, Math.PI*0.5 + time*0.1);
-      var arcColors = [[0,245,255],[168,85,247],[255,45,149],[0,229,160]];
-      var ac = arcColors[arc];
-      ctx.strokeStyle = 'rgba('+ac[0]+','+ac[1]+','+ac[2]+',0.5)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-    ctx.restore();
-
-    // 顶部流光
-    var flowGrad = ctx.createLinearGradient(0, 0, W, 0);
-    var flowOffset = Math.sin(time * 0.4) * 0.3 + 0.5;
-    flowGrad.addColorStop(Math.max(0, flowOffset - 0.3), 'rgba(0,245,255,0)');
-    flowGrad.addColorStop(Math.max(0, flowOffset - 0.1), 'rgba(0,245,255,0.06)');
-    flowGrad.addColorStop(flowOffset, 'rgba(168,85,247,0.10)');
-    flowGrad.addColorStop(Math.min(1, flowOffset + 0.1), 'rgba(255,45,149,0.06)');
-    flowGrad.addColorStop(Math.min(1, flowOffset + 0.3), 'rgba(255,45,149,0)');
-    ctx.fillStyle = flowGrad;
-    ctx.fillRect(0, 0, W, 4);
-
-    // 底部流光
-    var flowGrad2 = ctx.createLinearGradient(0, H-4, W, H-4);
-    var flowOffset2 = Math.cos(time * 0.35) * 0.3 + 0.5;
-    flowGrad2.addColorStop(Math.max(0, flowOffset2 - 0.3), 'rgba(168,85,247,0)');
-    flowGrad2.addColorStop(Math.max(0, flowOffset2 - 0.1), 'rgba(168,85,247,0.04)');
-    flowGrad2.addColorStop(flowOffset2, 'rgba(0,245,255,0.08)');
-    flowGrad2.addColorStop(Math.min(1, flowOffset2 + 0.1), 'rgba(0,229,160,0.04)');
-    flowGrad2.addColorStop(Math.min(1, flowOffset2 + 0.3), 'rgba(0,229,160,0)');
-    ctx.fillStyle = flowGrad2;
-    ctx.fillRect(0, H-4, W, 4);
-
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
-
 (function(){
   'use strict'
 
@@ -707,10 +356,10 @@ body::after{
   var defaultStore = {
     "principal": 300000,
     "loan": 300000,
-    "dailyProfit": 737.05,
-    "dailyProfitPct": 1.389083636385567,
-    "totalReturn": -53060.159999999996,
-    "periodReturnPct": -17.686719999999998,
+    "dailyProfit": 3472.01,
+    "dailyProfitPct": 7.001692944786206,
+    "totalReturn": -49588.14999999999,
+    "periodReturnPct": -16.529383333333328,
     "costLine": 300000,
     "klineBase": 300000,
     "records": {
@@ -749,6 +398,11 @@ body::after{
           "amount": 737.05,
           "name": "传智教育浮动收益；金螳螂打板",
           "time": "2026-08-17 15:00"
+        },
+        {
+          "amount": 3472.01,
+          "name": "金螳螂、传智教育清仓收益；沃格光电打板",
+          "time": "2026-08-18 15:00"
         }
       ],
       "out": [
@@ -1048,13 +702,6 @@ body::after{
     }
   }
 
-  // 光标光晕
-  (function(){
-    var glow=document.getElementById('cursorGlow');
-    var mx=400,my=400,gx=400,gy=400;
-    document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;});
-    (function a(){gx+=(mx-gx)*0.025;gy+=(my-gy)*0.025;glow.style.transform='translate('+(gx-400)+'px,'+(gy-400)+'px)';requestAnimationFrame(a);})();
-  })();
 
   // 可见动画
   setTimeout(function(){
@@ -1189,13 +836,13 @@ body::after{
     adminBody.innerHTML = '<div class="admin-form">' +
       '<div class="af-row"><span class="af-label">持仓本金</span><input class="af-input" id="afPrincipal" value="'+store.principal+'" placeholder="0.00"></div>' +
       '<div class="af-row"><span class="af-label">借款金额</span><input class="af-input" id="afLoan" value="'+store.loan+'" placeholder="0.00"></div>' +
-      '<div class="af-row"><span class="af-label">当日收益</span><span style="color:var(--neon-cyan);font-size:16px;font-weight:600">¥'+(store.dailyProfit>=0?'+':'')+store.dailyProfit.toFixed(2)+'</span><span style="color:rgba(255,255,255,.20);font-size:11px;margin-left:8px">自动=今日流入-流出</span></div>' +
-      '<div class="af-row"><span class="af-label">当日收益率%</span><span style="color:var(--neon-cyan);font-size:16px;font-weight:600">'+(store.totalReturn!==0?(store.dailyProfit/Math.abs(store.totalReturn)*100).toFixed(2):'0.00')+'%</span><span style="color:rgba(255,255,255,.20);font-size:11px;margin-left:8px">自动=当日收益÷当前收益</span></div>' +
-      '<div class="af-row"><span class="af-label">当前收益总额</span><span style="color:var(--down);font-size:18px;font-weight:600">¥'+(store.totalReturn>=0?'+':'')+store.totalReturn.toFixed(2)+'</span><span style="color:rgba(255,255,255,.20);font-size:11px;margin-left:8px">自动=流入总和-流出总和</span></div>' +
-      '<div class="af-row"><span class="af-label">总收益率%</span><span style="color:var(--neon-cyan);font-size:16px;font-weight:600">'+(store.principal>0?(store.totalReturn/store.principal*100).toFixed(2):'0.00')+'%</span><span style="color:rgba(255,255,255,.20);font-size:11px;margin-left:8px">自动=当前收益÷本金</span></div>' +
+      '<div class="af-row"><span class="af-label">当日收益</span><span style="color:var(--neon-cyan);font-size:16px;font-weight:600">¥'+(store.dailyProfit>=0?'+':'')+store.dailyProfit.toFixed(2)+'</span><span style="color:#fff;font-size:11px;margin-left:8px">自动=今日流入-流出</span></div>' +
+      '<div class="af-row"><span class="af-label">当日收益率%</span><span style="color:var(--neon-cyan);font-size:16px;font-weight:600">'+(store.totalReturn!==0?(store.dailyProfit/Math.abs(store.totalReturn)*100).toFixed(2):'0.00')+'%</span><span style="color:#fff;font-size:11px;margin-left:8px">自动=当日收益÷当前收益</span></div>' +
+      '<div class="af-row"><span class="af-label">当前收益总额</span><span style="color:var(--down);font-size:18px;font-weight:600">¥'+(store.totalReturn>=0?'+':'')+store.totalReturn.toFixed(2)+'</span><span style="color:#fff;font-size:11px;margin-left:8px">自动=流入总和-流出总和</span></div>' +
+      '<div class="af-row"><span class="af-label">总收益率%</span><span style="color:var(--neon-cyan);font-size:16px;font-weight:600">'+(store.principal>0?(store.totalReturn/store.principal*100).toFixed(2):'0.00')+'%</span><span style="color:#fff;font-size:11px;margin-left:8px">自动=当前收益÷本金</span></div>' +
       '<div class="af-row"><span class="af-label">成本线值</span><input class="af-input" id="afCostLine" value="'+store.costLine+'" placeholder="0"></div>' +
       '<div class="af-row"><span class="af-label">K线起始值</span><input class="af-input" id="afKlineBase" value="'+store.klineBase+'" placeholder="0"></div>' +
-      '<div class="af-row"><span class="af-label" style="color:rgba(255,255,255,.30);font-size:12px">净资产(自动)</span><span style="color:var(--down);font-size:16px;font-weight:600">¥'+(store.principal+store.totalReturn-store.loan).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span></div>' +
+      '<div class="af-row"><span class="af-label" style="color:#fff;font-size:12px">净资产(自动)</span><span style="color:var(--down);font-size:16px;font-weight:600">¥'+(store.principal+store.totalReturn-store.loan).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span></div>' +
       '</div><div class="admin-foot">' +
       '<button class="af-btn af-btn-primary" id="afSaveBasic">保存</button>' +
       '<button class="af-btn af-btn-primary" id="afExportData">导出数据 → 嵌入文件</button>' +
