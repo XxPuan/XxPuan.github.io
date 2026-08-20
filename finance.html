@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1440">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>资产管理 · XxPuan</title>
 <style>
 @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2')format('woff2');font-weight:400;font-display:swap}
@@ -22,7 +22,7 @@
   --glow-cyan:rgba(0,245,255,.35);--glow-magenta:rgba(255,45,149,.30);
   --glow-purple:rgba(168,85,247,.30);
 }
-html,body{width:100vw;height:100vh;overflow:hidden;margin:0;font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text',sans-serif;-webkit-font-smoothing:antialiased;background:#05060f url('assets/finance-bg.jpg') center/cover no-repeat fixed;color:var(--text-primary)}
+html,body{width:100%;height:100%;overflow:auto;margin:0;font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text',sans-serif;-webkit-font-smoothing:antialiased;background:#05060f url('assets/finance-bg.jpg') center/cover no-repeat fixed;color:var(--text-primary)}
 #appWrapper{position:absolute;top:0;left:0;width:1440px;height:1024px;transform-origin:top left}
 
 /* === iOS 液态玻璃卡片 === */
@@ -356,10 +356,10 @@ html,body{width:100vw;height:100vh;overflow:hidden;margin:0;font-family:'Harmony
   var defaultStore = {
     "principal": 300000,
     "loan": 300000,
-    "dailyProfit": 3472.01,
-    "dailyProfitPct": 7.001692944786206,
-    "totalReturn": -49588.14999999999,
-    "periodReturnPct": -16.529383333333328,
+    "dailyProfit": 11007.04,
+    "dailyProfitPct": 25.425189533277276,
+    "totalReturn": -43291.86999999999,
+    "periodReturnPct": -14.430623333333328,
     "costLine": 300000,
     "klineBase": 300000,
     "records": {
@@ -403,6 +403,11 @@ html,body{width:100vw;height:100vh;overflow:hidden;margin:0;font-family:'Harmony
           "amount": 3472.01,
           "name": "金螳螂、传智教育清仓收益；沃格光电打板",
           "time": "2026-08-18 15:00"
+        },
+        {
+          "amount": 11007.04,
+          "name": "神奇制药售出3/4收益",
+          "time": "2026-08-20 15:00"
         }
       ],
       "out": [
@@ -440,6 +445,11 @@ html,body{width:100vw;height:100vh;overflow:hidden;margin:0;font-family:'Harmony
           "amount": 14015.81,
           "name": "传智教育清仓、利通电子打板 亏损",
           "time": "2026-08-13 15:00"
+        },
+        {
+          "amount": 4710.76,
+          "name": "神奇制药购入亏损；沃格光电清仓",
+          "time": "2026-08-19 15:00"
         }
       ]
     },
@@ -936,12 +946,20 @@ html,body{width:100vw;height:100vh;overflow:hidden;margin:0;font-family:'Harmony
   }
 
   // 自适应缩放
+  var lastPhysW = 0, lastPhysH = 0;
   function fitLayout(){
     var wrapper = document.getElementById('appWrapper');
     if(!wrapper) return;
-    var sx = window.innerWidth / 1440;
-    var sy = window.innerHeight / 1024;
-    var s = Math.min(sx, sy);
+    // 用物理视口尺寸计算缩放：浏览器缩放(Ctrl+滚轮/双指捏合)时 innerWidth×visualViewport.scale 不变，
+    // 所以自动适配不会把浏览器的缩放抵消掉，页面可以自由放大缩小；窗口大小变化时仍会自动适配
+    var vv = window.visualViewport;
+    var zoom = (vv && vv.scale > 0) ? vv.scale : 1;
+    var physW = window.innerWidth * zoom;
+    var physH = window.innerHeight * zoom;
+    // 物理尺寸没变 = 只是浏览器缩放，保持 transform 不动，缩放交给浏览器
+    if(lastPhysW && Math.abs(physW - lastPhysW) < 1 && Math.abs(physH - lastPhysH) < 1) return;
+    lastPhysW = physW; lastPhysH = physH;
+    var s = Math.min(physW / 1440, physH / 1024);
     wrapper.style.transform = 'scale(' + s + ')';
   }
   fitLayout();
