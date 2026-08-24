@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>公考成绩 · XxPuan's Value</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,500;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+  <style>
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Bold.woff2') format('woff2'); font-weight:700; font-display:swap; }
+    @font-face { font-family:'HarmonyOS Sans'; src:url('assets/fonts/HarmonyOS_Sans_Black.woff2') format('woff2'); font-weight:800; font-display:swap; }
+
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bc15:#F5F5FA;
+      --purple:#A855F7;--purple-deep:#7C3AED;
+      --danger:#EF4444;--ok:#22c55e;
+      /* 文字层级（统一提亮，保证可读性） */
+      --t-hi:#FFFFFF;      /* 主要文字 */
+      --t-mid:rgba(255,255,255,.84); /* 次要文字 */
+      --t-low:rgba(255,255,255,.66); /* 辅助文字 */
+      --t-dim:rgba(255,255,255,.5);  /* 最弱（仅用于装饰性说明） */
+      --line:rgba(255,255,255,.14);
+    }
+    html{font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#08080E;color:var(--bc15);-webkit-font-smoothing:antialiased}
+    body{min-height:100vh;overflow-x:hidden;background:transparent}
+    a{color:inherit;text-decoration:none}
+
+    /* ===== 独立背景（深紫渐变底 + 多层光晕 + 漂移光斑） ===== */
+    #bgImg{
+      position:fixed;inset:0;z-index:0;
+      background:
+        radial-gradient(1100px 600px at 85% -10%, rgba(124,58,237,.18), transparent 62%),
+        radial-gradient(900px 550px at -12% 108%, rgba(168,85,247,.13), transparent 60%),
+        linear-gradient(160deg,#0c0b18 0%,#08080e 55%,#0e0b1c 100%);
+    }
+    #bgImg::after{
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+      background-size:56px 56px;
+      mask-image:radial-gradient(ellipse at 50% 30%, #000 30%, transparent 75%);
+      -webkit-mask-image:radial-gradient(ellipse at 50% 30%, #000 30%, transparent 75%);
+    }
+    /* 静态多层彩色光晕 */
+    body::before{
+      content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+      background:
+        radial-gradient(ellipse 720px 720px at 16% 26%, rgba(124,58,237,.32), transparent 65%),
+        radial-gradient(ellipse 620px 620px at 80% 16%, rgba(168,85,247,.24), transparent 65%),
+        radial-gradient(ellipse 820px 820px at 46% 84%, rgba(59,91,246,.20), transparent 65%),
+        radial-gradient(ellipse 480px 480px at 88% 72%, rgba(236,72,153,.13), transparent 60%);
+    }
+    /* 缓慢漂移的光斑 */
+    body::after{
+      content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+      background:
+        radial-gradient(ellipse 420px 420px at 62% 38%, rgba(168,85,247,.16), transparent 60%),
+        radial-gradient(ellipse 460px 460px at 28% 68%, rgba(124,58,237,.12), transparent 60%),
+        radial-gradient(ellipse 380px 380px at 76% 58%, rgba(99,102,241,.11), transparent 60%);
+      animation:drifting 14s ease-in-out infinite alternate;
+    }
+    @keyframes drifting{
+      0%{transform:translate(0,0) scale(1)}
+      33%{transform:translate(20px,-14px) scale(1.05)}
+      50%{transform:translate(-14px,20px) scale(.97)}
+      100%{transform:translate(14px,-8px) scale(1.03)}
+    }
+
+    /* ===== 玻璃页眉（液态玻璃，与主页/状态页同款） ===== */
+    .gs{
+      position:fixed;top:24px;left:50%;transform:translateX(-50%);
+      z-index:100;
+      width:80vw;max-width:1200px;
+      height:60px;
+      border-radius:50px;
+      display:flex;align-items:center;justify-content:flex-start;
+      padding:0 28px;
+      overflow:hidden;
+    }
+    .gs--svg{
+      background:hsl(0 0% 0% / 0);
+      backdrop-filter:var(--gs-filter) saturate(1.3);
+      -webkit-backdrop-filter:var(--gs-filter) saturate(1.3);
+      box-shadow:
+        0 0 1.5px 1px rgba(255,255,255,.15) inset,
+        0 0 10px 4px rgba(255,255,255,.07) inset,
+        0 4px 16px rgba(17,17,26,.06),
+        0 8px 24px rgba(17,17,26,.05),
+        0 16px 56px rgba(17,17,26,.05);
+    }
+    .gs--fallback{
+      background:rgba(255,255,255,.08);
+      backdrop-filter:blur(18px) saturate(1.8) brightness(1.15);
+      -webkit-backdrop-filter:blur(18px) saturate(1.8) brightness(1.15);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 8px 32px rgba(31,38,135,.15),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(255,255,255,.12);
+    }
+    .gs__svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;z-index:-1}
+    .gs__content{position:relative;z-index:1;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;border-radius:inherit;padding:0 4px}
+    .gs__title{display:flex;align-items:center;gap:5px}
+    .gs__title b{font-size:21px;font-weight:800;color:#fff}
+    .gs__title .s{font-size:15px;font-weight:500;color:var(--t-mid);letter-spacing:.01em}
+    .gs__nav{
+      display:flex;align-items:center;gap:clamp(8px,1.2vw,18px);
+      margin-left:auto;
+    }
+    .gs__nav-item{
+      font-size:clamp(0.65rem,.9vw,0.85rem);
+      font-weight:700;
+      color:var(--t-hi);
+      letter-spacing:.04em;
+      cursor:pointer;
+      transition:opacity .25s ease;
+      text-decoration:none;
+    }
+    .gs__nav-item:hover{opacity:.65}
+    .gs__nav-item.active{color:#c084fc;text-shadow:0 0 14px rgba(168,85,247,.7)}
+
+    /* ===== 内容区 ===== */
+    .page-wrap{
+      position:relative;z-index:3;
+      min-height:100vh;padding-top:120px;padding-bottom:80px;
+      width:calc(100% / 6 * 5);max-width:1200px;
+      margin:0 auto;
+    }
+
+    /* ===== 标题区 ===== */
+    .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+    .page-head h1{
+      font-family:'Noto Serif SC',Georgia,serif;
+      font-size:clamp(1.5rem,3vw,2.4rem);
+      font-weight:900;color:#fff;letter-spacing:.08em;
+      display:flex;align-items:center;gap:12px;
+    }
+    .page-head h1 .dot{width:10px;height:10px;border-radius:50%;background:var(--purple);box-shadow:0 0 12px var(--purple);flex-shrink:0}
+    .page-head .sub{font-size:clamp(0.65rem,.8vw,0.8rem);color:var(--t-low);letter-spacing:.1em;margin-top:6px}
+    .head-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.08);color:#fff;
+      font-size:clamp(0.6rem,.75vw,0.72rem);font-weight:600;letter-spacing:.05em;
+      cursor:pointer;transition:all .25s;font-family:inherit;
+    }
+    .btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3)}
+    .btn-primary{background:linear-gradient(135deg,#7C3AED,#A855F7);border:none}
+    .btn-primary:hover{opacity:.85;background:linear-gradient(135deg,#7C3AED,#A855F7)}
+    .btn-danger{background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.35);color:#ff9c9c}
+    .btn-danger:hover{background:rgba(239,68,68,.24)}
+
+    /* ===== 统计卡 ===== */
+    .stat-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+      gap:clamp(12px,1.5vw,18px);margin-bottom:24px;
+    }
+    .stat-card{
+      border-radius:18px;padding:clamp(14px,1.6vw,20px);
+      background:rgba(255,255,255,.05);
+      backdrop-filter:blur(24px) saturate(1.15);
+      -webkit-backdrop-filter:blur(24px) saturate(1.15);
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow:0 8px 32px rgba(0,0,0,.35);
+      position:relative;overflow:hidden;
+    }
+    .stat-card::before{
+      content:'';position:absolute;top:-40%;left:-20%;width:140%;height:80%;
+      background:radial-gradient(ellipse,rgba(124,58,237,.14),transparent 70%);pointer-events:none;
+    }
+    .stat-label{font-size:clamp(0.55rem,.7vw,0.65rem);color:var(--t-low);letter-spacing:.12em;margin-bottom:8px}
+    .stat-value{
+      font-family:'Bebas Neue','HarmonyOS Sans',sans-serif;
+      font-size:clamp(1.7rem,3vw,2.4rem);font-weight:400;color:#fff;line-height:1.05;
+      letter-spacing:.03em;
+      background:linear-gradient(135deg,rgba(255,255,255,.95) 20%,rgba(255,255,255,.6) 80%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .stat-value.hot{background:linear-gradient(135deg,#c084fc,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 14px rgba(168,85,247,.4))}
+    .stat-sub{font-size:clamp(0.5rem,.65vw,0.6rem);color:var(--t-low);margin-top:6px;letter-spacing:.06em}
+
+    /* ===== 玻璃卡片 ===== */
+    .glass-card{
+      border-radius:22px;padding:clamp(18px,2vw,28px);
+      background:rgba(255,255,255,.05);
+      backdrop-filter:blur(26px) saturate(1.15);
+      -webkit-backdrop-filter:blur(26px) saturate(1.15);
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow:0 8px 40px rgba(0,0,0,.35);
+      margin-bottom:24px;position:relative;overflow:hidden;
+    }
+    .glass-card::before{
+      content:'';position:absolute;top:-45%;right:-15%;width:60%;height:90%;
+      background:radial-gradient(ellipse,rgba(124,58,237,.1),transparent 70%);pointer-events:none;
+    }
+    .card-title{
+      display:flex;align-items:center;gap:10px;
+      font-size:clamp(0.85rem,1.2vw,1.05rem);font-weight:800;color:#fff;letter-spacing:.1em;
+      margin-bottom:16px;
+    }
+    .card-title .bar{width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,#A855F7,#7C3AED);box-shadow:0 0 10px rgba(168,85,247,.6)}
+
+    /* ===== 记录卡片 ===== */
+    .exam-card{
+      border-radius:16px;padding:clamp(14px,1.6vw,20px);margin-bottom:14px;
+      background:rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.09);
+      box-shadow:0 6px 24px rgba(0,0,0,.22);
+      transition:border-color .25s,background .25s;
+    }
+    .exam-card:hover{border-color:rgba(255,255,255,.18)}
+    .exam-head{display:flex;align-items:center;gap:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:12px}
+    .exam-info{flex:1;min-width:0}
+    .exam-name{font-size:clamp(0.85rem,1.1vw,1.05rem);font-weight:800;color:#fff;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .exam-meta{font-size:clamp(0.55rem,.7vw,0.68rem);color:var(--t-mid);margin-top:4px;letter-spacing:.05em}
+    .exam-meta .rank{color:#fbbf24;font-weight:700}
+    .exam-total{text-align:right;flex-shrink:0}
+    .total-num{
+      font-size:clamp(1.2rem,1.8vw,1.6rem);font-weight:800;color:#fff;line-height:1;
+      background:linear-gradient(135deg,#c084fc,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      font-variant-numeric:tabular-nums;filter:drop-shadow(0 0 12px rgba(168,85,247,.35));
+    }
+    .total-label{font-size:clamp(0.5rem,.65vw,0.6rem);color:var(--t-low);margin-top:3px;letter-spacing:.08em}
+    .sec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1vw,12px)}
+    @media screen and (max-width:860px){.sec-grid{grid-template-columns:repeat(2,1fr)}}
+    .sec-card{
+      border-radius:12px;padding:clamp(8px,1vw,12px) clamp(10px,1.2vw,14px);
+      background:rgba(255,255,255,.035);
+      border:1px solid rgba(255,255,255,.09);
+      transition:transform .2s,border-color .2s;
+    }
+    .sec-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.2)}
+    .sec-head{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+    .sec-name{font-size:clamp(0.56rem,.72vw,0.68rem);font-weight:700;color:var(--t-mid);letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sec-target{margin-left:auto;font-size:0.8em;color:var(--t-low);white-space:nowrap}
+    .sec-count{font-size:clamp(1rem,1.4vw,1.25rem);font-weight:800;color:#fff;line-height:1.15;font-variant-numeric:tabular-nums}
+    .sec-total{font-size:0.68em;font-weight:600;color:var(--t-low)}
+    .sec-foot{font-size:clamp(0.52rem,.68vw,0.64rem);color:var(--t-mid);margin-top:4px;letter-spacing:.03em;font-variant-numeric:tabular-nums}
+    /* 低于目标正确率：醒目标记 */
+    .sec-card.below{
+      background:linear-gradient(135deg,rgba(239,68,68,.26),rgba(239,68,68,.1));
+      border-color:rgba(239,68,68,.5);
+      box-shadow:0 0 14px rgba(239,68,68,.2),inset 0 0 0 1px rgba(239,68,68,.35);
+    }
+    .sec-card.below .sec-count{color:#ff8a8a;text-shadow:0 0 10px rgba(239,68,68,.5)}
+    .sec-card.below .sec-foot{color:rgba(255,182,182,.9)}
+    .sec-card.below .sec-target{color:rgba(255,138,138,.7)}
+    .warn-mark{color:#ff6b6b;animation:blink 1.2s infinite;font-size:0.85em}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .row-actions{display:flex;gap:6px;flex-shrink:0}
+    .icon-btn{
+      width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.07);color:var(--t-mid);cursor:pointer;
+      font-size:12px;display:inline-flex;align-items:center;justify-content:center;transition:all .2s;
+    }
+    .icon-btn:hover{background:rgba(255,255,255,.18);color:#fff}
+    .icon-btn.del:hover{background:rgba(239,68,68,.28);border-color:rgba(239,68,68,.55);color:#ff8a8a}
+    .empty-note{color:var(--t-low);padding:44px;text-align:center;letter-spacing:.15em}
+
+    /* ===== 图表区 ===== */
+    .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    @media screen and (max-width:980px){.chart-grid{grid-template-columns:1fr}}
+    .chart-box{height:380px;width:100%}
+    .chart-box.tall{height:320px}
+    .chart-wide{grid-column:1/-1}
+    .chart-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+    .chart-toolbar label{font-size:clamp(0.55rem,.7vw,0.65rem);color:var(--t-low);letter-spacing:.1em}
+    .chart-toolbar select{
+      padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.18);
+      background:rgba(15,15,30,.85);color:#fff;font-size:clamp(0.6rem,.75vw,0.7rem);
+      font-family:inherit;outline:none;cursor:pointer;
+    }
+    .chart-toolbar select:focus{border-color:#A855F7}
+    .chart-toolbar select option{background:#15152a}
+    .chart-tip{font-size:clamp(0.58rem,.72vw,0.68rem);color:var(--t-low);line-height:1.8}
+    .chart-tip b{color:#ff8a8a}
+    .chart-fallback{display:none;color:var(--t-low);text-align:center;padding:60px 0;letter-spacing:.1em}
+
+    /* 薄弱板块列表 */
+    .weak-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .weak-tag{
+      padding:5px 12px;border-radius:20px;font-size:clamp(0.58rem,.72vw,0.68rem);
+      background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.45);color:#ffa8a8;
+      letter-spacing:.05em;font-weight:600;
+    }
+    .weak-none{color:var(--t-mid);font-size:clamp(0.6rem,.75vw,0.7rem);letter-spacing:.08em}
+
+    /* ===== 模态框 ===== */
+    #modal{
+      position:fixed;inset:0;z-index:300;display:none;
+      align-items:center;justify-content:center;
+      background:rgba(0,0,0,.7);backdrop-filter:blur(10px);
+      padding:20px;
+    }
+    #modal.open{display:flex}
+    .modal-box{
+      width:clamp(360px,62vw,760px);max-height:88vh;overflow-y:auto;
+      background:rgba(16,16,32,.98);
+      border:1px solid rgba(255,255,255,.14);border-radius:18px;
+      padding:clamp(18px,2.4vw,28px);
+      box-shadow:0 24px 64px rgba(0,0,0,.6);
+    }
+    .modal-title{font-size:clamp(0.85rem,1.1vw,1.05rem);font-weight:800;color:#fff;letter-spacing:.1em;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+    .modal-title .bar{width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,#A855F7,#7C3AED);box-shadow:0 0 10px rgba(168,85,247,.6)}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    @media screen and (max-width:760px){.form-grid{grid-template-columns:1fr 1fr}}
+    .form-grid .wide{grid-column:1/-1}
+    .f-group label{display:block;font-size:clamp(0.55rem,.7vw,0.65rem);color:var(--t-mid);margin-bottom:4px;letter-spacing:.05em}
+    .f-group label small{color:var(--t-low);margin-left:4px}
+    .f-group input{
+      width:100%;padding:8px 10px;border-radius:8px;
+      border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;
+      font-size:clamp(0.6rem,.75vw,0.7rem);font-family:inherit;outline:none;transition:border-color .3s;
+    }
+    .f-group input:focus{border-color:#A855F7}
+    .f-group input::placeholder{color:var(--t-dim)}
+    .modal-actions{display:flex;gap:10px;margin-top:20px}
+    .modal-actions .btn{flex:1;padding:11px}
+
+    /* ===== 数据同步浮层 ===== */
+    #syncToast{
+      position:fixed;inset:0;z-index:300;display:none;
+      align-items:center;justify-content:center;
+      background:rgba(0,0,0,.7);backdrop-filter:blur(10px);
+      padding:20px;
+    }
+    #syncToast.open{display:flex}
+    .sync-box{
+      width:clamp(340px,52vw,560px);
+      background:rgba(16,16,32,.98);
+      border:1px solid rgba(255,255,255,.14);border-radius:18px;
+      padding:clamp(18px,2.4vw,26px);
+      box-shadow:0 24px 64px rgba(0,0,0,.6);
+    }
+    .sync-title{font-size:clamp(0.85rem,1.1vw,1.05rem);font-weight:800;color:#fff;letter-spacing:.06em;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+    .sync-title .bar{width:4px;height:16px;border-radius:2px;background:linear-gradient(180deg,#A855F7,#7C3AED);box-shadow:0 0 10px rgba(168,85,247,.6)}
+    .sync-desc{font-size:clamp(0.6rem,.75vw,0.7rem);color:var(--t-mid);line-height:1.9;margin-bottom:12px}
+    .sync-desc b{color:#fff}
+    .sync-desc code{color:#c084fc}
+    #syncCode{
+      width:100%;height:130px;resize:vertical;
+      background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.12);border-radius:10px;
+      padding:10px;color:rgba(255,255,255,.85);
+      font-family:'Cascadia Code','Fira Code',Consolas,monospace;font-size:clamp(0.55rem,.68vw,0.65rem);
+      line-height:1.6;outline:none;white-space:pre;overflow:auto;
+    }
+    .sync-actions{display:flex;gap:10px;margin-top:14px}
+    .sync-actions .btn{flex:1;padding:11px}
+
+    /* 页脚说明 */
+    .foot-note{margin-top:28px;padding:16px 20px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);font-size:clamp(0.58rem,.72vw,0.68rem);color:var(--t-mid);line-height:2;letter-spacing:.03em}
+    .foot-note b{color:#fff}
+    .foot-note .hl{color:#ff8a8a;font-weight:700}
+
+    @media screen and (max-width:767px){
+      .gs{width:calc(100% - 24px);height:52px;padding:0 16px}
+      .gs__title b{font-size:17px}
+      .gs__title .s{font-size:13px}
+      .gs__nav-item{font-size:clamp(0.55rem,1.8vw,0.7rem);padding:3px 6px}
+      .page-wrap{width:calc(100% - 2rem);padding-top:104px}
+      .chart-box{height:320px}
+    }
+  </style>
+</head>
+<body>
+
+<div id="bgImg"></div>
+
+<div class="gs" id="glassSurface">
+  <svg class="gs__svg" id="glassSvg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="gsFilter" colorInterpolationFilters="sRGB" x="0%" y="0%" width="100%" height="100%">
+        <feImage id="feMap" x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" id="feRed" xChannelSelector="R" yChannelSelector="G" result="dispRed"/>
+        <feColorMatrix in="dispRed" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" id="feGreen" xChannelSelector="R" yChannelSelector="G" result="dispGreen"/>
+        <feColorMatrix in="dispGreen" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" id="feBlue" xChannelSelector="R" yChannelSelector="G" result="dispBlue"/>
+        <feColorMatrix in="dispBlue" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+        <feBlend in="red" in2="green" mode="screen" result="rg"/>
+        <feBlend in="rg" in2="blue" mode="screen" result="output"/>
+        <feGaussianBlur in="output" stdDeviation="0.7"/>
+      </filter>
+    </defs>
+  </svg>
+  <div class="gs__content">
+    <div class="gs__title"><b>XxPuan</b><span class="s">'s Value</span></div>
+    <nav class="gs__nav">
+      <a href="status.html" class="gs__nav-item">事件</a>
+      <a href="finance.html" class="gs__nav-item">理财</a>
+      <a href="job.html" class="gs__nav-item">工作</a>
+      <a href="exam.html" class="gs__nav-item active">成绩</a>
+      <a href="index.html" class="gs__nav-item">返回主页</a>
+    </nav>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <!-- 标题区 -->
+  <div class="page-head">
+    <div>
+      <h1><span class="dot"></span>公考模拟成绩</h1>
+      <div class="sub">模考成绩记录 · 板块得分分析 · 趋势与进步追踪</div>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-primary" id="btnAdd">＋ 添加记录</button>
+      <button class="btn btn-danger" id="btnReset">重置</button>
+    </div>
+  </div>
+
+  <!-- 统计概览 -->
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">考试次数</div><div class="stat-value" id="stCount">0</div><div class="stat-sub">已记录模考场次</div></div>
+    <div class="stat-card"><div class="stat-label">最新总分</div><div class="stat-value hot" id="stLatest">--</div><div class="stat-sub" id="stLatestSub"></div></div>
+    <div class="stat-card"><div class="stat-label">平均总分</div><div class="stat-value" id="stAvg">--</div><div class="stat-sub">满分 100 分</div></div>
+    <div class="stat-card"><div class="stat-label">最高总分</div><div class="stat-value" id="stMax">--</div><div class="stat-sub" id="stMaxSub"></div></div>
+  </div>
+
+  <!-- 成绩记录表格 -->
+  <div class="glass-card">
+    <div class="card-title"><span class="bar"></span>成绩记录明细</div>
+    <div id="recordList"></div>
+    <div class="chart-tip" style="margin-top:12px">
+      <b>■ 红色高亮</b> = 该板块正确率低于目标正确率（⚠ 需重点加强）。每个板块格显示：<u>正确数/题数</u> · <u>正确率 · 得分</u> · <u>目标正确率</u>。
+    </div>
+  </div>
+
+  <!-- 图表区 -->
+  <div class="chart-grid">
+    <div class="glass-card">
+      <div class="card-title"><span class="bar"></span>板块正确率雷达</div>
+      <div class="chart-toolbar">
+        <label>选择场次</label>
+        <select id="radarSelect"></select>
+      </div>
+      <div class="chart-box" id="radarChart"></div>
+      <div id="weakPanel" style="margin-top:10px">
+        <div class="chart-tip">薄弱板块（低于目标）：</div>
+        <div class="weak-list" id="weakList"></div>
+      </div>
+      <div class="chart-fallback" id="radarFallback">图表库加载失败（ECharts CDN 不可用），请检查网络后刷新。</div>
+    </div>
+
+    <div class="glass-card">
+      <div class="card-title"><span class="bar"></span>总分趋势</div>
+      <div class="chart-box" id="scoreChart"></div>
+      <div class="chart-tip" style="margin-top:8px">虚线 = 平均分 · 点线 = 最高分。</div>
+      <div class="chart-fallback" id="scoreFallback">图表库加载失败（ECharts CDN 不可用），请检查网络后刷新。</div>
+    </div>
+
+    <div class="glass-card">
+      <div class="card-title"><span class="bar"></span>排名趋势 <span style="font-size:0.6em;color:var(--t-low);margin-left:6px;font-weight:400">名次越小越靠前</span></div>
+      <div class="chart-box" id="rankChart"></div>
+      <div class="chart-fallback" id="rankFallback">图表库加载失败（ECharts CDN 不可用），请检查网络后刷新。</div>
+    </div>
+
+    <div class="glass-card">
+      <div class="card-title"><span class="bar"></span>板块进步幅度（首次 vs 最近）</div>
+      <div class="chart-box tall" id="progressChart"></div>
+      <div class="chart-tip" style="margin-top:8px">淡色条 = 首次考试 · 亮色条 = 最近一次 · 黄色虚线 = 目标正确率。</div>
+      <div class="chart-fallback" id="progressFallback">图表库加载失败（ECharts CDN 不可用），请检查网络后刷新。</div>
+    </div>
+
+    <div class="glass-card chart-wide">
+      <div class="card-title"><span class="bar"></span>板块正确率趋势（变化轨迹）</div>
+      <div class="chart-toolbar">
+        <label>查看板块</label>
+        <select id="trendSelect"></select>
+      </div>
+      <div class="chart-box tall" id="trendChart"></div>
+      <div class="chart-tip" style="margin-top:8px">虚线为目标正确率，观察该板块变化轨迹与是否持续走低。</div>
+      <div class="chart-fallback" id="trendFallback">图表库加载失败（ECharts CDN 不可用），请检查网络后刷新。</div>
+    </div>
+  </div>
+
+  <!-- 页脚说明 -->
+  <div class="foot-note">
+    <b>记分规则：</b>总分 = Σ 各板块（正确数 × 每题分值），满分 100 分。<br>
+    <b>目标正确率：</b>政治常识 50% · 片段阅读 80% · 逻辑填空 75% · 文章阅读 80% · 数量关系 40% · 类比推理 80% · 图形/逻辑/定义 75% · 资料分析 85%。<br>
+    <span class="hl">低于目标正确率的板块会被红色高亮，</span>并体现在雷达图、进步幅度与趋势图中；数据保存在浏览器本地（localStorage），可用「导出数据」生成嵌入代码持久化到本文件。
+  </div>
+</div>
+
+<!-- ===== 添加/编辑模态框 ===== -->
+<div id="modal">
+  <div class="modal-box">
+    <div class="modal-title"><span class="bar"></span><span id="modalTitle">添加考试记录</span></div>
+    <div class="form-grid" id="modalForm"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="modalSave">保存</button>
+      <button class="btn" id="modalCancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 数据同步浮层（保存/删除后自动弹出） ===== -->
+<div id="syncToast">
+  <div class="sync-box">
+    <div class="sync-title"><span class="bar"></span>数据已保存，要同步到网站？</div>
+    <div class="sync-desc">数据已存到<b>本浏览器</b>（localStorage）。要让 <b>git push 后网页显示最新数据</b>，需要把数据写进网页文件。点击复制下面的代码，粘贴给 AI 助手，由它更新 <code>exam.html</code> 并提交；或自行替换文件里的 <code>var DEFAULT_RECORDS = [...]</code> 后 push。</div>
+    <textarea id="syncCode" readonly spellcheck="false"></textarea>
+    <div class="sync-actions">
+      <button class="btn btn-primary" id="syncCopyBtn">复制同步代码</button>
+      <button class="btn" id="syncCloseBtn">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict'
+
+/* ============ 液态玻璃页眉（与主页/状态页同款 SVG 折射） ============ */
+var gsEl = document.getElementById('glassSurface')
+window.addEventListener('scroll', function(){ gsEl.style.background = window.scrollY > 30 ? 'rgba(255,255,255,.035)' : '' }, {passive:true})
+var isChromium = !(/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)) && !/Firefox/.test(navigator.userAgent)
+var td = document.createElement('div'); td.style.backdropFilter = 'url(#gsFilter)'
+var supportsSvg = td.style.backdropFilter !== '' && isChromium
+gsEl.classList.add(supportsSvg ? 'gs--svg' : 'gs--fallback')
+if(supportsSvg) gsEl.style.setProperty('--gs-filter', 'url(#gsFilter)')
+var distortionScale = -180, redOffset = 0, greenOffset = 10, blueOffset = 20
+var borderWidth = .07, brightness = 50, opacity = .93, blurAmt = 11, borderRadius = 50, mixBlendMode = 'difference'
+function genMap(el, w, h){
+  var e = Math.min(w, h) * borderWidth * .5
+  return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '"><defs><linearGradient id="rg" x1="100%" y1="0%" x2="0%" y2="0%"><stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="red"/></linearGradient><linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="blue"/></linearGradient></defs><rect fill="black" width="' + w + '" height="' + h + '"/><rect rx="' + borderRadius + '" width="' + w + '" height="' + h + '" fill="url(#rg)"/><rect rx="' + borderRadius + '" width="' + w + '" height="' + h + '" fill="url(#bg)" style="mix-blend-mode:' + mixBlendMode + '"/><rect x="' + e + '" y="' + e + '" width="' + (w - e*2) + '" height="' + (h - e*2) + '" rx="' + borderRadius + '" fill="hsl(0 0% ' + brightness + '% / ' + opacity + ')" style="filter:blur(' + blurAmt + 'px)"/></svg>')
+}
+function updateGS(){
+  if(!supportsSvg) return
+  var m = document.getElementById('feMap')
+  if(m){ var r = gsEl.getBoundingClientRect(); if(r.width > 1) m.setAttribute('href', genMap(gsEl, r.width, r.height)) }
+  var r2 = document.getElementById('feRed'), g2 = document.getElementById('feGreen'), b2 = document.getElementById('feBlue')
+  if(r2) r2.setAttribute('scale', distortionScale + redOffset)
+  if(g2) g2.setAttribute('scale', distortionScale + greenOffset)
+  if(b2) b2.setAttribute('scale', distortionScale + blueOffset)
+}
+updateGS()
+var rt2
+window.addEventListener('resize', function(){ clearTimeout(rt2); rt2 = setTimeout(updateGS, 150) })
+if(window.ResizeObserver) new ResizeObserver(function(){ clearTimeout(rt2); rt2 = setTimeout(updateGS, 100) }).observe(gsEl)
+
+/* ============ 板块配置（题数 / 每题分值 / 目标正确率） ============ */
+var CONFIG = {
+  sections: [
+    { key:'zz',  name:'政治常识',       total:20, weight:0.65, target:0.50 },
+    { key:'pd',  name:'片段阅读',       total:15, weight:0.70, target:0.80 },
+    { key:'lj',  name:'逻辑填空',       total:10, weight:0.50, target:0.75 },
+    { key:'wz',  name:'文章阅读',       total:5,  weight:0.70, target:0.80 },
+    { key:'sl',  name:'数量关系',       total:20, weight:0.85, target:0.40 },
+    { key:'lb',  name:'类比推理',       total:10, weight:0.50, target:0.80 },
+    { key:'tzl', name:'图形/逻辑/定义', total:35, weight:0.80, target:0.75 },
+    { key:'zl',  name:'资料分析',       total:20, weight:0.90, target:0.85 }
+  ]
+}
+
+/* ============ 默认数据（示例，可在页面中编辑/删除） ============ */
+    var DEFAULT_RECORDS =   [
+        {
+            "name": "华图模块 · 第一期",
+            "date": "2026-08-22",
+            "rank": 29,
+            "scores": {
+                "zz": 9,
+                "pd": 9,
+                "lj": 5,
+                "wz": 1,
+                "sl": 4,
+                "lb": 5,
+                "tzl": 20,
+                "zl": 9
+            }
+        }
+    ]
+
+var STORE_KEY = 'gkExamRecordsV2'
+var records = loadRecords()
+
+/* ============ 工具函数 ============ */
+function validRecord(r){
+  if(!r || typeof r !== 'object' || !r.name || !r.date || isNaN(new Date(r.date).getTime())) return false
+  if(typeof r.rank !== 'number' || r.rank < 1) return false
+  if(!r.scores || typeof r.scores !== 'object') return false
+  var ok = CONFIG.sections.every(function(s){
+    var v = r.scores[s.key]
+    return typeof v === 'number' && v >= 0 && v <= s.total
+  })
+  return ok
+}
+
+function loadRecords(){
+  var saved = null
+  try { saved = localStorage.getItem(STORE_KEY) } catch(e){}
+  if(saved){
+    try{
+      var data = JSON.parse(saved)
+      if(Array.isArray(data) && data.every(validRecord)){
+        return sortRecords(data)
+      }
+    }catch(e){}
+    try{ localStorage.removeItem(STORE_KEY) }catch(e){}
+  }
+  return sortRecords(JSON.parse(JSON.stringify(DEFAULT_RECORDS)))
+}
+
+function saveRecords(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(records)) }catch(e){}
+}
+
+function sortRecords(arr){
+  return arr.slice().sort(function(a,b){ return new Date(a.date) - new Date(b.date) })
+}
+
+/* 计算单场得分详情 */
+function calcRecord(rec){
+  var total = 0
+  var sections = CONFIG.sections.map(function(s){
+    var correct = rec.scores[s.key]
+    var pct = correct / s.total
+    var score = correct * s.weight
+    total += score
+    return {
+      key:s.key, name:s.name, total:s.total, weight:s.weight,
+      correct:correct, pct:pct, score:score, target:s.target,
+      below: pct < s.target
+    }
+  })
+  return { sections: sections, total: total }
+}
+
+function fmt(n, d){ return Number(n).toFixed(d == null ? 1 : d) }
+function fmtPct(p){ return fmt(p*100) + '%' }
+
+/* ============ 统计概览 ============ */
+function renderStats(){
+  var n = records.length
+  document.getElementById('stCount').textContent = n
+  if(n === 0){
+    document.getElementById('stLatest').textContent = '--'
+    document.getElementById('stLatestSub').textContent = ''
+    document.getElementById('stAvg').textContent = '--'
+    document.getElementById('stMax').textContent = '--'
+    document.getElementById('stMaxSub').textContent = ''
+    return
+  }
+  var totals = records.map(function(r){ return calcRecord(r).total })
+  var latest = totals[totals.length - 1]
+  var avg = totals.reduce(function(a,b){return a+b},0) / n
+  var maxV = Math.max.apply(null, totals)
+  var maxI = totals.indexOf(maxV)
+
+  var elL = document.getElementById('stLatest')
+  elL.textContent = fmt(latest, 1)
+  document.getElementById('stLatestSub').textContent = records[n-1].name + ' · ' + records[n-1].date
+  document.getElementById('stAvg').textContent = fmt(avg, 1)
+  document.getElementById('stMax').textContent = fmt(maxV, 1)
+  document.getElementById('stMaxSub').textContent = records[maxI].name
+}
+
+/* ============ 记录卡片渲染 ============ */
+function renderTable(){
+  var list = document.getElementById('recordList')
+  if(records.length === 0){
+    list.innerHTML = '<div class="empty-note">暂无记录，点击右上角「＋ 添加记录」开始记录成绩</div>'
+    return
+  }
+  var html = ''
+  records.forEach(function(rec, i){
+    var calc = calcRecord(rec)
+    html += '<div class="exam-card">'
+    html += '<div class="exam-head">'
+    html += '<div class="exam-info">'
+    html += '<div class="exam-name">' + esc(rec.name) + '</div>'
+    html += '<div class="exam-meta">' + rec.date + ' · 排名第 <span class="rank">' + rec.rank + '</span> 名</div>'
+    html += '</div>'
+    html += '<div class="exam-total">'
+    html += '<div class="total-num">' + fmt(calc.total, 1) + '</div>'
+    html += '<div class="total-label">总分 · 满分100</div>'
+    html += '</div>'
+    html += '<div class="row-actions">'
+    html += '<button class="icon-btn" title="编辑" onclick="GKE.edit(' + i + ')">✎</button>'
+    html += '<button class="icon-btn del" title="删除" onclick="GKE.del(' + i + ')">✕</button>'
+    html += '</div>'
+    html += '</div>'
+    html += '<div class="sec-grid">'
+    calc.sections.forEach(function(s){
+      html += '<div class="sec-card' + (s.below ? ' below' : '') + '">'
+      html += '<div class="sec-head"><span class="sec-name">' + s.name + '</span>' + (s.below ? '<span class="warn-mark">⚠</span>' : '') + '<span class="sec-target">目标' + Math.round(s.target*100) + '%</span></div>'
+      html += '<div class="sec-count">' + s.correct + '<span class="sec-total">/' + s.total + '</span></div>'
+      html += '<div class="sec-foot">正确率 ' + fmtPct(s.pct) + ' · ' + fmt(s.score, 1) + ' 分</div>'
+      html += '</div>'
+    })
+    html += '</div>'
+    html += '</div>'
+  })
+  list.innerHTML = html
+}
+
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+/* ============ 图表 ============ */
+var hasECharts = typeof window.echarts !== 'undefined'
+var charts = {}
+
+function initCharts(){
+  if(!hasECharts){
+    ;['radarChart','scoreChart','rankChart','progressChart','trendChart'].forEach(function(id){
+      document.getElementById(id).style.display = 'none'
+      var fb = document.getElementById(id.replace('Chart','') + 'Fallback')
+      if(fb) fb.style.display = 'block'
+    })
+    return
+  }
+  charts.radar = echarts.init(document.getElementById('radarChart'), null, {renderer:'canvas'})
+  charts.score = echarts.init(document.getElementById('scoreChart'), null, {renderer:'canvas'})
+  charts.rank  = echarts.init(document.getElementById('rankChart'),  null, {renderer:'canvas'})
+  charts.progress = echarts.init(document.getElementById('progressChart'), null, {renderer:'canvas'})
+  charts.trend = echarts.init(document.getElementById('trendChart'), null, {renderer:'canvas'})
+  window.addEventListener('resize', function(){
+    for(var k in charts) charts[k].resize()
+  })
+}
+
+/* 图表配色（提亮） */
+var baseText = 'rgba(255,255,255,.92)'
+var baseDim  = 'rgba(255,255,255,.62)'
+var baseLine = 'rgba(255,255,255,.14)'
+var purple   = '#A855F7'
+var purpleSoft = 'rgba(168,85,247,.4)'
+var amber    = '#F59E0B'
+var red      = '#EF4444'
+var green    = '#34d399'
+var blue     = '#38bdf8'
+
+/* ============ 雷达图 ============ */
+function renderRadar(){
+  if(!hasECharts) return
+  var n = records.length
+  if(n === 0){
+    charts.radar.clear()
+    document.getElementById('weakList').innerHTML = '<span class="weak-none">暂无记录</span>'
+    return
+  }
+  var idx = parseInt(document.getElementById('radarSelect').value, 10)
+  var rec = records[idx]
+  var calc = calcRecord(rec)
+
+  var indicator = CONFIG.sections.map(function(s){
+    return { name: s.name, max: 100 }
+  })
+  var curVal = calc.sections.map(function(s){ return +(s.pct*100).toFixed(1) })
+  var tgtVal = CONFIG.sections.map(function(s){ return +(s.target*100).toFixed(1) })
+
+  charts.radar.setOption({
+    backgroundColor:'transparent',
+    tooltip: { trigger:'item' },
+    legend: {
+      data: [rec.name, '目标正确率'],
+      textStyle: { color: baseText, fontSize: 11 },
+      bottom: 0
+    },
+    radar: {
+      indicator: indicator,
+      radius: '62%',
+      center:['50%','48%'],
+      splitNumber: 4,
+      axisName: { color: baseText, fontSize: 11 },
+      splitLine: { lineStyle: { color: baseLine } },
+      splitArea: { areaStyle: { color: ['rgba(168,85,247,.04)','rgba(168,85,247,.08)'] } },
+      axisLine: { lineStyle: { color: baseLine } }
+    },
+    series: [{
+      type: 'radar',
+      data: [
+        {
+          name: rec.name,
+          value: curVal,
+          symbol: 'circle', symbolSize: 5,
+          lineStyle: { color: purple, width: 2 },
+          itemStyle: { color: purple },
+          areaStyle: { color: 'rgba(168,85,247,.3)' }
+        },
+        {
+          name: '目标正确率',
+          value: tgtVal,
+          symbol: 'none',
+          lineStyle: { color: amber, width: 2, type: 'dashed' },
+          itemStyle: { color: amber },
+          areaStyle: { opacity: 0 }
+        }
+      ]
+    }]
+  })
+
+  /* 薄弱板块列表 */
+  var below = calc.sections.filter(function(s){ return s.below })
+  var listEl = document.getElementById('weakList')
+  if(below.length === 0){
+    listEl.innerHTML = '<span class="weak-none">✓ 本次全部板块达标，保持住！</span>'
+  }else{
+    listEl.innerHTML = below.map(function(s){
+      return '<span class="weak-tag">⚠ ' + s.name + ' ' + fmtPct(s.pct) + '（目标' + Math.round(s.target*100) + '%）</span>'
+    }).join('')
+  }
+}
+
+/* 总分折线（含转折点标注） */
+function renderScore(){
+  if(!hasECharts) return
+  if(records.length === 0){ charts.score.clear(); return }
+  var names = records.map(function(r){ return r.name + '\n' + r.date })
+  var totals = records.map(function(r){ return +calcRecord(r).total.toFixed(1) })
+  var avg = totals.reduce(function(a,b){return a+b},0) / totals.length
+  var maxV = Math.max.apply(null, totals)
+
+  charts.score.setOption({
+    backgroundColor:'transparent',
+    tooltip: { trigger:'axis', backgroundColor:'rgba(16,16,32,.96)', borderColor:'rgba(255,255,255,.2)', textStyle:{color:'#fff',fontSize:12} },
+    grid: { left: 44, right: 24, top: 34, bottom: 34 },
+    xAxis: {
+      type: 'category', data: names, boundaryGap: false,
+      axisLabel: { color: baseDim, fontSize: 10, interval: 0 },
+      axisLine: { lineStyle: { color: baseLine } },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: 'value', min: function(v){ return Math.max(0, Math.floor((v.min-5)/5)*5) }, max: 100,
+      axisLabel: { color: baseDim, fontSize: 10 },
+      splitLine: { lineStyle: { color: baseLine } }
+    },
+    series: [{
+      name: '总分', type: 'line', data: totals, smooth: true,
+      symbol: 'circle', symbolSize: 8,
+      lineStyle: { color: purple, width: 3 },
+      itemStyle: { color: purple, borderColor: '#fff', borderWidth: 1.5 },
+      areaStyle: { color: { type:'linear', x:0, y:0, x2:0, y2:1, colorStops:[{offset:0,color:'rgba(168,85,247,.38)'},{offset:1,color:'rgba(168,85,247,0)'}] } },
+      label: { show: true, position: 'top', color: baseText, fontSize: 11, fontWeight: 700, formatter: function(p){ return p.value } },
+      markLine: {
+        silent: true,
+        symbol: 'none',
+        data: [
+          { name:'平均分', yAxis: avg, lineStyle:{ color: amber, type:'dashed', width:1.5 }, label:{ formatter:'平均 ' + avg.toFixed(1), color: amber, fontSize: 11 } },
+          { name:'最高分', yAxis: maxV, lineStyle:{ color: green, type:'dotted', width:1.2 }, label:{ formatter:'最高 ' + maxV.toFixed(1), color: green, fontSize: 11 } }
+        ]
+      }
+    }]
+  })
+}
+
+/* 排名折线（名次越小越靠前） */
+function renderRank(){
+  if(!hasECharts) return
+  if(records.length === 0){ charts.rank.clear(); return }
+  var names = records.map(function(r){ return r.name + '\n' + r.date })
+  var ranks = records.map(function(r){ return r.rank })
+
+  charts.rank.setOption({
+    backgroundColor:'transparent',
+    tooltip: { trigger:'axis', backgroundColor:'rgba(16,16,32,.96)', borderColor:'rgba(255,255,255,.2)', textStyle:{color:'#fff',fontSize:12} },
+    grid: { left: 56, right: 24, top: 30, bottom: 34 },
+    xAxis: {
+      type: 'category', data: names, boundaryGap: false,
+      axisLabel: { color: baseDim, fontSize: 10, interval: 0 },
+      axisLine: { lineStyle: { color: baseLine } },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: 'value', inverse: true, min: 1, scale: true,
+      axisLabel: { color: baseDim, fontSize: 10, formatter: '第{value}名' },
+      splitLine: { lineStyle: { color: baseLine } }
+    },
+    series: [{
+      name: '排名', type: 'line', data: ranks, smooth: true,
+      symbol: 'circle', symbolSize: 8,
+      lineStyle: { color: blue, width: 3 },
+      itemStyle: { color: blue, borderColor: '#fff', borderWidth: 1.5 },
+      areaStyle: { color: { type:'linear', x:0, y:0, x2:0, y2:1, colorStops:[{offset:0,color:'rgba(56,189,248,.32)'},{offset:1,color:'rgba(56,189,248,0)'}] } },
+      label: { show: true, position: 'top', color: baseText, fontSize: 10, formatter: function(p){ return '第' + p.value + '名' } }
+    }]
+  })
+}
+
+/* 板块进步幅度（首次 vs 最近，横向条形图） */
+function renderProgress(){
+  if(records.length < 1){
+    if(hasECharts) charts.progress.clear()
+    return
+  }
+  var first = records[0]
+  var last = records[records.length - 1]
+  var rows = CONFIG.sections.map(function(s){
+    var fp = first.scores[s.key] / s.total * 100
+    var lp = last.scores[s.key] / s.total * 100
+    return {
+      name: s.name, target: s.target * 100,
+      first: +fp.toFixed(1), last: +lp.toFixed(1)
+    }
+  })
+
+  if(!hasECharts) return
+  var shortFirst = first.name.length > 14 ? first.name.slice(0,14) + '…' : first.name
+  var shortLast = last.name.length > 14 ? last.name.slice(0,14) + '…' : last.name
+
+  charts.progress.setOption({
+    backgroundColor:'transparent',
+    tooltip: { trigger:'axis', axisPointer:{type:'shadow'}, backgroundColor:'rgba(16,16,32,.96)', borderColor:'rgba(255,255,255,.2)', textStyle:{color:'#fff',fontSize:12}, valueFormatter: function(v){ return v + '%' } },
+    legend: { data:['首次考试','最近一次'], textStyle:{ color: baseText, fontSize: 11 }, top: 0, left: 'center' },
+    grid: { left: 96, right: 52, top: 34, bottom: 8 },
+    xAxis: {
+      type: 'value', min: 0, max: 100,
+      axisLabel: { color: baseDim, fontSize: 10, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: baseLine } }
+    },
+    yAxis: {
+      type: 'category',
+      data: rows.map(function(r){ return r.name }),
+      axisLabel: { color: baseText, fontSize: 11 },
+      axisLine: { lineStyle: { color: baseLine } },
+      axisTick: { show: false }
+    },
+    series: [
+      {
+        name: '首次考试', type: 'bar',
+        data: rows.map(function(r){ return r.first }),
+        barWidth: 7,
+        itemStyle: { color: purpleSoft, borderRadius: 4 },
+        label: { show: true, position: 'insideLeft', color: 'rgba(255,255,255,.85)', fontSize: 9, formatter: function(p){ return p.value + '%' } }
+      },
+      {
+        name: '最近一次', type: 'bar',
+        data: rows.map(function(r){ return r.last }),
+        barWidth: 7,
+        itemStyle: { color: purple, borderRadius: 4 },
+        label: { show: true, position: 'right', color: baseText, fontSize: 10, fontWeight: 700, formatter: function(p){ return p.value + '%' } },
+        markLine: {
+          silent: true, symbol: 'none',
+          label: { show: false },
+          lineStyle: { color: amber, type: 'dashed', width: 1, opacity: .7 },
+          data: rows.map(function(r, i){
+            return { yAxis: i, xAxis: r.target }
+          })
+        }
+      }
+    ]
+  })
+}
+
+/* 板块趋势折线 */
+function renderTrend(){
+  if(!hasECharts) return
+  if(records.length === 0){ charts.trend.clear(); return }
+  var idx = parseInt(document.getElementById('trendSelect').value, 10)
+  var sec = CONFIG.sections[idx]
+  var names = records.map(function(r){ return r.name + '\n' + r.date })
+  var vals = records.map(function(r){
+    return +( (r.scores[sec.key] / sec.total) * 100 ).toFixed(1)
+  })
+  var tgt = +(sec.target * 100).toFixed(1)
+
+  charts.trend.setOption({
+    backgroundColor:'transparent',
+    tooltip: { trigger:'axis', backgroundColor:'rgba(16,16,32,.96)', borderColor:'rgba(255,255,255,.2)', textStyle:{color:'#fff',fontSize:12}, valueFormatter: function(v){ return v + '%' } },
+    grid: { left: 44, right: 20, top: 36, bottom: 34 },
+    xAxis: {
+      type: 'category', data: names, boundaryGap: false,
+      axisLabel: { color: baseDim, fontSize: 10, interval: 0 },
+      axisLine: { lineStyle: { color: baseLine } },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: 'value', min: 0, max: 100,
+      axisLabel: { color: baseDim, fontSize: 10, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: baseLine } }
+    },
+    series: [{
+      name: sec.name + '正确率', type: 'line', data: vals, smooth: true,
+      symbol: 'circle', symbolSize: 7,
+      lineStyle: { color: purple, width: 2.5 },
+      itemStyle: { color: purple },
+      areaStyle: { color: 'rgba(168,85,247,.2)' },
+      label: { show: true, position: 'top', color: baseText, fontSize: 10, formatter: function(p){ return p.value + '%' } },
+      markLine: {
+        silent: true, symbol: 'none',
+        data: [{ name:'目标', yAxis: tgt, lineStyle:{ color: red, type:'dashed', width:1.5 }, label:{ formatter:'目标 ' + tgt + '%', color: red, fontSize: 11 } }]
+      }
+    }]
+  })
+}
+
+/* ============ 渲染入口 ============ */
+function renderAll(){
+  renderStats()
+  renderTable()
+  renderRadarSelect()
+  renderTrendSelect()
+  if(hasECharts){
+    renderRadar()
+    renderScore()
+    renderRank()
+    renderProgress()
+    renderTrend()
+  }else{
+    renderProgress()
+  }
+}
+
+/* 下拉选项 */
+function renderRadarSelect(){
+  var sel = document.getElementById('radarSelect')
+  var cur = sel.value
+  sel.innerHTML = records.map(function(r, i){
+    return '<option value="' + i + '">' + esc(r.name) + '（' + r.date + '）</option>'
+  }).join('')
+  if(records.length) sel.value = cur !== '' && +cur < records.length ? cur : String(records.length - 1)
+}
+function renderTrendSelect(){
+  var sel = document.getElementById('trendSelect')
+  var cur = sel.value
+  sel.innerHTML = CONFIG.sections.map(function(s, i){
+    return '<option value="' + i + '">' + s.name + '</option>'
+  }).join('')
+  if(cur !== '') sel.value = cur
+}
+
+/* ============ 模态框 ============ */
+var editIdx = -1
+var modal = document.getElementById('modal')
+
+function openModal(idx){
+  editIdx = idx
+  document.getElementById('modalTitle').textContent = idx >= 0 ? '编辑考试记录' : '添加考试记录'
+  var rec = idx >= 0 ? records[idx] : { name:'', date:'', rank:'', scores:{} }
+  var html = ''
+  html += '<div class="f-group wide"><label>考试名称</label><input id="f-name" placeholder="如：华图省模考 · 第4期" value="' + esc(rec.name || '') + '"></div>'
+  html += '<div class="f-group"><label>考试日期</label><input id="f-date" type="date" value="' + (rec.date || '') + '"></div>'
+  html += '<div class="f-group"><label>排名（名次）</label><input id="f-rank" type="number" min="1" placeholder="如 62" value="' + (rec.rank != null ? rec.rank : '') + '"></div>'
+  html += '<div class="f-group"></div>'
+  CONFIG.sections.forEach(function(s){
+    var v = rec.scores ? rec.scores[s.key] : ''
+    html += '<div class="f-group"><label>' + s.name + '<small>共' + s.total + '题 · ' + s.weight + '分/题 · 目标' + Math.round(s.target*100) + '%</small></label>'
+    html += '<input type="number" min="0" max="' + s.total + '" placeholder="正确数(0-' + s.total + ')" value="' + (v != null ? v : '') + '" data-key="' + s.key + '"></div>'
+  })
+  document.getElementById('modalForm').innerHTML = html
+  modal.classList.add('open')
+}
+
+function closeModal(){ modal.classList.remove('open') }
+
+function saveFromModal(){
+  var name = document.getElementById('f-name').value.trim()
+  var date = document.getElementById('f-date').value
+  var rank = parseInt(document.getElementById('f-rank').value, 10)
+  var scores = {}
+  var valid = true
+
+  if(!name){ alert('请填写考试名称'); return }
+  if(!date){ alert('请选择考试日期'); return }
+  if(!rank || rank < 1){ alert('请填写有效的排名（正整数）'); return }
+
+  document.querySelectorAll('#modalForm input[data-key]').forEach(function(inp){
+    var k = inp.dataset.key
+    var v = parseInt(inp.value, 10)
+    var sec = CONFIG.sections.filter(function(s){return s.key === k})[0]
+    if(isNaN(v) || v < 0){ valid = false; alert(sec.name + ' 正确数不能为空或小于0'); inp.focus(); return }
+    if(v > sec.total){ valid = false; alert(sec.name + ' 正确数不能超过 ' + sec.total + ' 题'); inp.focus(); return }
+    scores[k] = v
+  })
+  if(!valid) return
+
+  var rec = { name:name, date:date, rank:rank, scores:scores }
+  if(editIdx >= 0){
+    records[editIdx] = rec
+  }else{
+    records.push(rec)
+  }
+  records = sortRecords(records)
+  saveRecords()
+  closeModal()
+  renderAll()
+  syncData()
+}
+
+/* ============ 数据同步（保存/删除/重置后自动生成并复制同步代码） ============ */
+var syncToast = document.getElementById('syncToast')
+var syncCodeEl = document.getElementById('syncCode')
+
+function syncData(){
+  var code = 'var DEFAULT_RECORDS = ' + JSON.stringify(records, null, 2).replace(/^(.)/gm, '  $1')
+  syncCodeEl.value = code
+  syncToast.classList.add('open')
+  var btn = document.getElementById('syncCopyBtn')
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(function(){
+      btn.textContent = '已自动复制 ✓'
+      setTimeout(function(){ btn.textContent = '复制同步代码' }, 2500)
+    }).catch(function(){})
+  }
+}
+document.getElementById('syncCopyBtn').addEventListener('click', function(){
+  var btn = this
+  var code = syncCodeEl.value
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(function(){
+      btn.textContent = '已复制 ✓'
+      setTimeout(function(){ btn.textContent = '复制同步代码' }, 2000)
+    })
+  }else{
+    syncCodeEl.select()
+    syncCodeEl.setSelectionRange(0, syncCodeEl.value.length)
+    document.execCommand('copy')
+    btn.textContent = '已复制 ✓'
+    setTimeout(function(){ btn.textContent = '复制同步代码' }, 2000)
+  }
+})
+document.getElementById('syncCloseBtn').addEventListener('click', function(){ syncToast.classList.remove('open') })
+syncToast.addEventListener('click', function(e){ if(e.target === this) this.classList.remove('open') })
+
+document.getElementById('btnReset').addEventListener('click', function(){
+  if(confirm('确定要恢复为默认示例数据吗？当前所有本地记录将被覆盖。')){
+    try{ localStorage.removeItem(STORE_KEY) }catch(e){}
+    records = sortRecords(JSON.parse(JSON.stringify(DEFAULT_RECORDS)))
+    saveRecords()
+    renderAll()
+    syncData()
+  }
+})
+
+/* ============ 事件绑定 ============ */
+document.getElementById('btnAdd').addEventListener('click', function(){ openModal(-1) })
+document.getElementById('modalSave').addEventListener('click', saveFromModal)
+document.getElementById('modalCancel').addEventListener('click', closeModal)
+modal.addEventListener('click', function(e){ if(e.target === this) closeModal() })
+document.getElementById('radarSelect').addEventListener('change', renderRadar)
+document.getElementById('trendSelect').addEventListener('change', renderTrend)
+
+/* 全局编辑/删除（供表格行内按钮调用） */
+window.GKE = {
+  edit: function(i){ openModal(i) },
+  del: function(i){
+    if(confirm('确定删除「' + records[i].name + '」这条记录吗？')){
+      records.splice(i, 1)
+      saveRecords()
+      renderAll()
+      syncData()
+    }
+  }
+}
+
+/* 键盘 Esc 关闭弹窗 */
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    closeModal()
+    syncToast.classList.remove('open')
+  }
+})
+
+/* 鼠标光晕 */
+var glow = document.createElement('div')
+glow.style.cssText = 'position:fixed;top:0;left:0;width:700px;height:700px;border-radius:50%;pointer-events:none;z-index:1;background:radial-gradient(circle,rgba(124,58,237,.12),rgba(168,85,247,.06) 40%,transparent 70%)'
+document.body.appendChild(glow)
+var mx=0,my=0,gx=0,gy=0
+document.addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY })
+;(function anim(){ gx+=(mx-gx)*.03; gy+=(my-gy)*.03; glow.style.transform='translate('+(gx-350)+'px,'+(gy-350)+'px)'; requestAnimationFrame(anim) })()
+
+/* ============ 启动 ============ */
+initCharts()
+renderAll()
+})()
+</script>
+
+</body>
+</html>
