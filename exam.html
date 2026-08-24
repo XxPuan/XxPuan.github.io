@@ -412,7 +412,7 @@
       <h1><span class="dot"></span>公考模拟成绩</h1>
       <div class="sub">模考成绩记录 · 板块得分分析 · 趋势与进步追踪</div>
     </div>
-    <div class="head-actions">
+    <div class="head-actions" id="headActions">
       <button class="btn btn-primary" id="btnAdd">＋ 添加记录</button>
       <button class="btn btn-danger" id="btnReset">重置</button>
     </div>
@@ -519,6 +519,13 @@
 <script>
 (function(){
 'use strict'
+
+/* ============ 只读模式：编辑/管理仅限本地（file:// 或 localhost），线上网页只读 ============ */
+var IS_LOCAL = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+if(!IS_LOCAL){
+  var ha = document.getElementById('headActions')
+  if(ha) ha.style.display = 'none'
+}
 
 /* ============ 液态玻璃页眉（与主页/状态页同款 SVG 折射） ============ */
 var gsEl = document.getElementById('glassSurface')
@@ -685,10 +692,12 @@ function renderTable(){
     html += '<div class="total-num">' + fmt(calc.total, 1) + '</div>'
     html += '<div class="total-label">总分 · 满分100</div>'
     html += '</div>'
-    html += '<div class="row-actions">'
-    html += '<button class="icon-btn" title="编辑" onclick="GKE.edit(' + i + ')">✎</button>'
-    html += '<button class="icon-btn del" title="删除" onclick="GKE.del(' + i + ')">✕</button>'
-    html += '</div>'
+    if(IS_LOCAL){
+      html += '<div class="row-actions">'
+      html += '<button class="icon-btn" title="编辑" onclick="GKE.edit(' + i + ')">✎</button>'
+      html += '<button class="icon-btn del" title="删除" onclick="GKE.del(' + i + ')">✕</button>'
+      html += '</div>'
+    }
     html += '</div>'
     html += '<div class="sec-grid">'
     calc.sections.forEach(function(s){
@@ -1095,6 +1104,7 @@ var syncToast = document.getElementById('syncToast')
 var syncCodeEl = document.getElementById('syncCode')
 
 function syncData(){
+  if(!IS_LOCAL) return
   var code = 'var DEFAULT_RECORDS = ' + JSON.stringify(records, null, 2).replace(/^(.)/gm, '  $1')
   syncCodeEl.value = code
   syncToast.classList.add('open')
@@ -1126,6 +1136,7 @@ document.getElementById('syncCloseBtn').addEventListener('click', function(){ sy
 syncToast.addEventListener('click', function(e){ if(e.target === this) this.classList.remove('open') })
 
 document.getElementById('btnReset').addEventListener('click', function(){
+  if(!IS_LOCAL) return
   if(confirm('确定要恢复为默认示例数据吗？当前所有本地记录将被覆盖。')){
     try{ localStorage.removeItem(STORE_KEY) }catch(e){}
     records = sortRecords(JSON.parse(JSON.stringify(DEFAULT_RECORDS)))
@@ -1136,7 +1147,7 @@ document.getElementById('btnReset').addEventListener('click', function(){
 })
 
 /* ============ 事件绑定 ============ */
-document.getElementById('btnAdd').addEventListener('click', function(){ openModal(-1) })
+document.getElementById('btnAdd').addEventListener('click', function(){ if(!IS_LOCAL) return; openModal(-1) })
 document.getElementById('modalSave').addEventListener('click', saveFromModal)
 document.getElementById('modalCancel').addEventListener('click', closeModal)
 modal.addEventListener('click', function(e){ if(e.target === this) closeModal() })
@@ -1145,8 +1156,9 @@ document.getElementById('trendSelect').addEventListener('change', renderTrend)
 
 /* 全局编辑/删除（供表格行内按钮调用） */
 window.GKE = {
-  edit: function(i){ openModal(i) },
+  edit: function(i){ if(!IS_LOCAL) return; openModal(i) },
   del: function(i){
+    if(!IS_LOCAL) return
     if(confirm('确定删除「' + records[i].name + '」这条记录吗？')){
       records.splice(i, 1)
       saveRecords()
