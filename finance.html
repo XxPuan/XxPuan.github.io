@@ -364,7 +364,7 @@ main.container{padding-bottom:130px}
     </div>
   </section>
 
-  <p class="foot">红涨绿跌 · 数据仅存储于本机浏览器（localStorage）· 不构成投资建议</p>
+  <p class="foot">红涨绿跌 · 线上只读，编辑/管理仅限本地 · 数据仅存储于本机浏览器（localStorage）· 不构成投资建议</p>
 </main>
 
 <button class="fab" id="fab" title="记一笔">＋</button>
@@ -463,6 +463,8 @@ main.container{padding-bottom:130px}
 
 <script>
 'use strict';
+/* ============ 只读模式：编辑/管理仅限本地（file:// 或 localhost），线上网页只读 ============ */
+const IS_LOCAL = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 /* ================= 工具 ================= */
 const $=id=>document.getElementById(id);
 const svgNS=(tag,attrs)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',tag);if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]);return e;};
@@ -753,7 +755,7 @@ function renderMain(){
   const days=dailyAgg(),n=days.length;
   if(!n){
     const t=svgNS('text',{x:W/2,y:H/2,'text-anchor':'middle',fill:'#6b7488','font-size':13});
-    t.textContent='暂无交易记录，点击右下角 ＋ 记一笔';
+    t.textContent='暂无交易记录'+(IS_LOCAL?'，点击右下角 ＋ 记一笔':'');
     svg.appendChild(t);return;
   }
   let cp=0,cf=0;
@@ -1101,6 +1103,10 @@ function fallbackCopy(txt,done){
 
 /* ================= 事件 ================= */
 function wireEvents(){
+  /* 线上只读：隐藏编辑入口（仅本地 file:// 或 localhost 可记账/编辑/导出） */
+  if(!IS_LOCAL){
+    ['btnAdmin','btnExport','recMore','fab'].forEach(id=>{const e=$(id);if(e)e.style.display='none';});
+  }
   $('btnAdmin').onclick=()=>{openMask('maskAdmin');renderAdminTable();$('inpPrincipal').value=S.principal;$('inpBorrow').value=S.borrow;$('inpName').value=S.name;};
   $('admClose').onclick=()=>closeMask('maskAdmin');
   $('btnExport').onclick=exportJSON;
