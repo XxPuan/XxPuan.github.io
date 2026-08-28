@@ -453,7 +453,83 @@ main.container{padding-bottom:130px}
       <h2>📋 嵌入代码</h2>
       <button class="icon-btn" id="embedClose">✕</button>
     </div>
-    <p class="hint" style="margin-top:14px">把当前数据生成 <b>INIT_DATA</b> 默认值代码。在 <b>finance.html</b> 中找到 <code>const INIT_DATA={
+    <p class="hint" style="margin-top:14px">把当前数据生成 <b>INIT_DATA</b> 默认值代码。在 <b>finance.html</b> 中找到 <code>const INIT_DATA={</code> 那一行，选中到对应 <code>};</code> 的整段，粘贴替换后保存，再 git add → commit → push 即可同步。</p>
+    <textarea class="inp" id="embedCode" rows="10" readonly spellcheck="false" style="font-family:Consolas,Menlo,monospace;font-size:12px;margin-top:10px;resize:vertical;line-height:1.5"></textarea>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn primary" id="embedCopy">📋 复制代码</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ============ 只读模式：编辑/管理仅限本地（file:// 或 localhost），线上网页只读 ============ */
+const IS_LOCAL = location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+/* ================= 工具 ================= */
+const $=id=>document.getElementById(id);
+const svgNS=(tag,attrs)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',tag);if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]);return e;};
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function fmt(n,dec=2){if(n==null||!isFinite(n))return '—';return n.toLocaleString('zh-CN',{minimumFractionDigits:dec,maximumFractionDigits:dec});}
+function fmtSign(n,dec=2){if(n==null||!isFinite(n))return '—';const s=fmt(Math.abs(n),dec);return n>0?'+'+s:n<0?'-'+s:s;}
+function pct(r,dec=2){if(r==null||!isFinite(r))return '—';return fmt(r*100,dec)+'%';}
+function pctSign(r,dec=2){if(r==null||!isFinite(r))return '—';return fmtSign(r*100,dec)+'%';}
+function clsOf(n){return n>0?'pos':n<0?'neg':'';}
+function pillCls(r){return r==null?'flat':clsOf(r);}
+function compact(v){if(v==null||!isFinite(v))return '—';return Math.abs(v)>=1e4?fmt(v/1e4,1)+'万':fmt(v,0);}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function parseD(s){const p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
+function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+const cmpDate=(a,b)=>a.date<b.date?-1:a.date>b.date?1:0;
+function debounce(fn,ms){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+const todayIso=()=>iso(new Date());
+
+/* ================= 数据 ================= */
+const LS_KEY='xxpuan_finance_v1';
+const LEGACY_KEY='financeData_v3';
+let S=null;
+let mainMode='assets', period='cum', kView='month';
+let hm={y:new Date().getFullYear(),m:new Date().getMonth()};
+const prevVals={};
+let confirmCb=null, toastTimer=null;
+
+function normalize(d){
+  return {
+    name:(d.name||'盈迹 · 交易理财面板').toString().slice(0,24),
+    principal:Number(d.principal)||0,
+    borrow:Number(d.borrow)||0,
+    records:Array.isArray(d.records)?d.records
+      .filter(r=>r&&r.date)
+      .map(r=>({id:String(r.id||uid()),date:String(r.date),pnl:Number(r.pnl)||0,flow:Number(r.flow)||0,note:String(r.note||'')}))
+      .sort(cmpDate):[]
+  };
+}
+function load(){try{const d=JSON.parse(localStorage.getItem(LS_KEY));if(d&&typeof d==='object')return normalize(d);}catch(e){}return null;}
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){}}
+
+/* ===== 旧版 finance.html 数据迁移（financeData_v3：流入=赚 / 流出=亏） ===== */
+function migrateLegacy(d){
+  const recs=[];
+  (d.records&&d.records.in||[]).forEach(r=>{
+    if(r&&r.time)recs.push({id:uid(),date:String(r.time).slice(0,10),pnl:Math.abs(Number(r.amount)||0),flow:0,note:String(r.name||'')});
+  });
+  (d.records&&d.records.out||[]).forEach(r=>{
+    if(r&&r.time)recs.push({id:uid(),date:String(r.time).slice(0,10),pnl:-Math.abs(Number(r.amount)||0),flow:0,note:String(r.name||'')});
+  });
+  recs.sort(cmpDate);
+  return {name:'盈迹 · 交易理财面板',principal:Number(d.principal)||290000,borrow:Number(d.loan)||290000,records:recs};
+}
+function loadLegacy(){
+  try{
+    const d=JSON.parse(localStorage.getItem(LEGACY_KEY));
+    if(d&&typeof d==='object'&&d.records&&d.records.in)return normalize(migrateLegacy(d));
+  }catch(e){}
+  return null;
+}
+
+/* ===== 默认数据（本金/借款/21条盈亏记录，源自原 finance.html） ===== */
+const INIT_DATA={
   name:"Finance XxPuan",
   principal:0,
   borrow:280000,
