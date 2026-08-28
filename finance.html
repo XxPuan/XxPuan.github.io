@@ -1210,12 +1210,12 @@ function wireEvents(){
 
 /* ================= 启动 ================= */
 (function init(){
-  S=load();
-  if(!S){
+  S=IS_LOCAL?load():null; /* 线上始终渲染代码内置数据，忽略本机 localStorage 旧数据 */
+  if(!S&&IS_LOCAL){
     S=loadLegacy();
     if(S){save();setTimeout(()=>showToast('已迁移旧版 finance.html 数据（'+S.records.length+' 条记录）'),600);}
   }
-  if(!S){S=normalize(JSON.parse(JSON.stringify(INIT_DATA)));save();setTimeout(()=>showToast('已导入默认数据（21 条记录）'),600);}
+  if(!S){S=normalize(JSON.parse(JSON.stringify(INIT_DATA)));if(IS_LOCAL)save();setTimeout(()=>showToast('已导入默认数据（'+S.records.length+' 条记录）'),600);}
   $('appName').textContent=S.name;
   $('todayStr').textContent=new Intl.DateTimeFormat('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'}).format(new Date());
   hm={y:new Date().getFullYear(),m:new Date().getMonth()};
