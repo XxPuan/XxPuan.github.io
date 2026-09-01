@@ -409,7 +409,7 @@
   <!-- 标题区 -->
   <div class="page-head">
     <div>
-      <h1><span class="dot"></span>公考模拟成绩</h1>
+      <h1><span class="dot"></span>公考模拟（行测）成绩</h1>
       <div class="sub">模考成绩记录 · 板块得分分析 · 趋势与进步追踪</div>
     </div>
     <div class="head-actions" id="headActions">
@@ -570,23 +570,38 @@ var CONFIG = {
 }
 
 /* ============ 默认数据（示例，可在页面中编辑/删除） ============ */
-    var DEFAULT_RECORDS =   [
-        {
-            "name": "华图模考 · 第一期",
-            "date": "2026-08-22",
-            "rank": 29,
-            "scores": {
-                "zz": 9,
-                "pd": 9,
-                "lj": 5,
-                "wz": 1,
-                "sl": 4,
-                "lb": 5,
-                "tzl": 20,
-                "zl": 9
-            }
-        }
-    ]
+  var DEFAULT_RECORDS =   [
+    {
+      "name": "华图模考 · 第一期",
+      "date": "2026-08-22",
+      "rank": 29,
+      "scores": {
+        "zz": 9,
+        "pd": 9,
+        "lj": 5,
+        "wz": 1,
+        "sl": 4,
+        "lb": 5,
+        "tzl": 20,
+        "zl": 9
+      }
+    },
+    {
+      "name": "华图模考 · 第二期",
+      "date": "2026-08-30",
+      "rank": 28,
+      "scores": {
+        "zz": 9,
+        "pd": 8,
+        "lj": 6,
+        "wz": 3,
+        "sl": 4,
+        "lb": 6,
+        "tzl": 21,
+        "zl": 6
+      }
+    }
+  ]
 
 var STORE_KEY = 'gkExamRecordsV2'
 var records = loadRecords()
