@@ -75,6 +75,7 @@ main{max-width:1240px;margin:0 auto;padding:36px 20px 60px;position:relative;z-i
 .tool-btn{height:40px;padding:0 15px;border-radius:10px;font-size:13px;font-weight:600;color:var(--txt2);background:rgba(118,118,128,.08);display:inline-flex;align-items:center;gap:7px;transition:all .2s}
 .tool-btn:hover{background:rgba(99,102,241,.08);color:var(--accent)}
 .tool-btn.on{background:var(--accent-grad);color:#fff;box-shadow:0 3px 10px rgba(99,102,241,.32)}
+.tool-btn:disabled{opacity:.35;cursor:not-allowed}
 .cond-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:rgba(99,102,241,.03);border:1px solid rgba(99,102,241,.1);border-radius:14px}
 .cond-bar .tt{font-size:13px;font-weight:700;color:var(--txt2);flex-shrink:0}
 .cond-bar .tags{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:180px}
@@ -112,7 +113,6 @@ table.post-table{width:100%;border-collapse:collapse;min-width:1240px}
 .cell-main .u{font-weight:600;color:var(--txt);font-size:13.5px;line-height:1.45}
 .cell-main .b{font-size:12px;color:var(--txt3)}
 .cell-main .n{font-size:12px;color:var(--txt3)}
-.cell-id{font-family:'SF Mono',Consolas,Menlo,monospace;font-size:11.5px;color:var(--txt3);white-space:nowrap}
 .id-main{font-family:'SF Mono',Consolas,Menlo,monospace;font-size:11.5px;color:var(--txt3);white-space:nowrap;line-height:1.35}
 .id-sub{font-family:'SF Mono',Consolas,Menlo,monospace;font-size:10px;color:var(--txt3);opacity:.72;white-space:nowrap;margin-top:2px}
 .badge{font-size:10.5px;font-weight:700;padding:2.5px 9px;border-radius:999px;white-space:nowrap;display:inline-block}
@@ -133,6 +133,10 @@ table.post-table{width:100%;border-collapse:collapse;min-width:1240px}
 .match-badge.no{background:rgba(118,118,128,.08);color:var(--txt3)}
 .detail-btn{font-size:12.5px;font-weight:700;color:var(--accent);background:rgba(99,102,241,.06);padding:6px 14px;border-radius:999px;transition:all .2s;white-space:nowrap}
 .detail-btn:hover{background:var(--accent);color:#fff}
+.pager{display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 24px;border-top:.5px solid var(--sep)}
+.pager.show{display:flex}
+.pager .pinfo{font-size:13px;color:var(--txt3);font-weight:600}
+.pager .pbtns{display:flex;gap:8px}
 .mobile-cards{display:none;flex-direction:column;gap:12px;padding:16px}
 .m-card{border:.5px solid rgba(0,0,0,.06);border-radius:16px;padding:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.02),0 4px 16px rgba(0,0,0,.04)}
 .m-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
@@ -279,6 +283,15 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
         </table>
       </div>
       <div class="mobile-cards" id="mobileCards"></div>
+      <div class="pager" id="pager">
+        <span class="pinfo" id="pagerInfo"></span>
+        <div class="pbtns">
+          <button class="tool-btn" id="pgFirst" style="height:34px">⏮ 首页</button>
+          <button class="tool-btn" id="pgPrev" style="height:34px">‹ 上一页</button>
+          <button class="tool-btn" id="pgNext" style="height:34px">下一页 ›</button>
+          <button class="tool-btn" id="pgLast" style="height:34px">末页 ⏭</button>
+        </div>
+      </div>
       <div class="empty-state" id="emptyState">
         <div class="em">🗂</div><h3 id="emptyTitle">暂无岗位数据</h3>
         <p id="emptyDesc"></p><div class="hint" id="emptyHints"></div>
@@ -332,25 +345,35 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
 (function(){
 'use strict';
 function boot(){
-// ================= 数据字段映射（见 job-data-gk.js 头注释）=================
-// p.i=岗位编号 p.d=部门代码 p.c=职位代码 p.dp=部门名称 p.ju=用人司局 p.nm=职位
-// p.n=招录人数 p.ed=学历 p.dg=学位 p.mj=专业 p.pl=政治面貌 p.ob=服务基层项目经历
-// p.yr=基层年限 p.nt=备注 p.or=面试比例 p.lv=机构层级 p.ct=考试类别 p.na=机构性质
-// p.at=职位属性 p.dt=职位分布 p.tt=是否面试专业测试 p.lc=工作地点 p.st=落户地点
-// p.pv=省 p.cy=市 p.ar=区县 p.pt=机关分区 p.tl=咨询电话
+// ============ 数据字段映射（见 job-data-gk.js 头注释）============
+// i=编号 d=部门代码 c=职位代码 dp=部门名称 ju=用人司局 nm=职位 n=招录人数
+// [S表索引，启动时解析为字符串]: na=机构性质 pt=机关分区 lv=机构层级 ct=考试类别 dt=职位分布 at=职位属性 tt=面试测试 ed=学历 pl=政治面貌 dg=学位 ob=服务基层项目
+// yr=基层年限 or=面试比例 mj=专业 lc=工作地点 st=落户地点 pv=省 cy=市 ar=区县 tl=电话
+// f=限应届(0/1) g=性别('m'/'f'/'') v=裸眼视力阈值(0=无) e=英语('6'/'4'/'')
+// 备注全文在 job-data-gk-notes.js（打开详情时懒加载）
 
-var DATA = window.GK_DATA || {posts:[], meta:{}};
+var DATA = window.GK_DATA || {posts:[], meta:{}, S:[]};
+var S = DATA.S || [];
+var POSTS = DATA.posts || [];
+if(S.length){
+  POSTS.forEach(function(p){
+    p.na=S[p.na]; p.pt=S[p.pt]; p.lv=S[p.lv]; p.ct=S[p.ct]; p.dt=S[p.dt]; p.at=S[p.at]; p.tt=S[p.tt];
+    p.ed=S[p.ed]; p.pl=S[p.pl]; p.dg=S[p.dg]; p.ob=S[p.ob];
+  });
+}
+
 var PARTS = ['中央党群机关','中央国家行政机关（本级）','省级以下直属机构','参照公务员法管理事业单位'];
 var LEVELS = ['中央','省（副省）级','市（地）级','县（区）级及以下'];
 var LV_LABEL = {'中央':'中央（本级）','省（副省）级':'省（副省）级','市（地）级':'市（地）级','县（区）级及以下':'县（区）级及以下'};
 var PROV_ORDER = ['北京市','上海市','天津市','重庆市','河北省','山西省','辽宁省','吉林省','黑龙江省','江苏省','浙江省','安徽省','福建省','江西省','山东省','河南省','湖北省','湖南省','广东省','海南省','四川省','贵州省','云南省','陕西省','甘肃省','青海省','台湾省','内蒙古自治区','广西壮族自治区','西藏自治区','宁夏回族自治区','新疆维吾尔自治区','香港特别行政区','澳门特别行政区'];
+var PAGE_SIZE = 100;
 
 var LS = {
   get:function(k,d){ try{ var v=localStorage.getItem('gk_'+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
   set:function(k,v){ try{ localStorage.setItem('gk_'+k,JSON.stringify(v)); }catch(e){} }
 };
 
-var state = { part:'all', level:'all', prov:'all', city:'all', area:'all', search:'', onlyMatch:false,
+var state = { part:'all', level:'all', prov:'all', city:'all', area:'all', search:'', _kw:'', onlyMatch:false, page:0,
   fEdu:'', fPol:'', fFresh:'', fBase:'', fCat:'', fAttr:'', fDist:'', fNum:'', useUpload:false };
 
 var profile = Object.assign({
@@ -359,7 +382,7 @@ var profile = Object.assign({
   majors:'计算机类,电子信息类,物联网工程,软件工程,网络工程'
 }, LS.get('profile',{}));
 
-var uploadedPosts = LS.get('uploads', null);
+var uploadedPosts = LS.get('uploads2', null);
 
 var $=function(id){return document.getElementById(id)};
 var partChips=$('partChips'), levelChips=$('levelChips'), provSel=$('provSel'), citySel=$('citySel'), areaSel=$('areaSel'),
@@ -370,12 +393,13 @@ var partChips=$('partChips'), levelChips=$('levelChips'), provSel=$('provSel'), 
   stTotal=$('stTotal'), stRecruit=$('stRecruit'), stMatch=$('stMatch'), stRange=$('stRange'),
   listLoading=$('listLoading'), tableBody=$('tableBody'), mobileCards=$('mobileCards'),
   emptyState=$('emptyState'), emptyTitle=$('emptyTitle'), emptyDesc=$('emptyDesc'), emptyHints=$('emptyHints'),
+  pager=$('pager'), pagerInfo=$('pagerInfo'), pgFirst=$('pgFirst'), pgPrev=$('pgPrev'), pgNext=$('pgNext'), pgLast=$('pgLast'),
   detailModal=$('detailModal'), condModal=$('condModal'), toast=$('toast');
 
 var toastTimer;
-function showToast(t){ toast.textContent=t; toast.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){toast.classList.remove('show')},3500); }
+function showToast(t){ toast.textContent=t; toast.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){toast.classList.remove('show')},3000); }
 
-function allPosts(){ return state.useUpload && uploadedPosts ? uploadedPosts : (DATA.posts||[]); }
+function allPosts(){ return state.useUpload && uploadedPosts ? uploadedPosts : POSTS; }
 function myMajors(){ return profile.majors.split(/[,，、\s]+/).filter(Boolean); }
 
 /* 地区层级索引 */
@@ -393,12 +417,12 @@ function buildRegions(){
 }
 var REGIONS = buildRegions();
 
-/* ===== 过滤（ignore 用于计算各维度计数时跳过自身维度） ===== */
+/* ===== 过滤 ===== */
 function searchMatch(p){
-  var kw=state.search.trim().toLowerCase();
+  var kw=state._kw;
   if(!kw) return true;
-  var hay=[p.i,p.d,p.c,p.dp,p.ju,p.nm,p.mj,p.ed,p.pl,p.lv,p.lc,p.st,p.ct,p.na,p.at,p.dt].join(' ').toLowerCase();
-  return hay.indexOf(kw)>=0;
+  if(!p._s) p._s=[p.dp,p.ju,p.nm,p.mj,p.ed,p.pl,p.lv,p.lc,p.st,p.ct,p.na,p.at,p.dt,p.i,p.d,p.c].join(' ').toLowerCase();
+  return p._s.indexOf(kw)>=0;
 }
 function filterBy(p, ignore){
   if(ignore!=='part' && state.part!=='all' && p.pt!==state.part) return false;
@@ -411,8 +435,8 @@ function filterBy(p, ignore){
   if(!searchMatch(p)) return false;
   if(state.fEdu && (p.ed||'')!==state.fEdu) return false;
   if(state.fPol && (p.pl||'')!==state.fPol) return false;
-  if(state.fFresh==='1' && !isFreshOnly(p)) return false;
-  if(state.fFresh==='0' && isFreshOnly(p)) return false;
+  if(state.fFresh==='1' && p.f!==1) return false;
+  if(state.fFresh==='0' && p.f===1) return false;
   if(state.fBase==='0' && isBaseOnly(p)) return false;
   if(state.fBase==='1' && !isBaseOnly(p)) return false;
   if(state.fCat && (p.ct||'')!==state.fCat) return false;
@@ -422,16 +446,11 @@ function filterBy(p, ignore){
   return true;
 }
 function filterPosts(){ return allPosts().filter(function(p){ return filterBy(p,null); }); }
-
-function isFreshOnly(p){ return /限应届|仅限应届|限20\d\d届|仅限20\d\d届|应届毕业生报考/.test(p.nt||''); }
 function isBaseOnly(p){ var o=(p.ob||'').trim(); return o && o!=='无限制' && o!=='不限' && o!==''; }
 
-/* ===== 匹配判定 ===== */
+/* ===== 匹配判定（基于预计算 flag，无正则） ===== */
 function matchPost(p){
   var r=[];
-  var note=(p.nt||'');
-  var obj=(p.ob||'').trim();
-
   // 学历
   var edu=(p.ed||'不限').trim();
   var eduOk=true;
@@ -467,17 +486,17 @@ function matchPost(p){
   else r.push({ok:true,k:'政治面貌',d:pol||'不限'});
 
   // 应届
-  var needFresh=isFreshOnly(p);
+  var needFresh = p.f===1;
   var freshOk = !needFresh || profile.identity.indexOf('应届')>=0;
   r.push({ok:freshOk,k:'应届身份',d:needFresh?(freshOk?'限应届毕业生，符合':'限应届毕业生，你为 '+profile.identity):'不限'});
 
-  // 服务基层项目经历
+  // 服务基层项目
   var needObj=isBaseOnly(p);
   if(needObj){
-    var isVet=/退役|服役|士兵/.test(obj);
+    var isVet=/退役|服役|士兵/.test(p.ob);
     var needSpecial=isVet?'退役':'基层';
     var objOk = profile.special===needSpecial;
-    r.push({ok:objOk,k:'服务基层项目',d:objOk?'符合（'+obj.substring(0,40)+'…）':'面向'+(isVet?'退役士兵':'服务基层项目人员')+'，你为'+(profile.special==='无'?'普通考生':(profile.special==='退役'?'退役士兵':'基层项目人员'))});
+    r.push({ok:objOk,k:'服务基层项目',d:objOk?'符合（'+p.ob.substring(0,40)+'…）':'面向'+(isVet?'退役士兵':'服务基层项目人员')+'，你为'+(profile.special==='无'?'普通考生':(profile.special==='退役'?'退役士兵':'基层项目人员'))});
   }else{
     r.push({ok:true,k:'服务基层项目',d:'无限制'});
   }
@@ -488,47 +507,45 @@ function matchPost(p){
   else r.push({ok:true,k:'基层年限',d:'无要求'});
 
   // 性别
-  var gM=/限男性|仅限男性|限招男性/.test(note);
-  var gF=/限女性|仅限女性|限招女性/.test(note);
-  if(gM&&profile.gender!=='男') r.push({ok:false,k:'性别',d:'限男性，你为'+profile.gender});
-  else if(gF&&profile.gender!=='女') r.push({ok:false,k:'性别',d:'限女性，你为'+profile.gender});
-  else r.push({ok:true,k:'性别',d:(gM||gF)?('符合（限'+(gM?'男性':'女性')+'）'):'不限'});
+  if(p.g==='m' && profile.gender!=='男') r.push({ok:false,k:'性别',d:'限男性，你为'+profile.gender});
+  else if(p.g==='f' && profile.gender!=='女') r.push({ok:false,k:'性别',d:'限女性，你为'+profile.gender});
+  else r.push({ok:true,k:'性别',d:(p.g==='m'||p.g==='f')?('符合（限'+(p.g==='m'?'男性':'女性')+'）'):'不限'});
 
   // 视力
-  var vN=note.match(/裸眼视力低于([\d.]+)不合格/);
-  var myopic=profile.vision==='近视';
-  if(vN && myopic) r.push({ok:false,k:'视力',d:'要求裸眼视力≥'+vN[1]+'，你为近视'});
-  else if(/视力|体检特殊标准/.test(note)) r.push({ok:true,k:'视力',d:'岗位有视力/体检要求（详见备注）'});
+  if(p.v>0 && profile.vision==='近视') r.push({ok:false,k:'视力',d:'要求裸眼视力≥'+p.v+'，你为近视'});
+  else if(p.v>0) r.push({ok:true,k:'视力',d:'符合（裸眼视力≥'+p.v+'）'});
   else r.push({ok:true,k:'视力',d:'无视力要求'});
 
   // 英语
-  var cetReq='';
-  if(/英语六级|CET6|六级425/.test(note)&&/425/.test(note)) cetReq='六级';
-  else if(/英语四级|CET4|四级425/.test(note)&&/425/.test(note)) cetReq='四级';
-  if(cetReq){
-    var cetOk = cetReq==='六级' ? profile.cet.indexOf('六级')>=0 : (profile.cet.indexOf('四级')>=0||profile.cet.indexOf('六级')>=0);
-    r.push({ok:cetOk,k:'英语',d:cetOk?('符合（'+cetReq+' 425+）'):('要求'+cetReq+' 425+，你为'+(profile.cet==='无'?'无英语等级':profile.cet))});
-  }else if(/英语|CET/.test(note)){
-    r.push({ok:true,k:'英语',d:'岗位有英语要求（未明确分数线）'});
-  }else{
-    r.push({ok:true,k:'英语',d:'无英语要求'});
-  }
+  if(p.e==='6'){ var cetOk6 = profile.cet.indexOf('六级')>=0; r.push({ok:cetOk6,k:'英语',d:cetOk6?'符合（六级 425+）':'要求六级 425+，你为'+(profile.cet==='无'?'无英语等级':profile.cet)}); }
+  else if(p.e==='4'){ var cetOk4 = profile.cet.indexOf('四级')>=0||profile.cet.indexOf('六级')>=0; r.push({ok:cetOk4,k:'英语',d:cetOk4?'符合（四级 425+）':'要求四级 425+，你为'+(profile.cet==='无'?'无英语等级':profile.cet)}); }
+  else r.push({ok:true,k:'英语',d:'无英语要求'});
 
   return {ok:r.every(function(x){return x.ok}), reasons:r};
+}
+
+var CUR = {list:[], matchedAll:[], matched:[]};
+function compute(){
+  state._kw = state.search.trim().toLowerCase();
+  CUR.list = filterPosts();
+  CUR.matchedAll = CUR.list.map(function(p){ return {p:p, m:matchPost(p)}; });
+  CUR.matched = state.onlyMatch ? CUR.matchedAll.filter(function(x){return x.m.ok;}) : CUR.matchedAll;
 }
 
 /* ===== 渲染：机关分区 / 机构层级 ===== */
 function renderDims(){
   var posts=allPosts();
-  function cntBy(get, val, ignore){
-    return posts.filter(function(p){ return filterBy(p,ignore) && get(p)===val; }).length;
-  }
-  partChips.innerHTML='<button class="chip'+(state.part==='all'?' active':'')+'" data-v="all">全部<span class="cnt">('+posts.filter(function(p){return filterBy(p,'part')}).length+')</span></button>'
-    + PARTS.map(function(pt){return '<button class="chip'+(state.part===pt?' active':'')+'" data-v="'+pt+'">'+pt+'<span class="cnt">('+cntBy(function(p){return p.pt},pt,'part')+')</span></button>'}).join('');
+  var partCnt={}, levelCnt={}, partTotal=0, levelTotal=0;
+  posts.forEach(function(p){
+    if(filterBy(p,'part')){ partTotal++; partCnt[p.pt]=(partCnt[p.pt]||0)+1; }
+    if(filterBy(p,'level')){ levelTotal++; levelCnt[p.lv]=(levelCnt[p.lv]||0)+1; }
+  });
+  partChips.innerHTML='<button class="chip'+(state.part==='all'?' active':'')+'" data-v="all">全部<span class="cnt">('+partTotal+')</span></button>'
+    + PARTS.map(function(pt){return '<button class="chip'+(state.part===pt?' active':'')+'" data-v="'+pt+'">'+pt+'<span class="cnt">('+(partCnt[pt]||0)+')</span></button>'}).join('');
   partChips.querySelectorAll('.chip').forEach(function(b){ b.addEventListener('click',function(){ state.part=b.getAttribute('data-v'); renderAll(); }); });
 
-  levelChips.innerHTML='<button class="chip'+(state.level==='all'?' active':'')+'" data-v="all">全部<span class="cnt">('+posts.filter(function(p){return filterBy(p,'level')}).length+')</span></button>'
-    + LEVELS.map(function(lv){return '<button class="chip'+(state.level===lv?' active':'')+'" data-v="'+lv+'">'+LV_LABEL[lv]+'<span class="cnt">('+cntBy(function(p){return p.lv},lv,'level')+')</span></button>'}).join('');
+  levelChips.innerHTML='<button class="chip'+(state.level==='all'?' active':'')+'" data-v="all">全部<span class="cnt">('+levelTotal+')</span></button>'
+    + LEVELS.map(function(lv){return '<button class="chip'+(state.level===lv?' active':'')+'" data-v="'+lv+'">'+LV_LABEL[lv]+'<span class="cnt">('+(levelCnt[lv]||0)+')</span></button>'}).join('');
   levelChips.querySelectorAll('.chip').forEach(function(b){ b.addEventListener('click',function(){ state.level=b.getAttribute('data-v'); renderAll(); }); });
 }
 
@@ -538,31 +555,19 @@ function renderRegionSelects(){
   var pc={}, cc={}, ac={};
   base.forEach(function(p){
     if(p.pv){ pc[p.pv]=(pc[p.pv]||0)+1; }
-    if(p.cy){ var ck=p.pv+'|'+p.cy; cc[ck]=(cc[ck]||0)+1; }
-    var ak=p.pv+'|'+p.cy+'|'+p.ar; ac[ak]=(ac[ak]||0)+1;
+    if(p.cy){ cc[p.pv+'|'+p.cy]=(cc[p.pv+'|'+p.cy]||0)+1; }
+    ac[p.pv+'|'+p.cy+'|'+p.ar]=(ac[p.pv+'|'+p.cy+'|'+p.ar]||0)+1;
   });
-
-  // 省份
-  var provOpts='<option value="all">全部省份 ('+base.length+')</option>';
-  REGIONS.provs.forEach(function(pv){ provOpts+='<option value="'+pv+'"'+(state.prov===pv?' selected':'')+'>'+pv+' ('+(pc[pv]||0)+')</option>'; });
-  provSel.innerHTML=provOpts;
-
-  // 城市
+  provSel.innerHTML='<option value="all">全部省份 ('+base.length+')</option>'+REGIONS.provs.map(function(pv){return '<option value="'+pv+'"'+(state.prov===pv?' selected':'')+'>'+pv+' ('+(pc[pv]||0)+')</option>';}).join('');
   var cityList = state.prov!=='all' && REGIONS.byProv[state.prov] ? REGIONS.byProv[state.prov].cities : [];
-  var cityOpts='<option value="all">全部城市</option>';
-  cityList.forEach(function(cy){ cityOpts+='<option value="'+cy+'"'+(state.city===cy?' selected':'')+'>'+cy+' ('+(cc[state.prov+'|'+cy]||0)+')</option>'; });
-  citySel.innerHTML=cityOpts;
+  citySel.innerHTML='<option value="all">全部城市</option>'+cityList.map(function(cy){return '<option value="'+cy+'"'+(state.city===cy?' selected':'')+'>'+cy+' ('+(cc[state.prov+'|'+cy]||0)+')</option>';}).join('');
   citySel.disabled = state.prov==='all';
-
-  // 区县
   var areaList = state.city!=='all' && REGIONS.byProv[state.prov] && REGIONS.byProv[state.prov].byCity[state.city] ? REGIONS.byProv[state.prov].byCity[state.city] : [];
-  var areaOpts='<option value="all">全部区县</option>';
-  areaList.forEach(function(ar){ areaOpts+='<option value="'+(ar||'（未分区县）')+'"'+(state.area===ar?' selected':'')+'>'+(ar||'未分区县')+' ('+(ac[state.prov+'|'+state.city+'|'+ar]||0)+')</option>'; });
-  areaSel.innerHTML=areaOpts;
+  areaSel.innerHTML='<option value="all">全部区县</option>'+areaList.map(function(ar){return '<option value="'+(ar||'__EMPTY__')+'"'+(state.area===ar?' selected':'')+'>'+(ar||'未分区县')+' ('+(ac[state.prov+'|'+state.city+'|'+ar]||0)+')</option>';}).join('');
   areaSel.disabled = state.city==='all';
 }
 
-/* ===== 渲染：列表 ===== */
+/* ===== 渲染：列表（分页） ===== */
 function levelBadge(lv){
   var cls={'中央':'lv0','省（副省）级':'lv1','市（地）级':'lv2','县（区）级及以下':'lv3'}[lv]||'lv0';
   var lbl=LV_LABEL[lv]||lv;
@@ -578,13 +583,12 @@ function regionCell(p){
 function mb(m){ return m.ok?'<span class="match-badge ok">✓ 可报考</span>':'<span class="match-badge no">✕ 不符合</span>'; }
 
 function renderList(){
-  var list=filterPosts();
-  var matched=list.map(function(p){return {p:p,m:matchPost(p)}});
-  if(state.onlyMatch) matched=matched.filter(function(x){return x.m.ok});
+  var start = state.page*PAGE_SIZE;
+  var shown = CUR.matched.slice(start, start+PAGE_SIZE);
 
-  stTotal.textContent=matched.length;
-  stRecruit.textContent=matched.reduce(function(s,x){return s+(x.p.n||0)},0);
-  stMatch.textContent=matched.filter(function(x){return x.m.ok}).length;
+  stTotal.textContent=CUR.matched.length;
+  stRecruit.textContent=CUR.matched.reduce(function(s,x){return s+(x.p.n||0)},0);
+  stMatch.textContent=CUR.matchedAll.filter(function(x){return x.m.ok}).length;
   var parts=[];
   if(state.part!=='all') parts.push(state.part);
   if(state.level!=='all') parts.push(LV_LABEL[state.level]);
@@ -595,14 +599,14 @@ function renderList(){
     emptyTitle.textContent='暂无岗位数据'; emptyDesc.textContent='请上传官方《招考简章》Excel 文件。';
     emptyHints.innerHTML='<span>📂 上传 Excel</span>'; emptyState.classList.add('show'); tableBody.innerHTML=''; mobileCards.innerHTML=''; return;
   }
-  if(!matched.length){
+  if(!CUR.matched.length){
     emptyTitle.textContent='没有符合条件的岗位'; emptyDesc.textContent='试试调整机关分区、机构层级、地区，或清空搜索 / 条件筛选。';
     emptyHints.innerHTML='<span>🔍 清空搜索</span><span>⚙ 重置筛选</span><span>🌐 全国总览</span>';
     emptyState.classList.add('show'); tableBody.innerHTML=''; mobileCards.innerHTML=''; return;
   }
   emptyState.classList.remove('show');
 
-  tableBody.innerHTML=matched.map(function(x,i){
+  tableBody.innerHTML=shown.map(function(x){
     var p=x.p, m=x.m;
     return '<tr>'
       +'<td><div class="id-main">'+p.i+'</div><div class="id-sub">部门 '+p.d+' · 职位 '+p.c+'</div></td>'
@@ -616,12 +620,12 @@ function renderList(){
       +'<td>'+(p.ed||'不限')+'</td>'
       +'<td>'+(p.pl||'不限')+'</td>'
       +'<td>'+mb(m)+'</td>'
-      +'<td><button class="detail-btn" data-idx="'+i+'">详情</button></td>'
+      +'<td><button class="detail-btn" data-i="'+p.i+'">详情</button></td>'
       +'</tr>';
   }).join('');
-  tableBody.querySelectorAll('.detail-btn').forEach(function(b){ b.addEventListener('click',function(){ openDetail(matched[parseInt(b.getAttribute('data-idx'),10)]); }); });
+  tableBody.querySelectorAll('.detail-btn').forEach(function(b){ b.addEventListener('click',function(){ openDetailById(b.getAttribute('data-i')); }); });
 
-  mobileCards.innerHTML=matched.map(function(x,i){
+  mobileCards.innerHTML=shown.map(function(x){
     var p=x.p, m=x.m;
     return '<div class="m-card">'
       +'<div class="m-card-head"><span class="u">'+p.dp+'</span>'+mb(m)+'</div>'
@@ -637,14 +641,49 @@ function renderList(){
       +'<span><span class="k">学历：</span>'+(p.ed||'不限')+'</span>'
       +'<span><span class="k">政治：</span>'+(p.pl||'不限')+'</span>'
       +'</div>'
-      +'<div class="m-card-foot"><button class="detail-btn" data-idx="'+i+'">查看详情 →</button></div>'
+      +'<div class="m-card-foot"><button class="detail-btn" data-i="'+p.i+'">查看详情 →</button></div>'
       +'</div>';
   }).join('');
-  mobileCards.querySelectorAll('.detail-btn').forEach(function(b){ b.addEventListener('click',function(){ openDetail(matched[parseInt(b.getAttribute('data-idx'),10)]); }); });
+  mobileCards.querySelectorAll('.detail-btn').forEach(function(b){ b.addEventListener('click',function(){ openDetailById(b.getAttribute('data-i')); }); });
+}
+
+function renderPager(){
+  var total=CUR.matched.length;
+  var pages=Math.max(1, Math.ceil(total/PAGE_SIZE));
+  if(state.page>pages-1) state.page=pages-1;
+  pagerInfo.textContent='共 '+total.toLocaleString()+' 条 · 第 '+(state.page+1)+' / '+pages+' 页 · 每页 '+PAGE_SIZE+' 条';
+  pgFirst.disabled = state.page<=0;
+  pgPrev.disabled = state.page<=0;
+  pgNext.disabled = state.page>=pages-1;
+  pgLast.disabled = state.page>=pages-1;
+  pager.classList.toggle('show', total>PAGE_SIZE);
+}
+
+function findPostById(id){
+  for(var i=0;i<CUR.matched.length;i++){ if(CUR.matched[i].p.i===id) return CUR.matched[i]; }
+  return null;
+}
+
+/* ===== 备注懒加载 ===== */
+var notesPromise=null;
+function getNote(id, cb){
+  if(window.GK_NOTES){ cb(window.GK_NOTES[id]||''); return; }
+  if(!notesPromise){
+    notesPromise=new Promise(function(res){
+      var sc=document.createElement('script');
+      sc.src='job-data-gk-notes.js';
+      sc.onload=function(){ res(window.GK_NOTES||{}); };
+      sc.onerror=function(){ res({}); };
+      document.head.appendChild(sc);
+    });
+  }
+  notesPromise.then(function(m){ cb(m[id]||''); });
 }
 
 /* ===== 详情 ===== */
-function openDetail(item){
+function openDetailById(id){
+  var item=findPostById(id);
+  if(!item) return;
   var p=item.p, m=item.m;
   $('dmTitle').textContent=p.dp+' · '+(p.nm||'');
   $('dmId').textContent=p.i+' · 部门代码 '+p.d+' · 职位代码 '+p.c;
@@ -673,12 +712,15 @@ function openDetail(item){
     +'<div class="info-cell"><div class="k">落户地点</div><div class="v">'+p.st+'</div></div>'
     +(p.tl?'<div class="info-cell"><div class="k">咨询电话</div><div class="v">'+p.tl+'</div></div>':'')
     +'</div>';
-  var note=p.nt?'<div style="margin-top:11px"><div class="note-box">📌 '+p.nt+'</div></div>':'';
   var mHtml='<div class="m-sec" style="margin-top:16px"><div class="m-sec-title">可报考判定</div>'
     +'<span class="match-sum '+(m.ok?'ok':'no')+'">'+(m.ok?'✓ 符合你的条件，可报考':'✕ 暂不符合你的报考条件')+'</span>'
     +'<div class="match-list">'+m.reasons.map(function(r){return '<div class="match-item '+(r.ok?'ok':'no')+'"><span class="mk">'+(r.ok?'✓':'✕')+'</span><span class="tx">'+r.k+'：<b>'+r.d+'</b></span></div>';}).join('')+'</div></div>';
-  $('dmBody').innerHTML=info+note+mHtml;
+  $('dmBody').innerHTML=info+'<div style="margin-top:11px" id="dmNote"><div class="note-box">📌 加载备注…</div></div>'+mHtml;
   detailModal.classList.add('open');
+  getNote(p.i, function(note){
+    var el=$('dmNote');
+    if(el) el.innerHTML=note?'<div class="note-box">📌 '+note+'</div>':'<div class="note-box">（无备注）</div>';
+  });
 }
 
 /* ===== 条件条 ===== */
@@ -688,13 +730,20 @@ function renderCondBar(){
     '英语 '+(profile.cet==='无'?'无':(profile.cet.indexOf('六级')>=0?'六级425+':'四级425+')),
     '特殊身份 '+(spLbl[profile.special]||profile.special),'专业 '+profile.majors.substring(0,22)+'…'];
   condTags.innerHTML=tags.map(function(t){var i=t.indexOf(' ');return '<span class="tag">'+t.slice(0,i)+'<b>'+t.slice(i+1)+'</b></span>';}).join('');
-  var list=filterPosts();
-  if(!list.length){ condStatus.textContent='—'; condStatus.className='status'; return; }
-  var mk=list.filter(function(p){return matchPost(p).ok}).length;
-  condStatus.textContent=mk+' / '+list.length+' 可报考'; condStatus.className='status '+(mk?'ok':'no');
+  if(!CUR.list.length){ condStatus.textContent='—'; condStatus.className='status'; return; }
+  var mk=CUR.matchedAll.filter(function(x){return x.m.ok}).length;
+  condStatus.textContent=mk+' / '+CUR.list.length+' 可报考'; condStatus.className='status '+(mk?'ok':'no');
 }
 
-function renderAll(){ renderDims(); renderRegionSelects(); renderList(); renderCondBar(); }
+function renderAll(){
+  state.page=0;
+  compute();
+  renderDims(); renderRegionSelects(); renderList(); renderCondBar(); renderPager();
+}
+function goPage(n){
+  state.page=n;
+  renderList(); renderPager();
+}
 
 function syncToolbar(){ matchToggle.classList.toggle('on',state.onlyMatch); searchClear.style.display=state.search?'block':'none'; }
 
@@ -705,15 +754,20 @@ function syncToolbar(){ matchToggle.classList.toggle('on',state.onlyMatch); sear
 })();
 
 /* ===== 事件 ===== */
-searchInput.addEventListener('input',function(){ state.search=searchInput.value; renderAll(); syncToolbar(); });
-searchClear.addEventListener('click',function(){ searchInput.value=''; state.search=''; renderAll(); syncToolbar(); searchInput.focus(); });
+var searchTimer;
+searchInput.addEventListener('input',function(){
+  searchClear.style.display=searchInput.value?'block':'none';
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(function(){ state.search=searchInput.value; renderAll(); }, 300);
+});
+searchClear.addEventListener('click',function(){ searchInput.value=''; state.search=''; searchClear.style.display='none'; renderAll(); searchInput.focus(); });
 matchToggle.addEventListener('click',function(){ state.onlyMatch=!state.onlyMatch; renderAll(); syncToolbar(); });
 filterToggle.addEventListener('click',function(){ filterPanel.classList.toggle('open'); filterToggle.classList.toggle('on',filterPanel.classList.contains('open')); });
 condBtn.addEventListener('click',function(){ condBar.scrollIntoView({behavior:'smooth',block:'nearest'}); });
 
-provSel.addEventListener('change',function(){ state.prov=provSel.value; if(state.prov==='all'){ state.city='all'; state.area='all'; } else { state.city='all'; state.area='all'; } renderAll(); });
+provSel.addEventListener('change',function(){ state.prov=provSel.value; state.city='all'; state.area='all'; renderAll(); });
 citySel.addEventListener('change',function(){ state.city=citySel.value; state.area='all'; renderAll(); });
-areaSel.addEventListener('change',function(){ state.area=areaSel.value==='all'?'all':areaSel.value.replace(/^（未分区县）$/,''); renderAll(); });
+areaSel.addEventListener('change',function(){ var v=areaSel.value; state.area=(v==='all'||v==='__EMPTY__')?'all':v; renderAll(); });
 regionReset.addEventListener('click',function(){ state.prov='all'; state.city='all'; state.area='all'; renderAll(); });
 
 fEdu.addEventListener('change',function(){ state.fEdu=fEdu.value; renderAll(); });
@@ -730,6 +784,11 @@ fReset.addEventListener('click',function(){
   renderAll();
 });
 
+pgFirst.addEventListener('click',function(){ goPage(0); });
+pgPrev.addEventListener('click',function(){ goPage(state.page-1); });
+pgNext.addEventListener('click',function(){ goPage(state.page+1); });
+pgLast.addEventListener('click',function(){ goPage(Math.ceil(CUR.matched.length/PAGE_SIZE)-1); });
+
 editCond.addEventListener('click',function(){
   $('cEdu').value=profile.education; $('cDeg').value=profile.degree; $('cPol').value=profile.politics;
   $('cObj').value=profile.identity; $('cGender').value=profile.gender; $('cVision').value=profile.vision;
@@ -742,17 +801,13 @@ $('saveCond').addEventListener('click',function(){
   profile.cet=$('cCet').value; profile.special=$('cSpecial').value;
   profile.years=parseInt($('cYears').value,10)||0; profile.majors=$('cMajors').value.trim();
   LS.set('profile',profile); condModal.classList.remove('open'); renderAll();
-  var list=filterPosts(); var mk=list.filter(function(p){return matchPost(p).ok}).length;
-  showToast('条件已保存，已重新筛选：'+mk+' / '+list.length+' 个岗位可报考');
+  showToast('条件已保存：'+CUR.matchedAll.filter(function(x){return x.m.ok}).length+' / '+CUR.list.length+' 个岗位可报考');
 });
 
 /* ===== 上传（国考格式 Excel） ===== */
 function updateUploadUI(){
-  if(uploadedPosts && uploadedPosts.length>0 && state.useUpload){
-    $('uzLoaded').classList.add('show'); $('uzCount').textContent=uploadedPosts.length;
-  }else{
-    $('uzLoaded').classList.remove('show');
-  }
+  if(uploadedPosts && uploadedPosts.length>0 && state.useUpload){ $('uzLoaded').classList.add('show'); $('uzCount').textContent=uploadedPosts.length; }
+  else { $('uzLoaded').classList.remove('show'); }
 }
 var MUNI=['北京市','上海市','天津市','重庆市'];
 var ALLP=['北京市','上海市','天津市','重庆市','河北省','山西省','辽宁省','吉林省','黑龙江省','江苏省','浙江省','安徽省','福建省','江西省','山东省','河南省','湖北省','湖南省','广东省','海南省','四川省','贵州省','云南省','陕西省','甘肃省','青海省','台湾省','内蒙古自治区','广西壮族自治区','西藏自治区','宁夏回族自治区','新疆维吾尔自治区','香港特别行政区','澳门特别行政区'];
@@ -767,6 +822,13 @@ function parseRegion(loc){
   if(pos.length){ pos.sort(function(a,b){return a[0]-b[0]}); return [prov, rest.slice(0,pos[0][0]+pos[0][1]), rest.slice(pos[0][0]+pos[0][1])]; }
   return [prov, rest, ''];
 }
+function noteFlags(note){
+  var f=/限应届|仅限应届|限20\d\d届|仅限20\d\d届|应届毕业生报考/.test(note)?1:0;
+  var g=/限男性|仅限男性|限招男性/.test(note)?'m':(/限女性|仅限女性|限招女性/.test(note)?'f':'');
+  var v=0, m=note.match(/裸眼视力低于([\d.]+)不合格/); if(m) v=parseFloat(m[1]);
+  var e=''; if(/英语六级|CET6|六级425/.test(note)&&note.indexOf('425')>=0) e='6'; else if(/英语四级|CET4|四级425/.test(note)&&note.indexOf('425')>=0) e='4';
+  return {f:f,g:g,v:v,e:e};
+}
 function parseExcel(data, filename){
   try{
     var wb=XLSX.read(data,{type:'array'}); var posts=[];
@@ -774,9 +836,7 @@ function parseExcel(data, filename){
       var ws=wb.Sheets[sn]; var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
       if(rows.length<3) return;
       var hi=-1;
-      for(var r=0;r<Math.min(rows.length,5);r++){
-        if(rows[r].filter(function(c){return c&&String(c).indexOf('部门')>=0}).length>=2){ hi=r; break; }
-      }
+      for(var r=0;r<Math.min(rows.length,5);r++){ if(rows[r].filter(function(c){return c&&String(c).indexOf('部门')>=0}).length>=2){ hi=r; break; } }
       if(hi<0) return;
       var h=rows[hi].map(function(c){return String(c).trim()});
       var ix={};
@@ -797,15 +857,15 @@ function parseExcel(data, filename){
         var dept=gv('dept'), post=gv('post'), dp=gv('deptName'), nm=gv('name');
         if(!dept&&!dp&&!nm&&!post) continue;
         var rg=parseRegion(gv('loc'));
-        var yrs=gv('years');
-        var ynum=0; var ym={'一年':1,'二年':2,'三年':3,'四年':4,'五年':5};
-        if(ym[yrs]) ynum=ym[yrs];
+        var yrs=gv('years'); var ynum=0; var ym={'一年':1,'二年':2,'三年':3,'四年':4,'五年':5}; if(ym[yrs]) ynum=ym[yrs];
         var n=parseInt(gv('recruit'),10)||0;
+        var fl=noteFlags(gv('note'));
         posts.push({i:(dept+post)||('GK-'+posts.length), d:dept, c:post, dp:dp, ju:gv('bureau'), nm:nm,
           n:n||1, ed:gv('edu')||'不限', dg:gv('degree'), mj:gv('major')||'不限', pl:gv('politics')||'不限',
-          ob:gv('object')||'不限', yr:ynum, nt:gv('note'), or:gv('ratio'), lv:gv('level'), ct:gv('cat'),
+          ob:gv('object')||'不限', yr:ynum, or:gv('ratio'), lv:gv('level'), ct:gv('cat'),
           na:gv('nature'), at:gv('attr'), dt:gv('dist'), tt:gv('test'), lc:gv('loc'), st:gv('settle'),
-          pv:rg[0], cy:rg[1], ar:rg[2], pt:part, tl:''});
+          pv:rg[0], cy:rg[1], ar:rg[2], pt:part, tl:'',
+          f:fl.f, g:fl.g, v:fl.v, e:fl.e, nt:gv('note')});
       }
     });
     return posts;
@@ -817,7 +877,7 @@ uploadZone.addEventListener('dragover',function(e){ e.preventDefault(); uploadZo
 uploadZone.addEventListener('dragleave',function(){ uploadZone.style.borderColor=''; });
 uploadZone.addEventListener('drop',function(e){ e.preventDefault(); uploadZone.style.borderColor=''; handleFiles(e.dataTransfer.files); });
 fileInput.addEventListener('change',function(){ handleFiles(fileInput.files); });
-uzClear.addEventListener('click',function(e){ e.stopPropagation(); uploadedPosts=null; state.useUpload=false; LS.set('uploads',null); updateUploadUI(); renderAll(); showToast('已恢复内置 2027 数据'); });
+uzClear.addEventListener('click',function(e){ e.stopPropagation(); uploadedPosts=null; state.useUpload=false; LS.set('uploads2',null); updateUploadUI(); REGIONS=buildRegions(); renderAll(); showToast('已恢复内置 2027 数据'); });
 function handleFiles(files){
   if(!files||!files.length) return;
   if(!window.XLSX){
@@ -833,7 +893,7 @@ function handleFiles(files){
     rd.onload=function(e){
       all=all.concat(parseExcel(new Uint8Array(e.target.result), file.name)); done++;
       if(done===files.length){
-        if(all.length){ uploadedPosts=all; state.useUpload=true; LS.set('uploads',uploadedPosts); REGIONS=buildRegions(); updateUploadUI(); renderAll(); showToast('已解析 '+all.length+' 条岗位'); }
+        if(all.length){ uploadedPosts=all; state.useUpload=true; LS.set('uploads2',uploadedPosts); REGIONS=buildRegions(); updateUploadUI(); renderAll(); showToast('已解析 '+all.length+' 条岗位'); }
         else showToast('未能解析出岗位数据');
       }
     };
@@ -850,7 +910,7 @@ document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ detailMod
 listLoading.classList.add('show');
 if(uploadedPosts && uploadedPosts.length>0) state.useUpload=true;
 updateUploadUI();
-setTimeout(function(){ listLoading.classList.remove('show'); renderAll(); syncToolbar(); }, 300);
+setTimeout(function(){ listLoading.classList.remove('show'); renderAll(); syncToolbar(); }, 200);
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
 })();

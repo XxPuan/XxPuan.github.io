@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
-"""Generate job-data-gk.js (nationwide 国考) from the 2027 招考简章 .xls
-Compact-key schema (documented in output header):
-  i  = id (部门代码+职位代码)   d = deptCode 部门代码   c = postCode 职位代码
-  dp = dept 部门名称(招录单位)  ju = bureau 用人司局     nm = name 招考职位
-  n  = recruit 招考人数        ed = education 学历      dg = degree 学位
-  mj = major 专业              pl = politics 政治面貌   ob = object 服务基层项目经历
-  yr = years 基层工作最低年限  nt = note 备注           or = openRatio 面试人员比例
-  lv = level 机构层级          ct = cat 考试类别        na = nature 机构性质
-  at = attr 职位属性           dt = dist 职位分布       tt = test 是否面试专业测试
-  lc = loc 工作地点原文        st = settle 落户地点     pv = province 省
-  cy = city 市                 ar = area 区县           pt = part 机关分区(sheet)
-  tl = tel 咨询电话(顿号分隔)
+"""Generate nationwide 国考 data (optimized for fast front-end):
+- intern low-cardinality string fields into a shared S table (stored as int index)
+- precompute match flags (f=限应届, g=性别, v=裸眼视力, e=英语) so matchPost avoids regex on note
+- move the long 备注 (note) to a separate lazy-loaded file job-data-gk-notes.js
+
+posts schema (int fields resolve via S table on the page):
+  i=id d=deptCode c=postCode dp=部门名称 ju=用人司局 nm=职位 n=招录人数
+  [interned->int]: na=机构性质 pt=机关分区 lv=机构层级 ct=考试类别 dt=职位分布 at=职位属性 tt=面试测试 ed=学历 pl=政治面貌 dg=学位 ob=服务基层项目
+  yr=基层年限 or=面试比例 lc=工作地点 st=落户地点 pv=省 cy=市 ar=区县 tl=电话
+  f=限应届(0/1) g=性别('m'/'f'/'') v=裸眼视力阈值(number,0=无) e=英语('6'/'4'/'')
 """
-import xlrd, json, io
+import xlrd, json, io, re
 
 SRC = r'C:\Users\Huawei\Desktop\中央机关及其直属机构2027年度考试录用公务员招考简章\中央机关及其直属机构2027年度考试录用公务员招考简章.xls'
 OUT = r'C:\Users\Huawei\.openclaw\xxpuan-site\job-data-gk.js'
+OUT_NOTES = r'C:\Users\Huawei\.openclaw\xxpuan-site\job-data-gk-notes.js'
 
 MUNI = ['北京市', '上海市', '天津市', '重庆市']
 PROV = ['河北省', '山西省', '辽宁省', '吉林省', '黑龙江省', '江苏省', '浙江省', '安徽省',
@@ -73,11 +72,43 @@ def cv(sh, r, c):
         return str(int(v))
     return str(v).strip()
 
+def flags(note):
+    f = 1 if re.search(r'限应届|仅限应届|限20\d\d届|仅限20\d\d届|应届毕业生报考', note) else 0
+    g = ''
+    if re.search(r'限男性|仅限男性|限招男性', note):
+        g = 'm'
+    elif re.search(r'限女性|仅限女性|限招女性', note):
+        g = 'f'
+    v = 0
+    m = re.search(r'裸眼视力低于([\d.]+)不合格', note)
+    if m:
+        v = float(m.group(1))
+    e = ''
+    if re.search(r'英语六级|CET6|六级425', note) and '425' in note:
+        e = '6'
+    elif re.search(r'英语四级|CET4|四级425', note) and '425' in note:
+        e = '4'
+    return f, g, v, e
+
+class Intern:
+    def __init__(self):
+        self.table = []
+        self.idx = {}
+    def add(self, val):
+        val = val or ''
+        if val not in self.idx:
+            self.idx[val] = len(self.table)
+            self.table.append(val)
+        return self.idx[val]
+
 def main():
     wb = xlrd.open_workbook(SRC)
     posts = []
+    notes = {}
     unmatched = {}
     stat = {}
+    IN = Intern()
+
     for sn in wb.sheet_names():
         if sn == 'Sheet1' or sn not in SHEET_MAP:
             continue
@@ -125,43 +156,50 @@ def main():
 
             pid = (dept + postCode) if (dept and postCode) else ('GK-' + str(len(posts)))
             tels = '、'.join(t for t in (tel1, tel2, tel3) if t)
+            f, g, v, e = flags(note)
 
             posts.append({
                 'i': pid, 'd': dept, 'c': postCode,
                 'dp': deptName, 'ju': bureau, 'nm': jobName,
-                'n': n or 1, 'ed': edu or '不限', 'dg': degree,
-                'mj': major or '不限', 'pl': politics or '不限', 'ob': object_ or '不限',
-                'yr': years_to_num(years), 'nt': note, 'or': ratio,
-                'lv': level, 'ct': examCat, 'na': nature, 'at': attr, 'dt': dist, 'tt': test,
-                'lc': loc, 'st': settle, 'pv': prov, 'cy': city, 'ar': area,
-                'pt': part, 'tl': tels,
+                'n': n or 1,
+                'na': IN.add(nature), 'pt': IN.add(part), 'lv': IN.add(level),
+                'ct': IN.add(examCat), 'dt': IN.add(dist), 'at': IN.add(attr), 'tt': IN.add(test),
+                'ed': IN.add(edu or '不限'), 'pl': IN.add(politics or '不限'),
+                'dg': IN.add(degree), 'ob': IN.add(object_ or '不限'),
+                'yr': years_to_num(years), 'or': ratio,
+                'mj': major or '不限',
+                'lc': loc, 'st': settle, 'pv': prov, 'cy': city, 'ar': area, 'tl': tels,
+                'f': f, 'g': g, 'v': v, 'e': e,
             })
+            notes[pid] = note
             cnt += 1
         stat[sn] = cnt
 
     payload = {
         'meta': {
-            'year': 2027,
-            'exam': '国考',
-            'published': True,
-            'updatedAt': '2026-10-14',
+            'year': 2027, 'exam': '国考', 'published': True, 'updatedAt': '2026-10-14',
             'note': '2027年度中央机关及其直属机构考试录用公务员招考简章，全国岗位，共 %d 条。' % len(posts),
             'source': '官方招考简章 Excel 解析',
         },
+        'S': IN.table,
         'posts': posts,
     }
 
     header = ('/* 2027 国考全国岗位数据（自动生成，勿手改）\n'
-              '   字段映射见 _gen_gk.py 顶部注释\n'
-              '   id = d + c（部门代码+职位代码）\n*/\n')
+              '   字段映射见 _gen_gk.py 顶部注释；带 int 的字段为 S 表索引\n'
+              '   备注全文见 job-data-gk-notes.js（懒加载）\n*/\n')
     js = header + 'window.GK_DATA=' + json.dumps(payload, ensure_ascii=False, separators=(',', ':')) + ';\n'
-
     with io.open(OUT, 'w', encoding='utf-8') as f:
         f.write(js)
 
-    size = len(js.encode('utf-8'))
+    notes_js = '/* 2027 国考岗位备注全文（懒加载） */\nwindow.GK_NOTES=' + json.dumps(notes, ensure_ascii=False, separators=(',', ':')) + ';\n'
+    with io.open(OUT_NOTES, 'w', encoding='utf-8') as f:
+        f.write(notes_js)
+
     print('total posts:', len(posts))
-    print('output bytes:', size, '=', round(size / 1024 / 1024, 2), 'MB')
+    print('main bytes:', round(len(js.encode('utf-8'))/1024/1024, 2), 'MB')
+    print('notes bytes:', round(len(notes_js.encode('utf-8'))/1024/1024, 2), 'MB')
+    print('S table size:', len(IN.table))
     print('sheets:', stat)
     print('unmatched locations:', len(unmatched))
     for k, v in sorted(unmatched.items()):
