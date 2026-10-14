@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2027 国考 · 全国岗位筛选 · XxPuan</title>
+<style>
+@font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2')format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2')format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Bold.woff2')format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Black.woff2')format('woff2');font-weight:800;font-display:swap}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --accent:#6366F1;--accent2:#8B5CF6;
+  --accent-grad:linear-gradient(135deg,#6366F1 0%,#8B5CF6 100%);
+  --blue-grad:linear-gradient(135deg,#6366F1 0%,#3B82F6 60%,#06B6D4 100%);
+  --sys-bg:#F2F2F7;--card-bg:#FFFFFF;--glass:rgba(255,255,255,.72);
+  --txt:#1C1C1E;--txt2:#48484A;--txt3:#8E8E93;--sep:#E5E5EA;
+  --ok:#34C759;--ok-bg:rgba(52,199,89,.12);--no:#FF3B30;
+  --seg-bg:rgba(118,118,128,.12);
+  --card-radius:22px;--btn-radius:12px;
+}
+html{font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'SF Pro Display','PingFang SC','Microsoft YaHei',sans-serif;background:var(--sys-bg);color:var(--txt);-webkit-font-smoothing:antialiased}
+body{min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
+input,select{font-family:inherit;outline:none}
+.bg-aura{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 640px 540px at 82% 18%,rgba(99,102,241,.14),transparent 58%),radial-gradient(ellipse 520px 460px at 15% 80%,rgba(236,72,153,.09),transparent 55%),radial-gradient(ellipse 480px 520px at 48% 56%,rgba(14,165,233,.07),transparent 55%);animation:auraFloat 16s ease-in-out infinite alternate}
+@keyframes auraFloat{0%{transform:translate(0,0) scale(1)}33%{transform:translate(18px,-12px) scale(1.03)}67%{transform:translate(-14px,16px) scale(.97)}100%{transform:translate(8px,-6px) scale(1.01)}}
+.nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 24px;background:var(--glass);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:.5px solid rgba(0,0,0,.08)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px}
+.nav-logo .dot{width:28px;height:28px;border-radius:8px;background:var(--accent-grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 4px 12px rgba(99,102,241,.35)}
+.nav-logo small{font-weight:500;color:var(--txt3);font-size:12px;letter-spacing:.06em}
+.nav-link{font-size:13px;font-weight:600;color:var(--txt2);padding:6px 14px;border-radius:999px;transition:all .2s}
+.nav-link:hover{background:rgba(99,102,241,.06);color:var(--accent)}
+.nav-link.home{background:var(--accent-grad);color:#fff;box-shadow:0 4px 10px rgba(99,102,241,.3)}
+main{max-width:1240px;margin:0 auto;padding:36px 20px 60px;position:relative;z-index:2}
+.page-title{margin-bottom:26px}
+.page-title h1{font-size:30px;font-weight:800;letter-spacing:-.01em}
+.page-title h1 .glow{background:var(--blue-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.page-title p{font-size:14.5px;color:var(--txt3);margin-top:6px;font-weight:500}
+.upload-zone{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;border:1px dashed rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.02);cursor:pointer;transition:all .2s;font-size:13px;margin-bottom:16px}
+.upload-zone:hover{border-color:var(--accent);background:rgba(99,102,241,.06)}
+.upload-zone .uz-title{font-weight:700;color:var(--txt2)}
+.upload-zone .uz-hint{font-size:12px;color:var(--txt3)}
+.upload-zone input[type=file]{display:none}
+.upload-zone .uz-loaded{display:none;align-items:center;gap:8px;font-weight:600;color:var(--ok)}
+.upload-zone .uz-loaded.show{display:flex}
+.upload-zone .uz-clear{font-size:11.5px;font-weight:700;color:var(--no);background:rgba(255,59,48,.06);padding:3px 9px;border-radius:999px;cursor:pointer}
+.app-card{background:var(--card-bg);border-radius:var(--card-radius);box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.05);overflow:hidden}
+.tool-area{padding:22px 24px 14px;display:flex;flex-direction:column;gap:16px}
+.dim-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dim-row .dl{font-size:12px;font-weight:800;color:var(--txt3);letter-spacing:.04em;flex-shrink:0;min-width:70px}
+.dim-row .dl b{color:var(--accent)}
+.chips{display:flex;gap:7px;flex-wrap:wrap;flex:1}
+.chip{padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;color:var(--txt2);background:rgba(118,118,128,.08);transition:all .18s;white-space:nowrap}
+.chip:hover{background:rgba(99,102,241,.1);color:var(--accent)}
+.chip.active{background:var(--accent-grad);color:#fff;box-shadow:0 3px 12px rgba(99,102,241,.3)}
+.chip .cnt{font-size:11px;opacity:.7;font-weight:500;margin-left:2px}
+.region-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.region-row .rl{font-size:12px;font-weight:800;color:var(--txt3);letter-spacing:.04em;flex-shrink:0}
+.region-row select{height:36px;padding:0 12px;border-radius:9px;border:.5px solid rgba(0,0,0,.12);background:#fff;font-size:13px;color:var(--txt);min-width:120px;cursor:pointer}
+.region-row select:focus{border-color:rgba(99,102,241,.4)}
+.region-row select:disabled{opacity:.45;cursor:not-allowed}
+.row3{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search-box{flex:1;min-width:240px;display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;background:rgba(118,118,128,.1);border-radius:10px;border:1.5px solid transparent;transition:all .22s}
+.search-box:focus-within{background:#fff;border-color:rgba(99,102,241,.35);box-shadow:0 0 0 4px rgba(99,102,241,.08)}
+.search-box .mag{color:var(--txt3);font-size:14px;flex-shrink:0}
+.search-box input{flex:1;border:none;background:transparent;font-size:14px;color:var(--txt)}
+.search-box input::placeholder{color:var(--txt3)}
+.search-box .clear{color:var(--txt3);font-size:14px;padding:3px;border-radius:50%;display:none}
+.tool-btn{height:40px;padding:0 15px;border-radius:10px;font-size:13px;font-weight:600;color:var(--txt2);background:rgba(118,118,128,.08);display:inline-flex;align-items:center;gap:7px;transition:all .2s}
+.tool-btn:hover{background:rgba(99,102,241,.08);color:var(--accent)}
+.tool-btn.on{background:var(--accent-grad);color:#fff;box-shadow:0 3px 10px rgba(99,102,241,.32)}
+.cond-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:rgba(99,102,241,.03);border:1px solid rgba(99,102,241,.1);border-radius:14px}
+.cond-bar .tt{font-size:13px;font-weight:700;color:var(--txt2);flex-shrink:0}
+.cond-bar .tags{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:180px}
+.cond-bar .tag{font-size:12px;font-weight:600;color:var(--txt2);background:#fff;border:.5px solid rgba(0,0,0,.08);padding:4px 10px;border-radius:999px}
+.cond-bar .tag b{color:var(--accent);font-weight:700}
+.cond-bar .status{flex-shrink:0;font-size:12.5px;font-weight:700;padding:5px 13px;border-radius:999px}
+.cond-bar .status.ok{background:var(--ok-bg);color:var(--ok)}
+.cond-bar .status.no{background:rgba(255,59,48,.08);color:var(--no)}
+.cond-bar .edit{flex-shrink:0;font-size:12.5px;font-weight:700;color:var(--accent);background:rgba(99,102,241,.08);padding:6px 14px;border-radius:999px}
+.filter-panel{display:none;flex-wrap:wrap;gap:12px;align-items:flex-end;padding:14px 16px;background:rgba(118,118,128,.04);border:.5px solid rgba(0,0,0,.05);border-radius:14px}
+.filter-panel.open{display:flex}
+.f-item{display:flex;flex-direction:column;gap:5px}
+.f-item label{font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:.04em}
+.f-item select,.f-item input[type=number]{height:34px;padding:0 10px;border-radius:8px;border:.5px solid rgba(0,0,0,.12);background:#fff;font-size:13px;color:var(--txt);min-width:110px;cursor:pointer}
+.f-reset{height:34px;padding:0 14px;border-radius:8px;font-size:12px;font-weight:700;color:var(--txt3);background:rgba(118,118,128,.08);transition:all .2s}
+.f-reset:hover{color:var(--no);background:rgba(255,59,48,.08)}
+.stats-bar{display:flex;align-items:center;gap:28px;flex-wrap:wrap;padding:14px 24px;border-top:.5px solid var(--sep);border-bottom:.5px solid var(--sep);background:rgba(0,0,0,.01)}
+.stat{display:flex;align-items:baseline;gap:7px}
+.stat .num{font-size:22px;font-weight:800;color:var(--txt)}
+.stat .num.hl{background:var(--blue-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat .num.ok-num{color:var(--ok)}
+.stat .lbl{font-size:12.5px;color:var(--txt3);font-weight:600}
+.stats-right{margin-left:auto;font-size:12px;color:var(--txt3);font-weight:500;max-width:46%}
+.list-area{position:relative;min-height:240px}
+.list-loading{display:none;position:absolute;inset:0;z-index:5;background:rgba(255,255,255,.7);backdrop-filter:blur(2px);align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--txt2);font-weight:600}
+.list-loading.show{display:flex}
+.post-table-wrap{overflow-x:auto}
+table.post-table{width:100%;border-collapse:collapse;min-width:1240px}
+.post-table th{text-align:left;padding:12px 14px;font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:.06em;background:rgba(0,0,0,.02);border-bottom:.5px solid var(--sep);white-space:nowrap;position:sticky;top:0;z-index:2}
+.post-table td{padding:13px 14px;font-size:13px;border-bottom:.5px solid rgba(0,0,0,.04);vertical-align:middle;color:var(--txt2)}
+.post-table tbody tr{transition:background .12s}
+.post-table tbody tr:hover{background:rgba(99,102,241,.035)}
+.post-table tbody tr:last-child td{border-bottom:none}
+.cell-main{display:flex;flex-direction:column;gap:3px;max-width:340px}
+.cell-main .u{font-weight:600;color:var(--txt);font-size:13.5px;line-height:1.45}
+.cell-main .b{font-size:12px;color:var(--txt3)}
+.cell-main .n{font-size:12px;color:var(--txt3)}
+.cell-id{font-family:'SF Mono',Consolas,Menlo,monospace;font-size:11.5px;color:var(--txt3);white-space:nowrap}
+.id-main{font-family:'SF Mono',Consolas,Menlo,monospace;font-size:11.5px;color:var(--txt3);white-space:nowrap;line-height:1.35}
+.id-sub{font-family:'SF Mono',Consolas,Menlo,monospace;font-size:10px;color:var(--txt3);opacity:.72;white-space:nowrap;margin-top:2px}
+.badge{font-size:10.5px;font-weight:700;padding:2.5px 9px;border-radius:999px;white-space:nowrap;display:inline-block}
+.badge.part{background:rgba(99,102,241,.1);color:var(--accent)}
+.badge.lv0{background:rgba(139,92,246,.1);color:#7C3AED}
+.badge.lv1{background:rgba(14,165,233,.1);color:#0284C7}
+.badge.lv2{background:rgba(245,158,11,.12);color:#B45309}
+.badge.lv3{background:rgba(16,185,129,.12);color:#059669}
+.badge.cat{background:rgba(236,72,153,.1);color:#DB2777}
+.badge.west{background:rgba(217,119,6,.12);color:#D97706}
+.region-cell{display:flex;flex-direction:column;gap:2px;font-size:12.5px}
+.region-cell .pv{font-weight:700;color:var(--txt)}
+.region-cell .cy{color:var(--txt3);font-size:11.5px}
+.recruit{font-size:15px;font-weight:800;color:var(--txt);text-align:center}
+.num{text-align:center}
+.match-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:4px 11px;border-radius:999px;white-space:nowrap}
+.match-badge.ok{background:var(--ok-bg);color:var(--ok)}
+.match-badge.no{background:rgba(118,118,128,.08);color:var(--txt3)}
+.detail-btn{font-size:12.5px;font-weight:700;color:var(--accent);background:rgba(99,102,241,.06);padding:6px 14px;border-radius:999px;transition:all .2s;white-space:nowrap}
+.detail-btn:hover{background:var(--accent);color:#fff}
+.mobile-cards{display:none;flex-direction:column;gap:12px;padding:16px}
+.m-card{border:.5px solid rgba(0,0,0,.06);border-radius:16px;padding:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.02),0 4px 16px rgba(0,0,0,.04)}
+.m-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.m-card-head .u{font-weight:700;font-size:14px;color:var(--txt);line-height:1.45}
+.m-card .b{font-size:12.5px;color:var(--txt3);margin-bottom:2px}
+.m-card .n{font-size:12.5px;color:var(--txt3);margin-bottom:10px}
+.m-card .grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px;font-size:12.5px;color:var(--txt2)}
+.m-card .grid .k{color:var(--txt3)}
+.m-card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:.5px solid rgba(0,0,0,.05)}
+.empty-state{display:none;flex-direction:column;align-items:center;justify-content:center;padding:70px 20px;text-align:center}
+.empty-state.show{display:flex}
+.empty-state .em{font-size:48px;margin-bottom:16px}
+.empty-state h3{font-size:18px;font-weight:800;margin-bottom:8px}
+.empty-state p{font-size:13.5px;color:var(--txt3);line-height:1.8;max-width:520px}
+.empty-state .hint{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+.empty-state .hint span{font-size:12px;font-weight:600;color:var(--txt2);background:rgba(118,118,128,.06);padding:6px 13px;border-radius:999px;cursor:pointer}
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.3);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{width:100%;max-width:820px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -16px 48px rgba(0,0,0,.15);animation:slideUp .32s cubic-bezier(.2,.9,.3,1)}
+@keyframes slideUp{from{transform:translateY(60px);opacity:.4}to{transform:translateY(0);opacity:1}}
+@media(min-width:768px){.modal-overlay{align-items:center;padding:20px}.modal{border-radius:20px}}
+.modal-head{position:sticky;top:0;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);z-index:5;padding:20px 26px 14px;border-bottom:.5px solid var(--sep);display:flex;align-items:flex-start;gap:12px}
+.modal-head .tt{flex:1}
+.modal-head h2{font-size:18px;font-weight:800;line-height:1.45}
+.modal-head .idline{font-size:11.5px;color:var(--txt3);margin-top:5px;font-family:'SF Mono',Consolas,Menlo,monospace}
+.modal-close{width:32px;height:32px;border-radius:50%;background:rgba(118,118,128,.08);color:var(--txt2);font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-close:hover{background:rgba(255,59,48,.1);color:var(--no)}
+.modal-body{padding:20px 26px 34px}
+.m-sec{margin-bottom:20px}
+.m-sec-title{font-size:12px;font-weight:700;color:var(--txt3);letter-spacing:.08em;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.m-sec-title::after{content:'';flex:1;height:.5px;background:var(--sep)}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px}
+.info-cell{background:rgba(0,0,0,.02);border:.5px solid rgba(0,0,0,.06);border-radius:10px;padding:10px 13px}
+.info-cell .k{font-size:10.5px;color:var(--txt3);font-weight:700;margin-bottom:4px;letter-spacing:.04em}
+.info-cell .v{font-size:13px;color:var(--txt);font-weight:600;line-height:1.5}
+.note-box{background:rgba(0,0,0,.02);border-radius:10px;padding:11px 15px;font-size:13px;color:var(--txt2);line-height:1.7;border:.5px solid rgba(0,0,0,.05)}
+.match-sum{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;padding:9px 18px;border-radius:999px;margin-bottom:10px}
+.match-sum.ok{background:var(--ok-bg);color:var(--ok)}
+.match-sum.no{background:rgba(255,59,48,.08);color:var(--no)}
+.match-list{display:flex;flex-direction:column;gap:6px}
+.match-item{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;line-height:1.6;padding:9px 13px;border-radius:9px;background:rgba(0,0,0,.02)}
+.match-item .mk{font-weight:800;flex-shrink:0;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:2px}
+.match-item.ok .mk{background:var(--ok-bg);color:var(--ok)}
+.match-item.no .mk{background:rgba(255,59,48,.08);color:var(--no)}
+.match-item .tx{color:var(--txt2)}
+.match-item .tx b{color:var(--txt)}
+.match-item.ok .tx b{color:var(--ok)}
+.match-item.no .tx b{color:var(--no)}
+#toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(24px);z-index:300;background:rgba(28,28,30,.88);backdrop-filter:blur(12px);color:#fff;font-size:13.5px;font-weight:600;padding:12px 24px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.2,.9,.3,1);display:flex;align-items:center;gap:8px;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px;line-height:1.8}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+@media(max-width:920px){.mobile-cards{display:flex}.post-table-wrap{display:none}.stats-bar{gap:16px}.stats-right{margin-left:0;width:100%;max-width:100%}.page-title h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="bg-aura"></div>
+<nav class="nav">
+  <a class="nav-logo" href="index.html"><span class="dot">求</span>求职 <small>JOB HUNTER</small></a>
+  <div style="display:flex;gap:8px">
+    <a class="nav-link" href="job.html">省考 / 事业编</a>
+    <a class="nav-link home" href=" ">2027 国考</a>
+  </div>
+</nav>
+
+<main>
+  <div class="page-title">
+    <h1><span class="glow">2027 国考 · 全国岗位报考筛选</span></h1>
+    <p>中央机关及其直属机构 2027 年度考试录用公务员 · 全国 19,426 个岗位 · 按「机关分区 / 机构层级 / 省市区」三维筛选 · 自动判定可报考<br><span style="opacity:.75">岗位编号 = 部门代码 + 职位代码，可直接在官方《招考简章》Excel 中定位</span></p>
+  </div>
+
+  <div class="upload-zone" id="uploadZone">
+    📂 <span class="uz-title">更新岗位表（Excel）</span>
+    <span class="uz-hint">拖拽或点击上传官方《招考简章》.xls / .xlsx</span>
+    <span class="uz-loaded" id="uzLoaded">✅ 已加载 <span id="uzCount">0</span> 条 <span class="uz-clear" id="uzClear">恢复内置</span></span>
+    <input type="file" id="fileInput" accept=".xls,.xlsx" multiple>
+  </div>
+
+  <div class="app-card">
+    <div class="tool-area">
+      <div class="dim-row">
+        <span class="dl">机关分区</span>
+        <div class="chips" id="partChips"></div>
+      </div>
+      <div class="dim-row">
+        <span class="dl">机构层级</span>
+        <div class="chips" id="levelChips"></div>
+      </div>
+      <div class="region-row">
+        <span class="rl">📍 地区</span>
+        <select id="provSel"><option value="all">全部省份</option></select>
+        <select id="citySel" disabled><option value="all">全部城市</option></select>
+        <select id="areaSel" disabled><option value="all">全部区县</option></select>
+        <button class="f-reset" id="regionReset" style="height:36px">清空地区</button>
+      </div>
+      <div class="row3">
+        <div class="search-box">
+          <span class="mag">🔍</span>
+          <input type="text" id="searchInput" placeholder="模糊搜索：岗位编号 / 部门·职位代码 / 部门名称 / 用人司局 / 职位 / 专业…" autocomplete="off">
+          <button class="clear" id="searchClear">✕</button>
+        </div>
+        <button class="tool-btn" id="matchToggle">◎ 只看可报考</button>
+        <button class="tool-btn" id="filterToggle">⚙ 条件筛选</button>
+        <button class="tool-btn" id="condBtn">🧑‍💼 我的条件</button>
+      </div>
+      <div class="cond-bar" id="condBar">
+        <span class="tt">🧑‍💼 我的条件</span>
+        <span class="tags" id="condTags"></span>
+        <span class="status" id="condStatus"></span>
+        <button class="edit" id="editCond">编辑</button>
+      </div>
+      <div class="filter-panel" id="filterPanel">
+        <div class="f-item"><label>学历要求</label><select id="fEdu"><option value="">全部</option></select></div>
+        <div class="f-item"><label>政治面貌</label><select id="fPol"><option value="">全部</option><option>不限</option><option>中共党员</option><option>中共党员或共青团员</option></select></div>
+        <div class="f-item"><label>应届要求</label><select id="fFresh"><option value="">全部</option><option value="1">仅限应届毕业生</option><option value="0">不限应届</option></select></div>
+        <div class="f-item"><label>基层项目</label><select id="fBase"><option value="">全部</option><option value="0">无限制</option><option value="1">面向基层项目/退役士兵</option></select></div>
+        <div class="f-item"><label>考试类别</label><select id="fCat"><option value="">全部</option><option>行政执法类</option><option>市（地）级及以下直属机构综合管理类</option><option>中央机关及其省级直属机构综合管理类</option></select></div>
+        <div class="f-item"><label>职位属性</label><select id="fAttr"><option value="">全部</option><option>普通职位</option><option>公安机关人民警察职位</option><option value="金融监管">金融监管类职位</option><option value="证监">证监类职位</option><option>特殊专业职位</option><option value="非通用语">非通用语职位</option></select></div>
+        <div class="f-item"><label>职位分布</label><select id="fDist"><option value="">全部</option><option>其他职位</option><option>西部地区和艰苦边远地区职位</option></select></div>
+        <div class="f-item"><label>招录人数 ≥</label><input type="number" id="fNum" min="1" max="100" placeholder="不限"></div>
+        <button class="f-reset" id="fReset">重置</button>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat"><span class="num" id="stTotal">—</span><span class="lbl">个岗位</span></div>
+      <div class="stat"><span class="num" id="stRecruit">—</span><span class="lbl">招录人数</span></div>
+      <div class="stat"><span class="num ok-num" id="stMatch">—</span><span class="lbl">可报考</span></div>
+      <div class="stats-right" id="stRange"></div>
+    </div>
+
+    <div class="list-area" id="listArea">
+      <div class="list-loading" id="listLoading">⏳ 加载岗位数据…</div>
+      <div class="post-table-wrap" id="tableWrap">
+        <table class="post-table">
+          <thead><tr>
+            <th>岗位编号</th><th>招录单位 / 职位</th><th>机关分区</th><th>机构层级</th><th>地区</th>
+            <th style="text-align:center">招录</th><th>考试类别</th><th>专业</th><th>学历</th>
+            <th>政治面貌</th><th>可报考</th><th>操作</th>
+          </tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="mobile-cards" id="mobileCards"></div>
+      <div class="empty-state" id="emptyState">
+        <div class="em">🗂</div><h3 id="emptyTitle">暂无岗位数据</h3>
+        <p id="emptyDesc"></p><div class="hint" id="emptyHints"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>求职 · XxPuan's Value · 2027 国考全国岗位筛选 · 请以官方公告为准</footer>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-head"><div class="tt"><h2 id="dmTitle"></h2><div class="idline" id="dmId"></div></div><button class="modal-close" data-close="detailModal">✕</button></div>
+    <div class="modal-body" id="dmBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="condModal">
+  <div class="modal">
+    <div class="modal-head"><div class="tt"><h2>🧑‍💼 我的报考条件</h2><div class="idline">用于自动判定岗位是否可报考 · 保存在本地浏览器</div></div><button class="modal-close" data-close="condModal">✕</button></div>
+    <div class="modal-body">
+      <div class="info-grid" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr))">
+        <div class="f-item"><label>学历</label><select id="cEdu"><option value="本科">本科</option><option value="硕士研究生">硕士研究生</option><option value="博士研究生">博士研究生</option></select></div>
+        <div class="f-item"><label>学位</label><select id="cDeg"><option value="学士">学士</option><option value="硕士">硕士</option><option value="博士">博士</option></select></div>
+        <div class="f-item"><label>政治面貌</label><select id="cPol"><option value="共青团员">共青团员</option><option value="中共预备党员">中共预备党员</option><option value="中共党员">中共党员</option><option value="群众">群众</option></select></div>
+        <div class="f-item"><label>身份</label><select id="cObj"><option value="应届毕业生">应届毕业生</option><option value="社会人员">社会人员</option></select></div>
+        <div class="f-item"><label>性别</label><select id="cGender"><option value="男">男</option><option value="女">女</option></select></div>
+        <div class="f-item"><label>视力</label><select id="cVision"><option value="不近视">不近视</option><option value="近视">近视</option></select></div>
+        <div class="f-item"><label>英语水平</label><select id="cCet"><option value="大学英语四级425分及以上">四级 425+</option><option value="大学英语六级425分及以上">六级 425+</option><option value="无">无英语等级</option></select></div>
+        <div class="f-item"><label>特殊身份</label><select id="cSpecial"><option value="无">无（普通考生）</option><option value="退役">退役军人/退役士兵（含士官）</option><option value="基层">服务基层项目人员</option></select></div>
+      </div>
+      <div class="info-grid" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr));margin-top:14px">
+        <div class="f-item"><label>基层工作年限（年）</label><input type="number" id="cYears" min="0" max="10" value="0" style="height:36px;border-radius:8px;border:.5px solid rgba(0,0,0,.12);padding:0 12px;font-size:13px;background:#fff;color:var(--txt)"></div>
+      </div>
+      <div class="f-item" style="margin-top:14px">
+        <label>专业关键词（逗号分隔，用于匹配「专业要求」，如：计算机类,电子信息类,软件工程,网络工程）</label>
+        <input type="text" id="cMajors" style="height:40px;border-radius:10px;border:.5px solid rgba(0,0,0,.12);padding:0 14px;font-size:13.5px;width:100%;background:#fff;color:var(--txt)">
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px">
+        <button class="tool-btn" data-close="condModal" style="height:40px">取消</button>
+        <button class="tool-btn on" id="saveCond" style="height:40px;padding:0 28px">保存并重新筛选</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="job-data-gk.js" defer></script>
+<script>
+(function(){
+'use strict';
+function boot(){
+// ================= 数据字段映射（见 job-data-gk.js 头注释）=================
+// p.i=岗位编号 p.d=部门代码 p.c=职位代码 p.dp=部门名称 p.ju=用人司局 p.nm=职位
+// p.n=招录人数 p.ed=学历 p.dg=学位 p.mj=专业 p.pl=政治面貌 p.ob=服务基层项目经历
+// p.yr=基层年限 p.nt=备注 p.or=面试比例 p.lv=机构层级 p.ct=考试类别 p.na=机构性质
+// p.at=职位属性 p.dt=职位分布 p.tt=是否面试专业测试 p.lc=工作地点 p.st=落户地点
+// p.pv=省 p.cy=市 p.ar=区县 p.pt=机关分区 p.tl=咨询电话
+
+var DATA = window.GK_DATA || {posts:[], meta:{}};
+var PARTS = ['中央党群机关','中央国家行政机关（本级）','省级以下直属机构','参照公务员法管理事业单位'];
+var LEVELS = ['中央','省（副省）级','市（地）级','县（区）级及以下'];
+var LV_LABEL = {'中央':'中央（本级）','省（副省）级':'省（副省）级','市（地）级':'市（地）级','县（区）级及以下':'县（区）级及以下'};
+var PROV_ORDER = ['北京市','上海市','天津市','重庆市','河北省','山西省','辽宁省','吉林省','黑龙江省','江苏省','浙江省','安徽省','福建省','江西省','山东省','河南省','湖北省','湖南省','广东省','海南省','四川省','贵州省','云南省','陕西省','甘肃省','青海省','台湾省','内蒙古自治区','广西壮族自治区','西藏自治区','宁夏回族自治区','新疆维吾尔自治区','香港特别行政区','澳门特别行政区'];
+
+var LS = {
+  get:function(k,d){ try{ var v=localStorage.getItem('gk_'+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
+  set:function(k,v){ try{ localStorage.setItem('gk_'+k,JSON.stringify(v)); }catch(e){} }
+};
+
+var state = { part:'all', level:'all', prov:'all', city:'all', area:'all', search:'', onlyMatch:false,
+  fEdu:'', fPol:'', fFresh:'', fBase:'', fCat:'', fAttr:'', fDist:'', fNum:'', useUpload:false };
+
+var profile = Object.assign({
+  education:'本科', degree:'学士', politics:'中共预备党员', identity:'应届毕业生',
+  gender:'男', years:0, vision:'不近视', cet:'大学英语四级425分及以上', special:'无',
+  majors:'计算机类,电子信息类,物联网工程,软件工程,网络工程'
+}, LS.get('profile',{}));
+
+var uploadedPosts = LS.get('uploads', null);
+
+var $=function(id){return document.getElementById(id)};
+var partChips=$('partChips'), levelChips=$('levelChips'), provSel=$('provSel'), citySel=$('citySel'), areaSel=$('areaSel'),
+  regionReset=$('regionReset'), searchInput=$('searchInput'), searchClear=$('searchClear'),
+  matchToggle=$('matchToggle'), filterToggle=$('filterToggle'), condBtn=$('condBtn'),
+  condBar=$('condBar'), condTags=$('condTags'), condStatus=$('condStatus'), editCond=$('editCond'),
+  filterPanel=$('filterPanel'), fEdu=$('fEdu'), fPol=$('fPol'), fFresh=$('fFresh'), fBase=$('fBase'), fCat=$('fCat'), fAttr=$('fAttr'), fDist=$('fDist'), fNum=$('fNum'), fReset=$('fReset'),
+  stTotal=$('stTotal'), stRecruit=$('stRecruit'), stMatch=$('stMatch'), stRange=$('stRange'),
+  listLoading=$('listLoading'), tableBody=$('tableBody'), mobileCards=$('mobileCards'),
+  emptyState=$('emptyState'), emptyTitle=$('emptyTitle'), emptyDesc=$('emptyDesc'), emptyHints=$('emptyHints'),
+  detailModal=$('detailModal'), condModal=$('condModal'), toast=$('toast');
+
+var toastTimer;
+function showToast(t){ toast.textContent=t; toast.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){toast.classList.remove('show')},3500); }
+
+function allPosts(){ return state.useUpload && uploadedPosts ? uploadedPosts : (DATA.posts||[]); }
+function myMajors(){ return profile.majors.split(/[,，、\s]+/).filter(Boolean); }
+
+/* 地区层级索引 */
+function buildRegions(){
+  var provs=[], byProv={};
+  allPosts().forEach(function(p){
+    var pv=p.pv||'', cy=p.cy||'', ar=p.ar||'';
+    if(!pv) return;
+    if(!byProv[pv]){ provs.push(pv); byProv[pv]={cities:[], byCity:{}}; }
+    if(!byProv[pv].byCity[cy]){ byProv[pv].cities.push(cy); byProv[pv].byCity[cy]=[]; }
+    if(ar && byProv[pv].byCity[cy].indexOf(ar)<0) byProv[pv].byCity[cy].push(ar);
+  });
+  provs.sort(function(a,b){ var ia=PROV_ORDER.indexOf(a), ib=PROV_ORDER.indexOf(b); return (ia<0?999:ia)-(ib<0?999:ib); });
+  return {provs:provs, byProv:byProv};
+}
+var REGIONS = buildRegions();
+
+/* ===== 过滤（ignore 用于计算各维度计数时跳过自身维度） ===== */
+function searchMatch(p){
+  var kw=state.search.trim().toLowerCase();
+  if(!kw) return true;
+  var hay=[p.i,p.d,p.c,p.dp,p.ju,p.nm,p.mj,p.ed,p.pl,p.lv,p.lc,p.st,p.ct,p.na,p.at,p.dt].join(' ').toLowerCase();
+  return hay.indexOf(kw)>=0;
+}
+function filterBy(p, ignore){
+  if(ignore!=='part' && state.part!=='all' && p.pt!==state.part) return false;
+  if(ignore!=='level' && state.level!=='all' && p.lv!==state.level) return false;
+  if(ignore!=='region'){
+    if(state.prov!=='all' && p.pv!==state.prov) return false;
+    if(state.city!=='all' && p.cy!==state.city) return false;
+    if(state.area!=='all' && p.ar!==state.area) return false;
+  }
+  if(!searchMatch(p)) return false;
+  if(state.fEdu && (p.ed||'')!==state.fEdu) return false;
+  if(state.fPol && (p.pl||'')!==state.fPol) return false;
+  if(state.fFresh==='1' && !isFreshOnly(p)) return false;
+  if(state.fFresh==='0' && isFreshOnly(p)) return false;
+  if(state.fBase==='0' && isBaseOnly(p)) return false;
+  if(state.fBase==='1' && !isBaseOnly(p)) return false;
+  if(state.fCat && (p.ct||'')!==state.fCat) return false;
+  if(state.fAttr){ if(state.fAttr==='金融监管'&&(p.at||'').indexOf('金融监管')<0) return false; else if(state.fAttr==='证监'&&(p.at||'').indexOf('证监')<0) return false; else if(state.fAttr==='非通用语'&&(p.at||'').indexOf('非通用语')<0) return false; else if((p.at||'')!==state.fAttr) return false; }
+  if(state.fDist && (p.dt||'')!==state.fDist) return false;
+  if(state.fNum && (p.n||0)<parseInt(state.fNum,10)) return false;
+  return true;
+}
+function filterPosts(){ return allPosts().filter(function(p){ return filterBy(p,null); }); }
+
+function isFreshOnly(p){ return /限应届|仅限应届|限20\d\d届|仅限20\d\d届|应届毕业生报考/.test(p.nt||''); }
+function isBaseOnly(p){ var o=(p.ob||'').trim(); return o && o!=='无限制' && o!=='不限' && o!==''; }
+
+/* ===== 匹配判定 ===== */
+function matchPost(p){
+  var r=[];
+  var note=(p.nt||'');
+  var obj=(p.ob||'').trim();
+
+  // 学历
+  var edu=(p.ed||'不限').trim();
+  var eduOk=true;
+  if(edu.indexOf('博士')>=0 && profile.education!=='博士研究生') eduOk=false;
+  else if(edu.indexOf('硕士')>=0 && edu.indexOf('仅限')>=0 && profile.education!=='硕士研究生' && profile.education!=='博士研究生') eduOk=false;
+  else if(edu.indexOf('硕士')>=0 && edu.indexOf('仅限')<0 && profile.education!=='硕士研究生' && profile.education!=='博士研究生' && profile.education!=='本科') eduOk=false;
+  r.push({ok:eduOk,k:'学历',d:eduOk?'符合（'+edu+'）':'要求 '+edu+'，你为 '+profile.education});
+
+  // 学位
+  var deg=(p.dg||'').trim();
+  if(deg && deg.indexOf('不限')<0){
+    var degOk=true;
+    if(deg.indexOf('博士')>=0 && profile.degree!=='博士') degOk=false;
+    else if(deg.indexOf('硕士')>=0 && profile.degree!=='硕士' && profile.degree!=='博士') degOk=false;
+    r.push({ok:degOk,k:'学位',d:degOk?'符合（'+deg+'）':'要求 '+deg});
+  }
+
+  // 专业
+  var mj=(p.mj||'').trim();
+  if(!mj||mj.indexOf('不限')>=0){ r.push({ok:true,k:'专业',d:'专业不限'}); }
+  else{
+    var hit=myMajors().filter(function(x){return x&&mj.indexOf(x)>=0});
+    if(hit.length) r.push({ok:true,k:'专业',d:'匹配（命中：'+hit.join('、')+'）'});
+    else r.push({ok:false,k:'专业',d:'不匹配（要求：'+mj.substring(0,80)+'…）'});
+  }
+
+  // 政治面貌
+  var pol=(p.pl||'').trim();
+  var isCCP = profile.politics==='中共党员'||profile.politics==='中共预备党员';
+  var isCY = profile.politics==='共青团员';
+  if(pol.indexOf('中共党员')>=0 && !isCCP) r.push({ok:false,k:'政治面貌',d:'要求'+pol+'，你为 '+profile.politics});
+  else if(pol==='中共党员或共青团员' && !isCCP && !isCY) r.push({ok:false,k:'政治面貌',d:'要求中共党员或共青团员，你为 '+profile.politics});
+  else r.push({ok:true,k:'政治面貌',d:pol||'不限'});
+
+  // 应届
+  var needFresh=isFreshOnly(p);
+  var freshOk = !needFresh || profile.identity.indexOf('应届')>=0;
+  r.push({ok:freshOk,k:'应届身份',d:needFresh?(freshOk?'限应届毕业生，符合':'限应届毕业生，你为 '+profile.identity):'不限'});
+
+  // 服务基层项目经历
+  var needObj=isBaseOnly(p);
+  if(needObj){
+    var isVet=/退役|服役|士兵/.test(obj);
+    var needSpecial=isVet?'退役':'基层';
+    var objOk = profile.special===needSpecial;
+    r.push({ok:objOk,k:'服务基层项目',d:objOk?'符合（'+obj.substring(0,40)+'…）':'面向'+(isVet?'退役士兵':'服务基层项目人员')+'，你为'+(profile.special==='无'?'普通考生':(profile.special==='退役'?'退役士兵':'基层项目人员'))});
+  }else{
+    r.push({ok:true,k:'服务基层项目',d:'无限制'});
+  }
+
+  // 基层年限
+  if(p.yr>profile.years) r.push({ok:false,k:'基层年限',d:'要求 '+p.yr+' 年，你有 '+profile.years+' 年'});
+  else if(p.yr) r.push({ok:true,k:'基层年限',d:'符合（'+p.yr+' 年）'});
+  else r.push({ok:true,k:'基层年限',d:'无要求'});
+
+  // 性别
+  var gM=/限男性|仅限男性|限招男性/.test(note);
+  var gF=/限女性|仅限女性|限招女性/.test(note);
+  if(gM&&profile.gender!=='男') r.push({ok:false,k:'性别',d:'限男性，你为'+profile.gender});
+  else if(gF&&profile.gender!=='女') r.push({ok:false,k:'性别',d:'限女性，你为'+profile.gender});
+  else r.push({ok:true,k:'性别',d:(gM||gF)?('符合（限'+(gM?'男性':'女性')+'）'):'不限'});
+
+  // 视力
+  var vN=note.match(/裸眼视力低于([\d.]+)不合格/);
+  var myopic=profile.vision==='近视';
+  if(vN && myopic) r.push({ok:false,k:'视力',d:'要求裸眼视力≥'+vN[1]+'，你为近视'});
+  else if(/视力|体检特殊标准/.test(note)) r.push({ok:true,k:'视力',d:'岗位有视力/体检要求（详见备注）'});
+  else r.push({ok:true,k:'视力',d:'无视力要求'});
+
+  // 英语
+  var cetReq='';
+  if(/英语六级|CET6|六级425/.test(note)&&/425/.test(note)) cetReq='六级';
+  else if(/英语四级|CET4|四级425/.test(note)&&/425/.test(note)) cetReq='四级';
+  if(cetReq){
+    var cetOk = cetReq==='六级' ? profile.cet.indexOf('六级')>=0 : (profile.cet.indexOf('四级')>=0||profile.cet.indexOf('六级')>=0);
+    r.push({ok:cetOk,k:'英语',d:cetOk?('符合（'+cetReq+' 425+）'):('要求'+cetReq+' 425+，你为'+(profile.cet==='无'?'无英语等级':profile.cet))});
+  }else if(/英语|CET/.test(note)){
+    r.push({ok:true,k:'英语',d:'岗位有英语要求（未明确分数线）'});
+  }else{
+    r.push({ok:true,k:'英语',d:'无英语要求'});
+  }
+
+  return {ok:r.every(function(x){return x.ok}), reasons:r};
+}
+
+/* ===== 渲染：机关分区 / 机构层级 ===== */
+function renderDims(){
+  var posts=allPosts();
+  function cntBy(get, val, ignore){
+    return posts.filter(function(p){ return filterBy(p,ignore) && get(p)===val; }).length;
+  }
+  partChips.innerHTML='<button class="chip'+(state.part==='all'?' active':'')+'" data-v="all">全部<span class="cnt">('+posts.filter(function(p){return filterBy(p,'part')}).length+')</span></button>'
+    + PARTS.map(function(pt){return '<button class="chip'+(state.part===pt?' active':'')+'" data-v="'+pt+'">'+pt+'<span class="cnt">('+cntBy(function(p){return p.pt},pt,'part')+')</span></button>'}).join('');
+  partChips.querySelectorAll('.chip').forEach(function(b){ b.addEventListener('click',function(){ state.part=b.getAttribute('data-v'); renderAll(); }); });
+
+  levelChips.innerHTML='<button class="chip'+(state.level==='all'?' active':'')+'" data-v="all">全部<span class="cnt">('+posts.filter(function(p){return filterBy(p,'level')}).length+')</span></button>'
+    + LEVELS.map(function(lv){return '<button class="chip'+(state.level===lv?' active':'')+'" data-v="'+lv+'">'+LV_LABEL[lv]+'<span class="cnt">('+cntBy(function(p){return p.lv},lv,'level')+')</span></button>'}).join('');
+  levelChips.querySelectorAll('.chip').forEach(function(b){ b.addEventListener('click',function(){ state.level=b.getAttribute('data-v'); renderAll(); }); });
+}
+
+/* ===== 渲染：地区下拉 ===== */
+function renderRegionSelects(){
+  var base=allPosts().filter(function(p){return filterBy(p,'region')});
+  var pc={}, cc={}, ac={};
+  base.forEach(function(p){
+    if(p.pv){ pc[p.pv]=(pc[p.pv]||0)+1; }
+    if(p.cy){ var ck=p.pv+'|'+p.cy; cc[ck]=(cc[ck]||0)+1; }
+    var ak=p.pv+'|'+p.cy+'|'+p.ar; ac[ak]=(ac[ak]||0)+1;
+  });
+
+  // 省份
+  var provOpts='<option value="all">全部省份 ('+base.length+')</option>';
+  REGIONS.provs.forEach(function(pv){ provOpts+='<option value="'+pv+'"'+(state.prov===pv?' selected':'')+'>'+pv+' ('+(pc[pv]||0)+')</option>'; });
+  provSel.innerHTML=provOpts;
+
+  // 城市
+  var cityList = state.prov!=='all' && REGIONS.byProv[state.prov] ? REGIONS.byProv[state.prov].cities : [];
+  var cityOpts='<option value="all">全部城市</option>';
+  cityList.forEach(function(cy){ cityOpts+='<option value="'+cy+'"'+(state.city===cy?' selected':'')+'>'+cy+' ('+(cc[state.prov+'|'+cy]||0)+')</option>'; });
+  citySel.innerHTML=cityOpts;
+  citySel.disabled = state.prov==='all';
+
+  // 区县
+  var areaList = state.city!=='all' && REGIONS.byProv[state.prov] && REGIONS.byProv[state.prov].byCity[state.city] ? REGIONS.byProv[state.prov].byCity[state.city] : [];
+  var areaOpts='<option value="all">全部区县</option>';
+  areaList.forEach(function(ar){ areaOpts+='<option value="'+(ar||'（未分区县）')+'"'+(state.area===ar?' selected':'')+'>'+(ar||'未分区县')+' ('+(ac[state.prov+'|'+state.city+'|'+ar]||0)+')</option>'; });
+  areaSel.innerHTML=areaOpts;
+  areaSel.disabled = state.city==='all';
+}
+
+/* ===== 渲染：列表 ===== */
+function levelBadge(lv){
+  var cls={'中央':'lv0','省（副省）级':'lv1','市（地）级':'lv2','县（区）级及以下':'lv3'}[lv]||'lv0';
+  var lbl=LV_LABEL[lv]||lv;
+  return '<span class="badge '+cls+'">'+lbl+'</span>';
+}
+function catLabel(c){ if(!c) return ''; if(c.indexOf('行政执法')>=0) return '行政执法'; if(c.indexOf('市（地）')>=0) return '综合管理·市地'; if(c.indexOf('省级')>=0) return '综合管理·省级'; return c; }
+function regionCell(p){
+  var s='<span class="pv">'+(p.pv||'—')+'</span>';
+  if(p.cy && p.cy!==p.pv) s+='<span class="cy">'+(p.cy||'')+(p.ar?' · '+p.ar:'')+'</span>';
+  else if(p.ar) s+='<span class="cy">'+p.ar+'</span>';
+  return '<div class="region-cell">'+s+'</div>';
+}
+function mb(m){ return m.ok?'<span class="match-badge ok">✓ 可报考</span>':'<span class="match-badge no">✕ 不符合</span>'; }
+
+function renderList(){
+  var list=filterPosts();
+  var matched=list.map(function(p){return {p:p,m:matchPost(p)}});
+  if(state.onlyMatch) matched=matched.filter(function(x){return x.m.ok});
+
+  stTotal.textContent=matched.length;
+  stRecruit.textContent=matched.reduce(function(s,x){return s+(x.p.n||0)},0);
+  stMatch.textContent=matched.filter(function(x){return x.m.ok}).length;
+  var parts=[];
+  if(state.part!=='all') parts.push(state.part);
+  if(state.level!=='all') parts.push(LV_LABEL[state.level]);
+  if(state.prov!=='all') parts.push(state.prov+(state.city!=='all'?' '+state.city:'')+(state.area!=='all'?' '+(state.area||'未分区县'):''));
+  stRange.textContent=(parts.length?parts.join(' · '):'全国总览')+(state.search?' · 搜索「'+state.search+'」':'')+(state.onlyMatch?' · 仅可报考':'');
+
+  if(!allPosts().length){
+    emptyTitle.textContent='暂无岗位数据'; emptyDesc.textContent='请上传官方《招考简章》Excel 文件。';
+    emptyHints.innerHTML='<span>📂 上传 Excel</span>'; emptyState.classList.add('show'); tableBody.innerHTML=''; mobileCards.innerHTML=''; return;
+  }
+  if(!matched.length){
+    emptyTitle.textContent='没有符合条件的岗位'; emptyDesc.textContent='试试调整机关分区、机构层级、地区，或清空搜索 / 条件筛选。';
+    emptyHints.innerHTML='<span>🔍 清空搜索</span><span>⚙ 重置筛选</span><span>🌐 全国总览</span>';
+    emptyState.classList.add('show'); tableBody.innerHTML=''; mobileCards.innerHTML=''; return;
+  }
+  emptyState.classList.remove('show');
+
+  tableBody.innerHTML=matched.map(function(x,i){
+    var p=x.p, m=x.m;
+    return '<tr>'
+      +'<td><div class="id-main">'+p.i+'</div><div class="id-sub">部门 '+p.d+' · 职位 '+p.c+'</div></td>'
+      +'<td><div class="cell-main"><span class="u">'+p.dp+'</span><span class="b">'+p.ju+'</span><span class="n">'+p.nm+'</span></div></td>'
+      +'<td><span class="badge part">'+p.pt+'</span></td>'
+      +'<td>'+levelBadge(p.lv)+'</td>'
+      +'<td>'+regionCell(p)+'</td>'
+      +'<td class="num"><span class="recruit">'+(p.n||1)+'</span></td>'
+      +'<td><span class="badge cat">'+catLabel(p.ct)+'</span>'+(p.dt&&p.dt.indexOf('西部')>=0?'<div style="margin-top:3px"><span class="badge west">西部/艰苦</span></div>':'')+'</td>'
+      +'<td>'+(p.mj||'不限')+'</td>'
+      +'<td>'+(p.ed||'不限')+'</td>'
+      +'<td>'+(p.pl||'不限')+'</td>'
+      +'<td>'+mb(m)+'</td>'
+      +'<td><button class="detail-btn" data-idx="'+i+'">详情</button></td>'
+      +'</tr>';
+  }).join('');
+  tableBody.querySelectorAll('.detail-btn').forEach(function(b){ b.addEventListener('click',function(){ openDetail(matched[parseInt(b.getAttribute('data-idx'),10)]); }); });
+
+  mobileCards.innerHTML=matched.map(function(x,i){
+    var p=x.p, m=x.m;
+    return '<div class="m-card">'
+      +'<div class="m-card-head"><span class="u">'+p.dp+'</span>'+mb(m)+'</div>'
+      +'<div class="b">'+p.ju+'</div><div class="n">'+p.nm+'</div>'
+      +'<div class="grid">'
+      +'<span><span class="k">编号：</span>'+p.i+'</span>'
+      +'<span><span class="k">分区：</span>'+p.pt+'</span>'
+      +'<span><span class="k">层级：</span>'+(LV_LABEL[p.lv]||p.lv)+'</span>'
+      +'<span><span class="k">地区：</span>'+p.pv+(p.cy&&p.cy!==p.pv?' '+p.cy:'')+(p.ar?' '+p.ar:'')+'</span>'
+      +'<span><span class="k">招录：</span>'+(p.n||1)+' 人</span>'
+      +'<span><span class="k">类别：</span>'+catLabel(p.ct)+'</span>'
+      +'<span style="grid-column:1/-1"><span class="k">专业：</span>'+(p.mj||'不限')+'</span>'
+      +'<span><span class="k">学历：</span>'+(p.ed||'不限')+'</span>'
+      +'<span><span class="k">政治：</span>'+(p.pl||'不限')+'</span>'
+      +'</div>'
+      +'<div class="m-card-foot"><button class="detail-btn" data-idx="'+i+'">查看详情 →</button></div>'
+      +'</div>';
+  }).join('');
+  mobileCards.querySelectorAll('.detail-btn').forEach(function(b){ b.addEventListener('click',function(){ openDetail(matched[parseInt(b.getAttribute('data-idx'),10)]); }); });
+}
+
+/* ===== 详情 ===== */
+function openDetail(item){
+  var p=item.p, m=item.m;
+  $('dmTitle').textContent=p.dp+' · '+(p.nm||'');
+  $('dmId').textContent=p.i+' · 部门代码 '+p.d+' · 职位代码 '+p.c;
+  var info='<div class="info-grid">'
+    +'<div class="info-cell"><div class="k">岗位编号</div><div class="v">'+p.i+'</div></div>'
+    +'<div class="info-cell"><div class="k">部门代码</div><div class="v">'+p.d+'</div></div>'
+    +'<div class="info-cell"><div class="k">职位代码</div><div class="v">'+p.c+'</div></div>'
+    +'<div class="info-cell"><div class="k">部门名称</div><div class="v">'+p.dp+'</div></div>'
+    +'<div class="info-cell"><div class="k">用人司局</div><div class="v">'+p.ju+'</div></div>'
+    +'<div class="info-cell"><div class="k">机关分区</div><div class="v">'+p.pt+'</div></div>'
+    +'<div class="info-cell"><div class="k">机构性质</div><div class="v">'+p.na+'</div></div>'
+    +'<div class="info-cell"><div class="k">机构层级</div><div class="v">'+(LV_LABEL[p.lv]||p.lv)+'</div></div>'
+    +'<div class="info-cell"><div class="k">考试类别</div><div class="v">'+catLabel(p.ct)+'</div></div>'
+    +'<div class="info-cell"><div class="k">职位属性</div><div class="v">'+p.at+'</div></div>'
+    +'<div class="info-cell"><div class="k">职位分布</div><div class="v">'+p.dt+'</div></div>'
+    +'<div class="info-cell"><div class="k">招考人数</div><div class="v">'+(p.n||1)+' 人</div></div>'
+    +'<div class="info-cell"><div class="k">面试人员比例</div><div class="v">'+(p.or||'3:1')+'</div></div>'
+    +'<div class="info-cell"><div class="k">是否专业测试</div><div class="v">'+(p.tt||'否')+'</div></div>'
+    +'<div class="info-cell"><div class="k">学历要求</div><div class="v">'+(p.ed||'不限')+'</div></div>'
+    +'<div class="info-cell"><div class="k">学位要求</div><div class="v">'+(p.dg||'不限')+'</div></div>'
+    +'<div class="info-cell" style="grid-column:1/-1"><div class="k">专业要求</div><div class="v">'+(p.mj||'不限')+'</div></div>'
+    +'<div class="info-cell"><div class="k">政治面貌</div><div class="v">'+(p.pl||'不限')+'</div></div>'
+    +'<div class="info-cell"><div class="k">基层工作年限</div><div class="v">'+(p.yr?p.yr+' 年':'无限制')+'</div></div>'
+    +'<div class="info-cell"><div class="k">服务基层项目</div><div class="v">'+(p.ob||'不限')+'</div></div>'
+    +'<div class="info-cell"><div class="k">工作地点</div><div class="v">'+p.lc+'</div></div>'
+    +'<div class="info-cell"><div class="k">落户地点</div><div class="v">'+p.st+'</div></div>'
+    +(p.tl?'<div class="info-cell"><div class="k">咨询电话</div><div class="v">'+p.tl+'</div></div>':'')
+    +'</div>';
+  var note=p.nt?'<div style="margin-top:11px"><div class="note-box">📌 '+p.nt+'</div></div>':'';
+  var mHtml='<div class="m-sec" style="margin-top:16px"><div class="m-sec-title">可报考判定</div>'
+    +'<span class="match-sum '+(m.ok?'ok':'no')+'">'+(m.ok?'✓ 符合你的条件，可报考':'✕ 暂不符合你的报考条件')+'</span>'
+    +'<div class="match-list">'+m.reasons.map(function(r){return '<div class="match-item '+(r.ok?'ok':'no')+'"><span class="mk">'+(r.ok?'✓':'✕')+'</span><span class="tx">'+r.k+'：<b>'+r.d+'</b></span></div>';}).join('')+'</div></div>';
+  $('dmBody').innerHTML=info+note+mHtml;
+  detailModal.classList.add('open');
+}
+
+/* ===== 条件条 ===== */
+function renderCondBar(){
+  var spLbl={无:'无',退役:'退役军人',基层:'基层项目'};
+  var tags=['学历 '+profile.education,'政治面貌 '+profile.politics,'身份 '+profile.identity,'视力 '+profile.vision,
+    '英语 '+(profile.cet==='无'?'无':(profile.cet.indexOf('六级')>=0?'六级425+':'四级425+')),
+    '特殊身份 '+(spLbl[profile.special]||profile.special),'专业 '+profile.majors.substring(0,22)+'…'];
+  condTags.innerHTML=tags.map(function(t){var i=t.indexOf(' ');return '<span class="tag">'+t.slice(0,i)+'<b>'+t.slice(i+1)+'</b></span>';}).join('');
+  var list=filterPosts();
+  if(!list.length){ condStatus.textContent='—'; condStatus.className='status'; return; }
+  var mk=list.filter(function(p){return matchPost(p).ok}).length;
+  condStatus.textContent=mk+' / '+list.length+' 可报考'; condStatus.className='status '+(mk?'ok':'no');
+}
+
+function renderAll(){ renderDims(); renderRegionSelects(); renderList(); renderCondBar(); }
+
+function syncToolbar(){ matchToggle.classList.toggle('on',state.onlyMatch); searchClear.style.display=state.search?'block':'none'; }
+
+/* ===== 初始化学历下拉 ===== */
+(function initEdu(){
+  var eds=['本科及以上','仅限本科','本科或硕士研究生','硕士研究生及以上','仅限硕士研究生','仅限博士研究生','大专及以上','仅限大专','大专或本科'];
+  fEdu.innerHTML='<option value="">全部</option>'+eds.map(function(e){return '<option>'+e+'</option>'}).join('');
+})();
+
+/* ===== 事件 ===== */
+searchInput.addEventListener('input',function(){ state.search=searchInput.value; renderAll(); syncToolbar(); });
+searchClear.addEventListener('click',function(){ searchInput.value=''; state.search=''; renderAll(); syncToolbar(); searchInput.focus(); });
+matchToggle.addEventListener('click',function(){ state.onlyMatch=!state.onlyMatch; renderAll(); syncToolbar(); });
+filterToggle.addEventListener('click',function(){ filterPanel.classList.toggle('open'); filterToggle.classList.toggle('on',filterPanel.classList.contains('open')); });
+condBtn.addEventListener('click',function(){ condBar.scrollIntoView({behavior:'smooth',block:'nearest'}); });
+
+provSel.addEventListener('change',function(){ state.prov=provSel.value; if(state.prov==='all'){ state.city='all'; state.area='all'; } else { state.city='all'; state.area='all'; } renderAll(); });
+citySel.addEventListener('change',function(){ state.city=citySel.value; state.area='all'; renderAll(); });
+areaSel.addEventListener('change',function(){ state.area=areaSel.value==='all'?'all':areaSel.value.replace(/^（未分区县）$/,''); renderAll(); });
+regionReset.addEventListener('click',function(){ state.prov='all'; state.city='all'; state.area='all'; renderAll(); });
+
+fEdu.addEventListener('change',function(){ state.fEdu=fEdu.value; renderAll(); });
+fPol.addEventListener('change',function(){ state.fPol=fPol.value; renderAll(); });
+fFresh.addEventListener('change',function(){ state.fFresh=fFresh.value; renderAll(); });
+fBase.addEventListener('change',function(){ state.fBase=fBase.value; renderAll(); });
+fCat.addEventListener('change',function(){ state.fCat=fCat.value; renderAll(); });
+fAttr.addEventListener('change',function(){ state.fAttr=fAttr.value; renderAll(); });
+fDist.addEventListener('change',function(){ state.fDist=fDist.value; renderAll(); });
+fNum.addEventListener('input',function(){ state.fNum=fNum.value; renderAll(); });
+fReset.addEventListener('click',function(){
+  fEdu.value=''; fPol.value=''; fFresh.value=''; fBase.value=''; fCat.value=''; fAttr.value=''; fDist.value=''; fNum.value='';
+  state.fEdu=''; state.fPol=''; state.fFresh=''; state.fBase=''; state.fCat=''; state.fAttr=''; state.fDist=''; state.fNum='';
+  renderAll();
+});
+
+editCond.addEventListener('click',function(){
+  $('cEdu').value=profile.education; $('cDeg').value=profile.degree; $('cPol').value=profile.politics;
+  $('cObj').value=profile.identity; $('cGender').value=profile.gender; $('cVision').value=profile.vision;
+  $('cCet').value=profile.cet; $('cSpecial').value=profile.special; $('cYears').value=profile.years; $('cMajors').value=profile.majors;
+  condModal.classList.add('open');
+});
+$('saveCond').addEventListener('click',function(){
+  profile.education=$('cEdu').value; profile.degree=$('cDeg').value; profile.politics=$('cPol').value;
+  profile.identity=$('cObj').value; profile.gender=$('cGender').value; profile.vision=$('cVision').value;
+  profile.cet=$('cCet').value; profile.special=$('cSpecial').value;
+  profile.years=parseInt($('cYears').value,10)||0; profile.majors=$('cMajors').value.trim();
+  LS.set('profile',profile); condModal.classList.remove('open'); renderAll();
+  var list=filterPosts(); var mk=list.filter(function(p){return matchPost(p).ok}).length;
+  showToast('条件已保存，已重新筛选：'+mk+' / '+list.length+' 个岗位可报考');
+});
+
+/* ===== 上传（国考格式 Excel） ===== */
+function updateUploadUI(){
+  if(uploadedPosts && uploadedPosts.length>0 && state.useUpload){
+    $('uzLoaded').classList.add('show'); $('uzCount').textContent=uploadedPosts.length;
+  }else{
+    $('uzLoaded').classList.remove('show');
+  }
+}
+var MUNI=['北京市','上海市','天津市','重庆市'];
+var ALLP=['北京市','上海市','天津市','重庆市','河北省','山西省','辽宁省','吉林省','黑龙江省','江苏省','浙江省','安徽省','福建省','江西省','山东省','河南省','湖北省','湖南省','广东省','海南省','四川省','贵州省','云南省','陕西省','甘肃省','青海省','台湾省','内蒙古自治区','广西壮族自治区','西藏自治区','宁夏回族自治区','新疆维吾尔自治区','香港特别行政区','澳门特别行政区'];
+function parseRegion(loc){
+  loc=(loc||'').trim(); if(!loc) return ['','',''];
+  var prov=''; var sorted=ALLP.slice().sort(function(a,b){return b.length-a.length});
+  for(var i=0;i<sorted.length;i++){ if(loc.indexOf(sorted[i])===0){ prov=sorted[i]; break; } }
+  if(!prov) return ['','',loc];
+  var rest=loc.slice(prov.length);
+  if(MUNI.indexOf(prov)>=0) return [prov,prov,rest];
+  var pos=[]; ['市','地区','州','盟'].forEach(function(mk){ var ix=rest.indexOf(mk); if(ix>=0) pos.push([ix,mk.length]); });
+  if(pos.length){ pos.sort(function(a,b){return a[0]-b[0]}); return [prov, rest.slice(0,pos[0][0]+pos[0][1]), rest.slice(pos[0][0]+pos[0][1])]; }
+  return [prov, rest, ''];
+}
+function parseExcel(data, filename){
+  try{
+    var wb=XLSX.read(data,{type:'array'}); var posts=[];
+    wb.SheetNames.forEach(function(sn){
+      var ws=wb.Sheets[sn]; var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      if(rows.length<3) return;
+      var hi=-1;
+      for(var r=0;r<Math.min(rows.length,5);r++){
+        if(rows[r].filter(function(c){return c&&String(c).indexOf('部门')>=0}).length>=2){ hi=r; break; }
+      }
+      if(hi<0) return;
+      var h=rows[hi].map(function(c){return String(c).trim()});
+      var ix={};
+      h.forEach(function(c,i){
+        if(c==='部门代码') ix.dept=i; if(c==='部门名称') ix.deptName=i; if(c==='用人司局') ix.bureau=i;
+        if(c==='机构性质') ix.nature=i; if(c==='招考职位') ix.name=i; if(c==='职位属性') ix.attr=i;
+        if(c==='职位分布') ix.dist=i; if(c==='职位代码') ix.post=i; if(c==='机构层级') ix.level=i;
+        if(c==='考试类别') ix.cat=i; if(c==='招考人数') ix.recruit=i; if(c==='专业') ix.major=i;
+        if(c==='学历') ix.edu=i; if(c==='学位') ix.degree=i; if(c==='政治面貌') ix.politics=i;
+        if(c==='基层工作最低年限') ix.years=i; if(c==='服务基层项目工作经历') ix.object=i;
+        if(c==='是否在面试阶段组织专业能力测试') ix.test=i; if(c==='面试人员比例') ix.ratio=i;
+        if(c==='工作地点') ix.loc=i; if(c==='落户地点') ix.settle=i; if(c==='备注') ix.note=i;
+      });
+      var part=sn.indexOf('党群')>=0?'中央党群机关':sn.indexOf('本级')>=0?'中央国家行政机关（本级）':sn.indexOf('直属机构')>=0?'省级以下直属机构':'参照公务员法管理事业单位';
+      for(var r=hi+1;r<rows.length;r++){
+        var row=rows[r];
+        var gv=function(k){ return k in ix ? String(row[ix[k]]||'').trim() : ''; };
+        var dept=gv('dept'), post=gv('post'), dp=gv('deptName'), nm=gv('name');
+        if(!dept&&!dp&&!nm&&!post) continue;
+        var rg=parseRegion(gv('loc'));
+        var yrs=gv('years');
+        var ynum=0; var ym={'一年':1,'二年':2,'三年':3,'四年':4,'五年':5};
+        if(ym[yrs]) ynum=ym[yrs];
+        var n=parseInt(gv('recruit'),10)||0;
+        posts.push({i:(dept+post)||('GK-'+posts.length), d:dept, c:post, dp:dp, ju:gv('bureau'), nm:nm,
+          n:n||1, ed:gv('edu')||'不限', dg:gv('degree'), mj:gv('major')||'不限', pl:gv('politics')||'不限',
+          ob:gv('object')||'不限', yr:ynum, nt:gv('note'), or:gv('ratio'), lv:gv('level'), ct:gv('cat'),
+          na:gv('nature'), at:gv('attr'), dt:gv('dist'), tt:gv('test'), lc:gv('loc'), st:gv('settle'),
+          pv:rg[0], cy:rg[1], ar:rg[2], pt:part, tl:''});
+      }
+    });
+    return posts;
+  }catch(e){ console.error(e); return []; }
+}
+var uploadZone=$('uploadZone'), fileInput=$('fileInput'), uzClear=$('uzClear');
+uploadZone.addEventListener('click',function(e){ if(e.target===uzClear) return; fileInput.click(); });
+uploadZone.addEventListener('dragover',function(e){ e.preventDefault(); uploadZone.style.borderColor='#6366F1'; });
+uploadZone.addEventListener('dragleave',function(){ uploadZone.style.borderColor=''; });
+uploadZone.addEventListener('drop',function(e){ e.preventDefault(); uploadZone.style.borderColor=''; handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change',function(){ handleFiles(fileInput.files); });
+uzClear.addEventListener('click',function(e){ e.stopPropagation(); uploadedPosts=null; state.useUpload=false; LS.set('uploads',null); updateUploadUI(); renderAll(); showToast('已恢复内置 2027 数据'); });
+function handleFiles(files){
+  if(!files||!files.length) return;
+  if(!window.XLSX){
+    showToast('正在加载 Excel 解析组件…');
+    var sc=document.createElement('script');
+    sc.src='https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js';
+    sc.onload=function(){ handleFiles(files); }; sc.onerror=function(){ showToast('Excel 解析组件加载失败'); };
+    document.head.appendChild(sc); return;
+  }
+  var all=[]; var done=0;
+  Array.from(files).forEach(function(file){
+    var rd=new FileReader();
+    rd.onload=function(e){
+      all=all.concat(parseExcel(new Uint8Array(e.target.result), file.name)); done++;
+      if(done===files.length){
+        if(all.length){ uploadedPosts=all; state.useUpload=true; LS.set('uploads',uploadedPosts); REGIONS=buildRegions(); updateUploadUI(); renderAll(); showToast('已解析 '+all.length+' 条岗位'); }
+        else showToast('未能解析出岗位数据');
+      }
+    };
+    rd.readAsArrayBuffer(file);
+  });
+}
+
+/* 关闭 Modal */
+document.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click',function(){ var m=$(b.getAttribute('data-close')); if(m)m.classList.remove('open'); }); });
+[detailModal,condModal].forEach(function(m){ m.addEventListener('click',function(e){ if(e.target===m)m.classList.remove('open'); }); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ detailModal.classList.remove('open'); condModal.classList.remove('open'); } });
+
+/* ===== 初始化 ===== */
+listLoading.classList.add('show');
+if(uploadedPosts && uploadedPosts.length>0) state.useUpload=true;
+updateUploadUI();
+setTimeout(function(){ listLoading.classList.remove('show'); renderAll(); syncToolbar(); }, 300);
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+})();
+</script>
+</body>
+</html>
