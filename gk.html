@@ -37,7 +37,7 @@ input,select{font-family:inherit;outline:none}
 .nav-link{font-size:13px;font-weight:600;color:var(--txt2);padding:6px 14px;border-radius:999px;transition:all .2s}
 .nav-link:hover{background:rgba(99,102,241,.06);color:var(--accent)}
 .nav-link.home{background:var(--accent-grad);color:#fff;box-shadow:0 4px 10px rgba(99,102,241,.3)}
-main{max-width:1240px;margin:0 auto;padding:36px 20px 60px;position:relative;z-index:2}
+main{max-width:1280px;margin:0 auto;padding:36px 20px 60px;position:relative;z-index:2}
 .page-title{margin-bottom:26px}
 .page-title h1{font-size:30px;font-weight:800;letter-spacing:-.01em}
 .page-title h1 .glow{background:var(--blue-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
@@ -76,6 +76,12 @@ main{max-width:1240px;margin:0 auto;padding:36px 20px 60px;position:relative;z-i
 .tool-btn:hover{background:rgba(99,102,241,.08);color:var(--accent)}
 .tool-btn.on{background:var(--accent-grad);color:#fff;box-shadow:0 3px 10px rgba(99,102,241,.32)}
 .tool-btn:disabled{opacity:.35;cursor:not-allowed}
+.export-wrap{position:relative}
+.export-menu{display:none;position:absolute;right:0;top:44px;z-index:60;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.16);padding:6px;min-width:236px}
+.export-menu.open{display:block}
+.export-menu .em-item{display:block;width:100%;text-align:left;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:600;color:var(--txt2);transition:background .15s}
+.export-menu .em-item:hover{background:rgba(99,102,241,.08);color:var(--accent)}
+.export-menu .em-item .sub{display:block;font-size:11px;font-weight:500;color:var(--txt3);margin-top:1px}
 .cond-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:rgba(99,102,241,.03);border:1px solid rgba(99,102,241,.1);border-radius:14px}
 .cond-bar .tt{font-size:13px;font-weight:700;color:var(--txt2);flex-shrink:0}
 .cond-bar .tags{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:180px}
@@ -102,14 +108,15 @@ main{max-width:1240px;margin:0 auto;padding:36px 20px 60px;position:relative;z-i
 .list-area{position:relative;min-height:240px}
 .list-loading{display:none;position:absolute;inset:0;z-index:5;background:rgba(255,255,255,.7);backdrop-filter:blur(2px);align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--txt2);font-weight:600}
 .list-loading.show{display:flex}
-.post-table-wrap{overflow-x:auto}
-table.post-table{width:100%;border-collapse:collapse;min-width:1240px}
+.post-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.post-table{width:100%;border-collapse:collapse;min-width:1120px}
 .post-table th{text-align:left;padding:12px 14px;font-size:11px;font-weight:700;color:var(--txt3);letter-spacing:.06em;background:rgba(0,0,0,.02);border-bottom:.5px solid var(--sep);white-space:nowrap;position:sticky;top:0;z-index:2}
 .post-table td{padding:13px 14px;font-size:13px;border-bottom:.5px solid rgba(0,0,0,.04);vertical-align:middle;color:var(--txt2)}
+.post-table td.mj{max-width:220px;overflow-wrap:anywhere;word-break:break-word;line-height:1.5}
 .post-table tbody tr{transition:background .12s}
 .post-table tbody tr:hover{background:rgba(99,102,241,.035)}
 .post-table tbody tr:last-child td{border-bottom:none}
-.cell-main{display:flex;flex-direction:column;gap:3px;max-width:340px}
+.cell-main{display:flex;flex-direction:column;gap:3px;max-width:300px;overflow-wrap:anywhere}
 .cell-main .u{font-weight:600;color:var(--txt);font-size:13.5px;line-height:1.45}
 .cell-main .b{font-size:12px;color:var(--txt3)}
 .cell-main .n{font-size:12px;color:var(--txt3)}
@@ -189,9 +196,22 @@ table.post-table{width:100%;border-collapse:collapse;min-width:1240px}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px;line-height:1.8}
 ::-webkit-scrollbar{width:8px;height:8px}
-::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:8px}
+::-webkit-scrollbar-thumb{background:rgba(0,0,0,.24);border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.38)}
 ::-webkit-scrollbar-track{background:transparent}
 @media(max-width:920px){.mobile-cards{display:flex}.post-table-wrap{display:none}.stats-bar{gap:16px}.stats-right{margin-left:0;width:100%;max-width:100%}.page-title h1{font-size:24px}}
+@media print{
+  .nav,.upload-zone,.tool-area,.stats-bar,.pager,.empty-state,footer,#toast,.modal-overlay,.export-wrap,.bg-aura{display:none!important}
+  .mobile-cards{display:none!important}
+  .post-table-wrap{display:block!important;overflow:visible}
+  table.post-table{min-width:0;font-size:11px}
+  .post-table th,.post-table td{padding:5px 8px}
+  .app-card{box-shadow:none;border:none;border-radius:0}
+  main{max-width:none;padding:0}
+  body{background:#fff}
+  .detail-btn{display:none!important}
+}
+@page{size:A4 landscape;margin:8mm}
 </style>
 </head>
 <body>
@@ -207,7 +227,7 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
 <main>
   <div class="page-title">
     <h1><span class="glow">2027 国考 · 全国岗位报考筛选</span></h1>
-    <p>中央机关及其直属机构 2027 年度考试录用公务员 · 全国 19,426 个岗位 · 按「机关分区 / 机构层级 / 省市区」三维筛选 · 自动判定可报考<br><span style="opacity:.75">岗位编号 = 部门代码 + 职位代码，可直接在官方《招考简章》Excel 中定位</span></p>
+    <p>中央机关及其直属机构 2027 年度考试录用公务员 · 全国 19,426 个岗位 · 按「机关分区 / 机构层级 / 省市区」三维筛选 · 自动判定可报考<br><span style="opacity:.75">源表定位：用「部门代码」(第1列) +「职位代码」(第9列) 在《招考简章》Excel 中 Ctrl+F；岗位编号 = 两者拼接（源表中无此合并列）</span></p>
   </div>
 
   <div class="upload-zone" id="uploadZone">
@@ -243,6 +263,16 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
         <button class="tool-btn" id="matchToggle">◎ 只看可报考</button>
         <button class="tool-btn" id="filterToggle">⚙ 条件筛选</button>
         <button class="tool-btn" id="condBtn">🧑‍💼 我的条件</button>
+        <div class="export-wrap" id="exportWrap">
+          <button class="tool-btn" id="exportBtn">📥 导出</button>
+          <div class="export-menu" id="exportMenu">
+            <button class="em-item" data-scope="page" data-fmt="xlsx">Excel (.xlsx)<span class="sub">导出当前页</span></button>
+            <button class="em-item" data-scope="all" data-fmt="xlsx">Excel (.xlsx)<span class="sub">导出全部筛选结果</span></button>
+            <button class="em-item" data-scope="page" data-fmt="csv">CSV (.csv)<span class="sub">导出当前页</span></button>
+            <button class="em-item" data-scope="all" data-fmt="csv">CSV (.csv)<span class="sub">导出全部筛选结果</span></button>
+            <button class="em-item" data-scope="page" data-fmt="pdf">打印 / 导出 PDF<span class="sub">打印当前页，可另存为 PDF</span></button>
+          </div>
+        </div>
       </div>
       <div class="cond-bar" id="condBar">
         <span class="tt">🧑‍💼 我的条件</span>
@@ -367,6 +397,8 @@ var LEVELS = ['中央','省（副省）级','市（地）级','县（区）级�
 var LV_LABEL = {'中央':'中央（本级）','省（副省）级':'省（副省）级','市（地）级':'市（地）级','县（区）级及以下':'县（区）级及以下'};
 var PROV_ORDER = ['北京市','上海市','天津市','重庆市','河北省','山西省','辽宁省','吉林省','黑龙江省','江苏省','浙江省','安徽省','福建省','江西省','山东省','河南省','湖北省','湖南省','广东省','海南省','四川省','贵州省','云南省','陕西省','甘肃省','青海省','台湾省','内蒙古自治区','广西壮族自治区','西藏自治区','宁夏回族自治区','新疆维吾尔自治区','香港特别行政区','澳门特别行政区'];
 var PAGE_SIZE = 100;
+var EDU_RANK = {'大专':1,'本科':2,'硕士研究生':3,'博士研究生':4};
+var DEG_RANK = {'学士':1,'硕士':2,'博士':3};
 
 var LS = {
   get:function(k,d){ try{ var v=localStorage.getItem('gk_'+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
@@ -394,7 +426,7 @@ var partChips=$('partChips'), levelChips=$('levelChips'), provSel=$('provSel'), 
   listLoading=$('listLoading'), tableBody=$('tableBody'), mobileCards=$('mobileCards'),
   emptyState=$('emptyState'), emptyTitle=$('emptyTitle'), emptyDesc=$('emptyDesc'), emptyHints=$('emptyHints'),
   pager=$('pager'), pagerInfo=$('pagerInfo'), pgFirst=$('pgFirst'), pgPrev=$('pgPrev'), pgNext=$('pgNext'), pgLast=$('pgLast'),
-  detailModal=$('detailModal'), condModal=$('condModal'), toast=$('toast');
+  detailModal=$('detailModal'), condModal=$('condModal'), toast=$('toast'), exportBtn=$('exportBtn'), exportMenu=$('exportMenu');
 
 var toastTimer;
 function showToast(t){ toast.textContent=t; toast.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){toast.classList.remove('show')},3000); }
@@ -451,21 +483,24 @@ function isBaseOnly(p){ var o=(p.ob||'').trim(); return o && o!=='无限制' && 
 /* ===== 匹配判定（基于预计算 flag，无正则） ===== */
 function matchPost(p){
   var r=[];
-  // 学历
+  // 学历（按学历等级精确匹配）
+  function eduMatch(req,my){
+    req=(req||'').trim(); if(!req||req==='不限') return true;
+    var rk=EDU_RANK[my]||0;
+    var only=req.match(/^仅限(.+)$/); if(only) return EDU_RANK[only[1]]===rk;
+    var above=req.match(/^(.+)及以上$/); if(above) return rk>=(EDU_RANK[above[1]]||99);
+    if(req.indexOf('或')>=0) return req.split('或').some(function(x){return EDU_RANK[x]===rk;});
+    return EDU_RANK[req]===rk;
+  }
   var edu=(p.ed||'不限').trim();
-  var eduOk=true;
-  if(edu.indexOf('博士')>=0 && profile.education!=='博士研究生') eduOk=false;
-  else if(edu.indexOf('硕士')>=0 && edu.indexOf('仅限')>=0 && profile.education!=='硕士研究生' && profile.education!=='博士研究生') eduOk=false;
-  else if(edu.indexOf('硕士')>=0 && edu.indexOf('仅限')<0 && profile.education!=='硕士研究生' && profile.education!=='博士研究生' && profile.education!=='本科') eduOk=false;
+  var eduOk=eduMatch(edu, profile.education);
   r.push({ok:eduOk,k:'学历',d:eduOk?'符合（'+edu+'）':'要求 '+edu+'，你为 '+profile.education});
 
-  // 学位
+  // 学位（按学位等级匹配，'与最高学历相对应的学位'随学历判定，无需单独卡）
   var deg=(p.dg||'').trim();
-  if(deg && deg.indexOf('不限')<0){
-    var degOk=true;
-    if(deg.indexOf('博士')>=0 && profile.degree!=='博士') degOk=false;
-    else if(deg.indexOf('硕士')>=0 && profile.degree!=='硕士' && profile.degree!=='博士') degOk=false;
-    r.push({ok:degOk,k:'学位',d:degOk?'符合（'+deg+'）':'要求 '+deg});
+  if(deg==='学士'||deg==='硕士'||deg==='博士'){
+    var degOk=(DEG_RANK[profile.degree]||0)>=(DEG_RANK[deg]||0);
+    r.push({ok:degOk,k:'学位',d:degOk?'符合（'+deg+'）':'要求 '+deg+'，你为 '+profile.degree});
   }
 
   // 专业
@@ -477,26 +512,30 @@ function matchPost(p){
     else r.push({ok:false,k:'专业',d:'不匹配（要求：'+mj.substring(0,80)+'…）'});
   }
 
-  // 政治面貌
+  // 政治面貌（'中共党员或共青团员'应允许团员）
   var pol=(p.pl||'').trim();
   var isCCP = profile.politics==='中共党员'||profile.politics==='中共预备党员';
   var isCY = profile.politics==='共青团员';
-  if(pol.indexOf('中共党员')>=0 && !isCCP) r.push({ok:false,k:'政治面貌',d:'要求'+pol+'，你为 '+profile.politics});
-  else if(pol==='中共党员或共青团员' && !isCCP && !isCY) r.push({ok:false,k:'政治面貌',d:'要求中共党员或共青团员，你为 '+profile.politics});
-  else r.push({ok:true,k:'政治面貌',d:pol||'不限'});
+  var polOk=true;
+  if(pol==='中共党员或共青团员') polOk = isCCP||isCY;
+  else if(pol.indexOf('中共党员')>=0) polOk = isCCP;
+  else if(pol==='共青团员') polOk = isCY;
+  r.push({ok:polOk,k:'政治面貌',d:polOk?'符合（'+(pol||'不限')+'）':'要求 '+pol+'，你为 '+profile.politics});
 
   // 应届
   var needFresh = p.f===1;
   var freshOk = !needFresh || profile.identity.indexOf('应届')>=0;
   r.push({ok:freshOk,k:'应届身份',d:needFresh?(freshOk?'限应届毕业生，符合':'限应届毕业生，你为 '+profile.identity):'不限'});
 
-  // 服务基层项目
+  // 服务基层项目（混合列表：基层项目人员与退役士兵均可报）
   var needObj=isBaseOnly(p);
   if(needObj){
-    var isVet=/退役|服役|士兵/.test(p.ob);
-    var needSpecial=isVet?'退役':'基层';
-    var objOk = profile.special===needSpecial;
-    r.push({ok:objOk,k:'服务基层项目',d:objOk?'符合（'+p.ob.substring(0,40)+'…）':'面向'+(isVet?'退役士兵':'服务基层项目人员')+'，你为'+(profile.special==='无'?'普通考生':(profile.special==='退役'?'退役士兵':'基层项目人员'))});
+    var needBase=/村官|三支一扶|西部计划|特岗|服务基层|农村义务教育/.test(p.ob);
+    var needVet=/退役|服役|士兵/.test(p.ob);
+    var objOk=(needBase && profile.special==='基层')||(needVet && profile.special==='退役');
+    var reqLbl=(needBase?'服务基层项目人员':'')+(needBase&&needVet?' / ':'')+(needVet?'退役士兵':'');
+    var myLbl=profile.special==='无'?'普通考生':(profile.special==='退役'?'退役士兵':'服务基层项目人员');
+    r.push({ok:objOk,k:'服务基层项目',d:objOk?'符合（'+p.ob.substring(0,40)+'…）':'面向'+reqLbl+'，你为'+myLbl});
   }else{
     r.push({ok:true,k:'服务基层项目',d:'无限制'});
   }
@@ -616,7 +655,7 @@ function renderList(){
       +'<td>'+regionCell(p)+'</td>'
       +'<td class="num"><span class="recruit">'+(p.n||1)+'</span></td>'
       +'<td><span class="badge cat">'+catLabel(p.ct)+'</span>'+(p.dt&&p.dt.indexOf('西部')>=0?'<div style="margin-top:3px"><span class="badge west">西部/艰苦</span></div>':'')+'</td>'
-      +'<td>'+(p.mj||'不限')+'</td>'
+      +'<td class="mj">'+(p.mj||'不限')+'</td>'
       +'<td>'+(p.ed||'不限')+'</td>'
       +'<td>'+(p.pl||'不限')+'</td>'
       +'<td>'+mb(m)+'</td>'
@@ -666,8 +705,8 @@ function findPostById(id){
 
 /* ===== 备注懒加载 ===== */
 var notesPromise=null;
-function getNote(id, cb){
-  if(window.GK_NOTES){ cb(window.GK_NOTES[id]||''); return; }
+function ensureNotes(cb){
+  if(window.GK_NOTES){ cb(window.GK_NOTES); return; }
   if(!notesPromise){
     notesPromise=new Promise(function(res){
       var sc=document.createElement('script');
@@ -677,8 +716,78 @@ function getNote(id, cb){
       document.head.appendChild(sc);
     });
   }
-  notesPromise.then(function(m){ cb(m[id]||''); });
+  notesPromise.then(cb);
 }
+function getNote(id, cb){
+  ensureNotes(function(m){ cb(m[id]||''); });
+}
+
+/* ===== 导出 ===== */
+var EXPORT_HEADERS=['岗位编号','部门代码','职位代码','部门名称','用人司局','招考职位','机关分区','机构层级','考试类别','职位属性','职位分布','省份','城市','区县','工作地点','落户地点','招考人数','面试人员比例','学历','学位','专业','政治面貌','服务基层项目','基层工作年限','是否面试专业测试','咨询电话','可报考','备注'];
+function exportRow(p,m,note){
+  return [p.i,p.d,p.c,p.dp,p.ju,p.nm,p.pt,(LV_LABEL[p.lv]||p.lv),catLabel(p.ct),p.at,p.dt,p.pv,p.cy,p.ar,p.lc,p.st,p.n,p.or,p.ed,p.dg,p.mj,p.pl,p.ob,p.yr,p.tt,p.tl,(m.ok?'可报考':'不符合'),(note||'')];
+}
+function csvCell(v){
+  v=(v===null||v===undefined)?'':String(v);
+  if(/[",\r\n]/.test(v)) return '"'+v.replace(/"/g,'""')+'"';
+  return v;
+}
+function downloadBlob(content,filename,mime){
+  var blob=new Blob([content],{type:mime});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); },1000);
+}
+function exportCSV(data,filename){
+  var lines=[EXPORT_HEADERS.map(csvCell).join(',')];
+  data.forEach(function(r){ lines.push(r.map(csvCell).join(',')); });
+  downloadBlob('\ufeff'+lines.join('\r\n'), filename+'.csv', 'text/csv;charset=utf-8');
+  showToast('已导出 '+data.length+' 条 CSV');
+}
+var xlsxPromise=null;
+function ensureXLSX(cb){
+  if(window.XLSX){ cb(); return; }
+  showToast('正在加载 Excel 组件…');
+  if(!xlsxPromise){
+    xlsxPromise=new Promise(function(res){
+      var sc=document.createElement('script');
+      sc.src='https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js';
+      sc.onload=function(){ res(true); };
+      sc.onerror=function(){ res(false); };
+      document.head.appendChild(sc);
+    });
+  }
+  xlsxPromise.then(function(ok){ if(ok){ cb(); } else { showToast('Excel 组件加载失败，请改用 CSV 导出'); } });
+}
+function exportXLSX(data,filename){
+  var aoa=[EXPORT_HEADERS].concat(data);
+  var ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=EXPORT_HEADERS.map(function(h){ return {wch: Math.max(8, Math.min(42, h.length*2))}; });
+  var wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '岗位');
+  XLSX.writeFile(wb, filename+'.xlsx');
+  showToast('已导出 '+data.length+' 条 Excel');
+}
+function doExport(scope,fmt){
+  var rows = scope==='all' ? CUR.matched : CUR.matched.slice(state.page*PAGE_SIZE, state.page*PAGE_SIZE+PAGE_SIZE);
+  if(!rows.length){ showToast('没有可导出的数据'); return; }
+  var tag = scope==='all' ? '全部' : ('第'+(state.page+1)+'页');
+  var filename = '国考2027_'+tag+'_'+new Date().toISOString().slice(0,10);
+  if(fmt==='pdf'){ window.print(); return; }
+  showToast('正在准备导出…');
+  ensureNotes(function(notes){
+    var data=rows.map(function(x){ return exportRow(x.p, x.m, notes[x.p.i]||''); });
+    if(fmt==='csv') exportCSV(data, filename);
+    else ensureXLSX(function(){ exportXLSX(data, filename); });
+  });
+}
+exportBtn.addEventListener('click', function(e){ e.stopPropagation(); exportMenu.classList.toggle('open'); });
+document.addEventListener('click', function(){ exportMenu.classList.remove('open'); });
+exportMenu.querySelectorAll('.em-item').forEach(function(b){
+  b.addEventListener('click', function(e){ e.stopPropagation(); exportMenu.classList.remove('open'); doExport(b.getAttribute('data-scope'), b.getAttribute('data-fmt')); });
+});
 
 /* ===== 详情 ===== */
 function openDetailById(id){
@@ -715,7 +824,8 @@ function openDetailById(id){
   var mHtml='<div class="m-sec" style="margin-top:16px"><div class="m-sec-title">可报考判定</div>'
     +'<span class="match-sum '+(m.ok?'ok':'no')+'">'+(m.ok?'✓ 符合你的条件，可报考':'✕ 暂不符合你的报考条件')+'</span>'
     +'<div class="match-list">'+m.reasons.map(function(r){return '<div class="match-item '+(r.ok?'ok':'no')+'"><span class="mk">'+(r.ok?'✓':'✕')+'</span><span class="tx">'+r.k+'：<b>'+r.d+'</b></span></div>';}).join('')+'</div></div>';
-  $('dmBody').innerHTML=info+'<div style="margin-top:11px" id="dmNote"><div class="note-box">📌 加载备注…</div></div>'+mHtml;
+  var srcHint='<div style="margin-top:11px"><div class="note-box">🔎 源表定位：打开《招考简章》Excel，在「部门代码」列（第1列·A列）Ctrl+F 搜索 <b>'+p.d+'</b>，再在「职位代码」列（第9列·I列）核对 <b>'+p.c+'</b> 即可定位该行。岗位编号 = 部门代码+职位代码（本站用于唯一标识，源表中无此合并列）。</div></div>';
+  $('dmBody').innerHTML=info+srcHint+'<div style="margin-top:11px" id="dmNote"><div class="note-box">📌 加载备注…</div></div>'+mHtml;
   detailModal.classList.add('open');
   getNote(p.i, function(note){
     var el=$('dmNote');
