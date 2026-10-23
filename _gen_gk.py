@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """Generate nationwide 国考 data (optimized for fast front-end):
 - intern low-cardinality string fields into a shared S table (stored as int index)
-- precompute match flags (f=限应届, g=性别, v=裸眼视力, e=英语) so matchPost avoids regex on note
+- precompute match flags (fr=应届要求, g=性别, v=裸眼视力, e=英语) so matchPost avoids regex on note
 - move the long 备注 (note) to a separate lazy-loaded file job-data-gk-notes.js
 
 posts schema (int fields resolve via S table on the page):
   i=id d=deptCode c=postCode dp=部门名称 ju=用人司局 nm=职位 n=招录人数
   [interned->int]: na=机构性质 pt=机关分区 lv=机构层级 ct=考试类别 dt=职位分布 at=职位属性 tt=面试测试 ed=学历 pl=政治面貌 dg=学位 ob=服务基层项目
   yr=基层年限 or=面试比例 lc=工作地点 st=落户地点 pv=省 cy=市 ar=区县 tl=电话
-  f=限应届(0/1) g=性别('m'/'f'/'') v=裸眼视力阈值(number,0=无) e=英语('6'/'4'/'')
+  fr=应届要求(0不限/1限应届含择业期/2限当年应届2027届) g=性别('m'/'f'/'') v=裸眼视力阈值(number,0=无) e=英语('6'/'4'/'')
 """
 import xlrd, json, io, re
 
@@ -73,7 +73,15 @@ def cv(sh, r, c):
     return str(v).strip()
 
 def flags(note):
-    f = 1 if re.search(r'限应届|仅限应届|限20\d\d届|仅限20\d\d届|应届毕业生报考', note) else 0
+    # 应届分类：2=限当年应届(2027届) / 1=限应届(含择业期) / 0=不限
+    if re.search(r'非2027届', note):
+        fr = 0
+    elif re.search(r'2027届|2027年应届|2027年毕业', note):
+        fr = 2
+    elif re.search(r'限应届|仅限应届', note):
+        fr = 1
+    else:
+        fr = 0
     g = ''
     if re.search(r'限男性|仅限男性|限招男性', note):
         g = 'm'
@@ -88,7 +96,7 @@ def flags(note):
         e = '6'
     elif re.search(r'英语四级|CET4|四级425', note) and '425' in note:
         e = '4'
-    return f, g, v, e
+    return fr, g, v, e
 
 class Intern:
     def __init__(self):
@@ -156,7 +164,7 @@ def main():
 
             pid = (dept + postCode) if (dept and postCode) else ('GK-' + str(len(posts)))
             tels = '、'.join(t for t in (tel1, tel2, tel3) if t)
-            f, g, v, e = flags(note)
+            fr, g, v, e = flags(note)
 
             posts.append({
                 'i': pid, 'd': dept, 'c': postCode,
@@ -169,7 +177,7 @@ def main():
                 'yr': years_to_num(years), 'or': ratio,
                 'mj': major or '不限',
                 'lc': loc, 'st': settle, 'pv': prov, 'cy': city, 'ar': area, 'tl': tels,
-                'f': f, 'g': g, 'v': v, 'e': e,
+                'fr': fr, 'g': g, 'v': v, 'e': e,
             })
             notes[pid] = note
             cnt += 1

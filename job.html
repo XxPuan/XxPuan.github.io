@@ -188,6 +188,12 @@ table.post-table{width:100%;border-collapse:collapse;min-width:1120px}
 .match-sum{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;padding:9px 18px;border-radius:999px;margin-bottom:10px}
 .match-sum.ok{background:var(--ok-bg);color:var(--ok)}
 .match-sum.no{background:rgba(255,59,48,.08);color:var(--no)}
+.ov-btn{padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--txt2);background:rgba(118,118,128,.08);transition:all .15s}
+.ov-btn:hover{background:rgba(99,102,241,.1);color:var(--accent)}
+.ov-btn.active{background:var(--accent-grad);color:#fff}
+.ov-btn.ok.active{background:var(--ok);color:#fff}
+.ov-btn.no.active{background:var(--no);color:#fff}
+.match-badge.manual{box-shadow:0 0 0 1.5px var(--accent) inset}
 .match-list{display:flex;flex-direction:column;gap:6px}
 .match-item{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;line-height:1.6;padding:9px 13px;border-radius:9px;background:rgba(0,0,0,.02)}
 .match-item .mk{font-weight:800;flex-shrink:0;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:2px}
@@ -286,7 +292,7 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
       <div class="filter-panel" id="filterPanel">
         <div class="f-item"><label>学历要求</label><select id="fEdu"><option value="">全部</option></select></div>
         <div class="f-item"><label>政治面貌</label><select id="fPol"><option value="">全部</option><option>不限</option><option>中共党员</option><option>中共党员或共青团员</option></select></div>
-        <div class="f-item"><label>应届要求</label><select id="fFresh"><option value="">全部</option><option value="1">仅限应届毕业生</option><option value="0">不限应届</option></select></div>
+        <div class="f-item"><label>应届要求</label><select id="fFresh"><option value="">全部</option><option value="2">限当年应届（2027届）</option><option value="1">限应届（含择业期）</option><option value="0">不限应届</option></select></div>
         <div class="f-item"><label>基层项目</label><select id="fBase"><option value="">全部</option><option value="0">无限制</option><option value="1">面向基层项目/退役士兵</option></select></div>
         <div class="f-item"><label>考试类别</label><select id="fCat"><option value="">全部</option><option>行政执法类</option><option>市（地）级及以下直属机构综合管理类</option><option>中央机关及其省级直属机构综合管理类</option></select></div>
         <div class="f-item"><label>职位属性</label><select id="fAttr"><option value="">全部</option><option>普通职位</option><option>公安机关人民警察职位</option><option value="金融监管">金融监管类职位</option><option value="证监">证监类职位</option><option>特殊专业职位</option><option value="非通用语">非通用语职位</option></select></div>
@@ -351,7 +357,7 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
         <div class="f-item"><label>学历</label><select id="cEdu"><option value="本科">本科</option><option value="硕士研究生">硕士研究生</option><option value="博士研究生">博士研究生</option></select></div>
         <div class="f-item"><label>学位</label><select id="cDeg"><option value="学士">学士</option><option value="硕士">硕士</option><option value="博士">博士</option></select></div>
         <div class="f-item"><label>政治面貌</label><select id="cPol"><option value="共青团员">共青团员</option><option value="中共预备党员">中共预备党员</option><option value="中共党员">中共党员</option><option value="群众">群众</option></select></div>
-        <div class="f-item"><label>身份</label><select id="cObj"><option value="应届毕业生">应届毕业生</option><option value="社会人员">社会人员</option></select></div>
+        <div class="f-item"><label>身份（应届分类）</label><select id="cObj"><option value="当年应届">当年应届（2027届）</option><option value="择业期应届">择业期应届（2025/2026届）</option><option value="社会人员">社会人员（非应届）</option></select></div>
         <div class="f-item"><label>性别</label><select id="cGender"><option value="男">男</option><option value="女">女</option></select></div>
         <div class="f-item"><label>视力</label><select id="cVision"><option value="不近视">不近视</option><option value="近视">近视</option></select></div>
         <div class="f-item"><label>英语水平</label><select id="cCet"><option value="大学英语四级425分及以上">四级 425+</option><option value="大学英语六级425分及以上">六级 425+</option><option value="无">无英语等级</option></select></div>
@@ -413,13 +419,15 @@ var state = { part:'all', level:'all', prov:'all', city:'all', area:'all', searc
   fEdu:'', fPol:'', fFresh:'', fBase:'', fCat:'', fAttr:'', fDist:'', fNum:'', useUpload:false };
 
 var profile = Object.assign({
-  education:'本科', degree:'学士', politics:'中共预备党员', identity:'应届毕业生',
+  education:'本科', degree:'学士', politics:'中共预备党员', identity:'择业期应届',
   gender:'男', years:0, vision:'不近视', cet:'大学英语四级425分及以上', special:'无',
   majors:'计算机类,电子信息类,物联网工程,软件工程,网络工程'
 }, LS.get('profile',{}));
+if(profile.identity==='应届毕业生') profile.identity='择业期应届'; // 旧数据迁移：应届毕业生→择业期应届
 
 var uploadedPosts = LS.get('uploads2', null);
 var favorites = new Set(LS.get('favs', []));
+var overrides = LS.get('overrides', {});
 var currentDetailId = null;
 function toggleFav(id){
   var on = !favorites.has(id);
@@ -493,8 +501,9 @@ function filterBy(p, ignore){
   if(state.onlyFav && !favorites.has(p.i)) return false;
   if(state.fEdu && (p.ed||'')!==state.fEdu) return false;
   if(state.fPol && (p.pl||'')!==state.fPol) return false;
-  if(state.fFresh==='1' && p.f!==1) return false;
-  if(state.fFresh==='0' && p.f===1) return false;
+  if(state.fFresh==='2' && p.fr!==2) return false;
+  if(state.fFresh==='1' && p.fr!==1) return false;
+  if(state.fFresh==='0' && p.fr!==0) return false;
   if(state.fBase==='0' && isBaseOnly(p)) return false;
   if(state.fBase==='1' && !isBaseOnly(p)) return false;
   if(state.fCat && (p.ct||'')!==state.fCat) return false;
@@ -505,6 +514,7 @@ function filterBy(p, ignore){
 }
 function filterPosts(){ return allPosts().filter(function(p){ return filterBy(p,null); }); }
 function isBaseOnly(p){ var o=(p.ob||'').trim(); return o && o!=='无限制' && o!=='不限' && o!==''; }
+function freshRankOf(id){ return id==='当年应届'?2:(id==='择业期应届'?1:0); }
 
 /* ===== 匹配判定（基于预计算 flag，无正则） ===== */
 function matchPost(p){
@@ -549,9 +559,11 @@ function matchPost(p){
   r.push({ok:polOk,k:'政治面貌',d:polOk?'符合（'+(pol||'不限')+'）':'要求 '+pol+'，你为 '+profile.politics});
 
   // 应届
-  var needFresh = p.f===1;
-  var freshOk = !needFresh || profile.identity.indexOf('应届')>=0;
-  r.push({ok:freshOk,k:'应届身份',d:needFresh?(freshOk?'限应届毕业生，符合':'限应届毕业生，你为 '+profile.identity):'不限'});
+  var fr = p.fr||0;
+  var myRank = freshRankOf(profile.identity);
+  var freshOk = myRank >= fr;
+  var frLbl = fr===2 ? '限当年应届（2027届）' : (fr===1 ? '限应届（含择业期）' : '不限');
+  r.push({ok:freshOk,k:'应届身份',d:freshOk?('符合（'+frLbl+'）'):('要求 '+frLbl+'，你为 '+profile.identity)});
 
   // 服务基层项目（混合列表：基层项目人员与退役士兵均可报）
   var needObj=isBaseOnly(p);
@@ -588,12 +600,31 @@ function matchPost(p){
 
   return {ok:r.every(function(x){return x.ok}), reasons:r};
 }
+function effectiveMatch(p){
+  var m = matchPost(p);
+  var ov = overrides[p.i];
+  if(ov === 'ok'){ m.ok = true; m.manual = 'ok'; }
+  else if(ov === 'no'){ m.ok = false; m.manual = 'no'; }
+  return m;
+}
+function setOverride(id, v){
+  if(v === 'auto') delete overrides[id];
+  else overrides[id] = v;
+  LS.set('overrides', overrides);
+  compute();
+  renderList();
+  renderCondBar();
+  renderPager();
+  var item = findPostById(id);
+  if(item) openDetailById(id);
+  showToast(v==='auto' ? '已还原自动判定' : (v==='ok' ? '已手动标记为可报考' : '已手动标记为不可报考'));
+}
 
 var CUR = {list:[], matchedAll:[], matched:[]};
 function compute(){
   state._kw = state.search.trim().toLowerCase();
   CUR.list = filterPosts();
-  CUR.matchedAll = CUR.list.map(function(p){ return {p:p, m:matchPost(p)}; });
+  CUR.matchedAll = CUR.list.map(function(p){ return {p:p, m:effectiveMatch(p)}; });
   CUR.matched = state.onlyMatch ? CUR.matchedAll.filter(function(x){return x.m.ok;}) : CUR.matchedAll;
 }
 
@@ -645,7 +676,7 @@ function regionCell(p){
   else if(p.ar) s+='<span class="cy">'+p.ar+'</span>';
   return '<div class="region-cell">'+s+'</div>';
 }
-function mb(m){ return m.ok?'<span class="match-badge ok">✓ 可报考</span>':'<span class="match-badge no">✕ 不符合</span>'; }
+function mb(m){ var cls=(m.ok?'ok':'no')+(m.manual?' manual':''); var lbl=(m.ok?'✓ 可报考':'✕ 不符合')+(m.manual?'<i style="font-style:normal;opacity:.7"> ·手动</i>':''); return '<span class="match-badge '+cls+'">'+lbl+'</span>'; }
 
 function renderList(){
   var start = state.page*PAGE_SIZE;
@@ -858,12 +889,30 @@ function openDetailById(id){
     +'<div class="info-cell"><div class="k">落户地点</div><div class="v">'+p.st+'</div></div>'
     +(p.tl?'<div class="info-cell"><div class="k">咨询电话</div><div class="v">'+p.tl+'</div></div>':'')
     +'</div>';
+  var sumLabel = m.manual==='ok' ? '✓ 手动标记：可报考' : (m.manual==='no' ? '✕ 手动标记：不可报考' : (m.ok?'✓ 符合你的条件，可报考':'✕ 暂不符合你的报考条件'));
+  var ov = overrides[p.i] || 'auto';
+  var autoOk = matchPost(p).ok;
   var mHtml='<div class="m-sec" style="margin-top:16px"><div class="m-sec-title">可报考判定</div>'
-    +'<span class="match-sum '+(m.ok?'ok':'no')+'">'+(m.ok?'✓ 符合你的条件，可报考':'✕ 暂不符合你的报考条件')+'</span>'
-    +'<div class="match-list">'+m.reasons.map(function(r){return '<div class="match-item '+(r.ok?'ok':'no')+'"><span class="mk">'+(r.ok?'✓':'✕')+'</span><span class="tx">'+r.k+'：<b>'+r.d+'</b></span></div>';}).join('')+'</div></div>';
+    +'<span class="match-sum '+(m.ok?'ok':'no')+'">'+sumLabel+'</span>'
+    +'<div class="match-list">'+m.reasons.map(function(r){return '<div class="match-item '+(r.ok?'ok':'no')+'"><span class="mk">'+(r.ok?'✓':'✕')+'</span><span class="tx">'+r.k+'：<b>'+r.d+'</b></span></div>';}).join('')+'</div>'
+    +'<div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--sep)">'
+    +'<div style="font-size:12px;font-weight:700;color:var(--txt3);margin-bottom:8px">✋ 手动调整报考状态</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +'<button class="ov-btn'+(ov==='auto'?' active':'')+'" data-ov="auto">🔄 自动判定</button>'
+    +'<button class="ov-btn ok'+(ov==='ok'?' active':'')+'" data-ov="ok">✓ 标为可报考</button>'
+    +'<button class="ov-btn no'+(ov==='no'?' active':'')+'" data-ov="no">✕ 标为不可报考</button>'
+    +'</div>'
+    +'<div style="font-size:11.5px;color:var(--txt3);margin-top:8px">'
+    +(ov==='ok'?'已手动标记为「可报考」，覆盖自动判定（自动判定：'+(autoOk?'可报':'不可报')+'）'
+      :ov==='no'?'已手动标记为「不可报考」，覆盖自动判定（自动判定：'+(autoOk?'可报':'不可报')+'）'
+      :'当前为自动判定。若岗位备注中有未识别的限制（如方言、户籍、视力等），可手动覆盖。')
+    +'</div></div></div>';
   var srcHint='<div style="margin-top:11px"><div class="note-box">🔎 源表定位：打开《招考简章》Excel，在「部门代码」列（第1列·A列）Ctrl+F 搜索 <b>'+p.d+'</b>，再在「职位代码」列（第9列·I列）核对 <b>'+p.c+'</b> 即可定位该行。岗位编号 = 部门代码+职位代码（本站用于唯一标识，源表中无此合并列）。</div></div>';
   $('dmBody').innerHTML=info+srcHint+'<div style="margin-top:11px" id="dmNote"><div class="note-box">📌 加载备注…</div></div>'+mHtml;
   detailModal.classList.add('open');
+  $('dmBody').querySelectorAll('.ov-btn').forEach(function(b){
+    b.addEventListener('click', function(){ setOverride(p.i, b.getAttribute('data-ov')); });
+  });
   getNote(p.i, function(note){
     var el=$('dmNote');
     if(el) el.innerHTML=note?'<div class="note-box">📌 '+note+'</div>':'<div class="note-box">（无备注）</div>';
@@ -972,11 +1021,11 @@ function parseRegion(loc){
   return [prov, rest, ''];
 }
 function noteFlags(note){
-  var f=/限应届|仅限应届|限20\d\d届|仅限20\d\d届|应届毕业生报考/.test(note)?1:0;
+  var fr=/非2027届/.test(note)?0:(/2027届|2027年应届|2027年毕业/.test(note)?2:(/限应届|仅限应届/.test(note)?1:0));
   var g=/限男性|仅限男性|限招男性/.test(note)?'m':(/限女性|仅限女性|限招女性/.test(note)?'f':'');
   var v=0, m=note.match(/裸眼视力低于([\d.]+)不合格/); if(m) v=parseFloat(m[1]);
   var e=''; if(/英语六级|CET6|六级425/.test(note)&&note.indexOf('425')>=0) e='6'; else if(/英语四级|CET4|四级425/.test(note)&&note.indexOf('425')>=0) e='4';
-  return {f:f,g:g,v:v,e:e};
+  return {fr:fr,g:g,v:v,e:e};
 }
 function parseExcel(data, filename){
   try{
@@ -1014,7 +1063,7 @@ function parseExcel(data, filename){
           ob:gv('object')||'不限', yr:ynum, or:gv('ratio'), lv:gv('level'), ct:gv('cat'),
           na:gv('nature'), at:gv('attr'), dt:gv('dist'), tt:gv('test'), lc:gv('loc'), st:gv('settle'),
           pv:rg[0], cy:rg[1], ar:rg[2], pt:part, tl:'',
-          f:fl.f, g:fl.g, v:fl.v, e:fl.e, nt:gv('note')});
+          fr:fl.fr, g:fl.g, v:fl.v, e:fl.e, nt:gv('note')});
       }
     });
     return posts;
