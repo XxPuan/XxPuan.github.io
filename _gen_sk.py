@@ -12,6 +12,7 @@ import openpyxl, json, io, re
 
 SRC = r'C:\Users\Huawei\Desktop\【江苏华图】2027江苏省考职位表汇总含专业目录.xlsx'
 OUT = r'C:\Users\Huawei\.openclaw\xxpuan-site\job-data-sk.js'
+SRC26 = r'C:\Users\Huawei\Desktop\【江苏华图】2026江苏省考职位表&报名数据&进面分汇总.xlsx'
 
 CITY = {'00':'江苏省','01':'南京市','02':'无锡市','03':'徐州市','04':'常州市','05':'苏州市',
         '06':'南通市','07':'连云港市','08':'淮安市','09':'盐城市','10':'扬州市','11':'镇江市',
@@ -44,6 +45,22 @@ def flags(note):
     m = re.search(r'矫正视力低于([\d.]+)不合格', note); vj = float(m.group(1)) if m else 0
     fa = 1 if '法律职业资格' in note else 0
     return pl, g, yr, fr, vt, vc, hk, vh, vj, fa
+
+def norm_pos(s):
+    return re.sub(r'[\s\u3000]+', '', s)
+
+def load_2026():
+    """返回 {单位代码(前9位): [{pos, apply, min, max}, ...]}"""
+    from collections import defaultdict
+    wb26 = openpyxl.load_workbook(SRC26, read_only=True, data_only=True)
+    ws26 = wb26['总表']
+    idx = defaultdict(list)
+    for row in ws26.iter_rows(values_only=True):
+        code = cv(row[0])
+        if not code or len(code) < 11:
+            continue
+        idx[code[:9]].append({'pos': cv(row[4]), 'apply': cv(row[10]), 'min': cv(row[12]), 'max': cv(row[13])})
+    return idx
 
 def main():
     wb = openpyxl.load_workbook(SRC, read_only=True, data_only=True)
@@ -97,6 +114,20 @@ def main():
             'vh': vh, 'vj': vj, 'fa': fa,
         })
 
+    # 接入 2026 报名人数/进面最低分/进面最高分（单位代码 + 职位名精确匹配）
+    idx26 = load_2026()
+    matched26 = 0
+    for p in posts:
+        ap = mn = mx = ''
+        for v in idx26.get(p['i'][:9], []):
+            if norm_pos(v['pos']) == norm_pos(p['nm']):
+                ap, mn, mx = v['apply'], v['min'], v['max']
+                matched26 += 1
+                break
+        p['ap'] = ap
+        p['mn'] = mn
+        p['mx'] = mx
+
     payload = {
         'meta': {
             'year': 2027, 'exam': '江苏省考', 'published': True,
@@ -125,6 +156,7 @@ def main():
     print('政治面貌 pl:', dict(Counter(p['pl'] for p in posts)))
     print('退役军人:', sum(1 for p in posts if p['vt']), '村社区:', sum(1 for p in posts if p['vc']), '户籍:', sum(1 for p in posts if p['hk']), '法考A:', sum(1 for p in posts if p['fa']))
     print('裸眼视力:', sum(1 for p in posts if p['vh']>0), '矫正视力:', sum(1 for p in posts if p['vj']>0))
+    print('2026报名数据匹配:', matched26, '/', len(posts))
 
 if __name__ == '__main__':
     main()

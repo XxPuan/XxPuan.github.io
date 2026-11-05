@@ -33,6 +33,17 @@ main{max-width:1280px;margin:0 auto;padding:36px 20px 60px;position:relative;z-i
 .page-title h1{font-size:30px;font-weight:800;letter-spacing:-.01em}
 .page-title h1 .glow{background:var(--blue-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .page-title p{font-size:14.5px;color:var(--txt3);margin-top:6px;font-weight:500}
+.province-bar{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.province-bar .pl{font-size:13px;font-weight:800;color:var(--txt3);letter-spacing:.04em}
+.province-bar .seg{display:inline-flex;background:var(--seg-bg);padding:3px;border-radius:999px}
+.province-bar .seg-btn{padding:8px 24px;border-radius:999px;font-size:14px;font-weight:700;color:var(--txt2);transition:all .2s}
+.province-bar .seg-btn.active{background:#fff;color:var(--accent);box-shadow:0 1px 3px rgba(0,0,0,.1),0 2px 8px rgba(99,102,241,.15)}
+.province-bar .prov-note{font-size:12px;color:var(--txt3);font-weight:500}
+.apply-num{font-weight:800;color:var(--txt)}
+.apply-num.hot{color:#E11D48}
+.apply-num.mid{color:#D97706}
+.score{font-size:12.5px;font-weight:600;color:var(--txt2)}
+.na{color:var(--txt3);opacity:.45}
 .app-card{background:var(--card-bg);border-radius:var(--card-radius);box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 32px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.05);overflow:hidden}
 .tool-area{padding:22px 24px 14px;display:flex;flex-direction:column;gap:16px}
 .dim-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -198,8 +209,18 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
 
 <main>
   <div class="page-title">
-    <h1><span class="glow">2027 江苏省考 · 岗位报考筛选</span></h1>
-    <p>江苏省 2027 年度考试录用公务员 · 5,725 个职位 · 按「隶属关系 / 考试类别 / 城市区县」筛选 · 自动判定可报考 · 专业大类匹配<br><span style="opacity:.75">岗位编号 = 地区代码 + 单位代码 + 职位代码，可直接在官方职位表 Excel 中定位</span></p>
+    <h1><span class="glow">2027 省考 · 岗位报考筛选</span></h1>
+    <p>多省份公务员省考职位筛选 · 自动判定可报考 · 专业大类匹配 · 附 2026 年报名/进面分参考<br><span style="opacity:.75">岗位编号 = 地区代码 + 单位代码 + 职位代码，可直接在官方职位表 Excel 中定位</span></p>
+  </div>
+
+  <div class="province-bar">
+    <span class="pl">📍 选择省份</span>
+    <div class="seg" id="provSeg">
+      <button class="seg-btn active" data-prov="jiangsu">江苏省</button>
+      <button class="seg-btn" data-prov="shanghai">上海市</button>
+      <button class="seg-btn" data-prov="tianjin">天津市</button>
+    </div>
+    <span class="prov-note" id="provNote">5,725 个职位 · 含 2026 报名/进面分</span>
   </div>
 
   <div class="app-card">
@@ -251,7 +272,7 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
         <div class="f-item"><label>应届要求</label><select id="fFresh"><option value="">全部</option><option value="2">限当年应届（2027届）</option><option value="1">限应届</option><option value="0">不限应届</option></select></div>
         <div class="f-item"><label>户籍</label><select id="fHk"><option value="">全部</option><option value="0">不限</option><option value="1">限户籍</option></select></div>
         <div class="f-item"><label>性别</label><select id="fGen"><option value="">全部</option><option value="m">限男性</option><option value="f">限女性</option></select></div>
-        <div class="f-item"><label>特殊身份</label><select id="fSp"><option value="">全部</option><option value="vt">面向退役军人</option><option value="vc">面向村社区书记</option></select></div>
+        <div class="f-item"><label>特殊身份</label><select id="fSp"><option value="">全部</option><option value="退役">面向退役军人</option><option value="村社">面向村社区书记</option><option value="基层">面向基层项目</option><option value="残疾">面向残疾人</option></select></div>
         <div class="f-item"><label>法考A证</label><select id="fFa"><option value="">全部</option><option value="1">要求法考A证</option><option value="0">不要求</option></select></div>
         <div class="f-item"><label>招录人数 ≥</label><input type="number" id="fNum" min="1" max="100" placeholder="不限"></div>
         <button class="f-reset" id="fReset">重置</button>
@@ -272,7 +293,7 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
         <table class="post-table">
           <thead><tr>
             <th>岗位编号</th><th>招录单位 / 职位</th><th>隶属</th><th>类别</th><th>地区</th>
-            <th style="text-align:center">招录</th><th>专业</th><th>学历</th><th>政治面貌</th>
+            <th style="text-align:center">招录</th><th style="text-align:center" title="2026年报名人数">26报名</th><th style="text-align:center" title="2026年进面最低~最高分">26进面分</th><th>专业</th><th>学历</th><th>政治面貌</th>
             <th>可报考</th><th>操作</th>
           </tr></thead>
           <tbody id="tableBody"></tbody>
@@ -316,7 +337,8 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
         <div class="f-item"><label>性别</label><select id="cGender"><option value="男">男</option><option value="女">女</option></select></div>
         <div class="f-item"><label>视力</label><select id="cVision"><option value="不近视">不近视</option><option value="近视">近视</option></select></div>
         <div class="f-item"><label>户籍省</label><select id="cHk"><option value="江苏">江苏</option><option value="非江苏">非江苏</option></select></div>
-        <div class="f-item"><label>特殊身份</label><select id="cSpecial"><option value="无">无（普通考生）</option><option value="退役">退役军人/退役士兵</option><option value="村社">村（社区）书记（主任）</option></select></div>
+        <div class="f-item"><label>户籍市</label><select id="cHkCity"><option value="">不限/非江苏</option><option>南京</option><option>无锡</option><option>苏州</option><option>常州</option><option>镇江</option><option>连云港</option><option>淮安</option><option>徐州</option><option>宿迁</option><option>扬州</option><option>泰州</option><option>南通</option><option>盐城</option></select></div>
+        <div class="f-item"><label>特殊身份</label><select id="cSpecial"><option value="无">无（普通考生）</option><option value="退役">退役军人/退役士兵</option><option value="村社">村（社区）书记（主任）</option><option value="基层">服务基层项目人员</option><option value="残疾">残疾人</option></select></div>
         <div class="f-item"><label>法律职业资格</label><select id="cLegal"><option value="0">未取得</option><option value="1">已取得A类</option></select></div>
       </div>
       <div class="info-grid" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr));margin-top:14px">
@@ -337,25 +359,81 @@ footer{text-align:center;padding:32px 20px 40px;color:var(--txt3);font-size:12px
 <div id="toast"></div>
 
 <script src="job-data-sk.js" defer></script>
+<script src="job-data-sh.js" defer></script>
+<script src="job-data-tj.js" defer></script>
 <script>
 (function(){
 'use strict';
 function boot(){
+var PROV = {
+  jiangsu: { name:'江苏省', dataVar:'SK_DATA',
+    levels:['省','市','县','乡镇','垂直'],
+    lvLabel:{'省':'省级','市':'市级','县':'县级','乡镇':'乡镇','垂直':'垂直管理'},
+    cats:['A','B','C'], catLabel:{'A':'A·综合管理','B':'B·行政执法','C':'C·乡镇街道'},
+    cities:['江苏省','南京市','无锡市','徐州市','常州市','苏州市','南通市','连云港市','淮安市','盐城市','扬州市','镇江市','泰州市','宿迁市'] },
+  shanghai: { name:'上海市', dataVar:'SH_DATA',
+    levels:['市级','区级'], lvLabel:{'市级':'市级','区级':'区级'},
+    cats:['综合管理','行政执法','执法勤务','警务技术','法官检察官助理'],
+    catLabel:{'综合管理':'综合管理','行政执法':'行政执法','执法勤务':'执法勤务','警务技术':'警务技术','法官检察官助理':'法官检察官助理'},
+    cities:['上海市'] },
+  tianjin: { name:'天津市', dataVar:'TJ_DATA',
+    levels:['市级','区级','街道','乡镇'], lvLabel:{'市级':'市级','区级':'区级','街道':'街道','乡镇':'乡镇'},
+    cats:['综合管理','行政执法','专业技术'],
+    catLabel:{'综合管理':'综合管理','行政执法':'行政执法','专业技术':'专业技术'},
+    cities:['天津市'] },
+};
+var currentProv = 'jiangsu';
 var DATA = window.SK_DATA || {posts:[], catalog:[]};
-
-var LEVELS = ['省','市','县','乡镇','垂直'];
-var LV_LABEL = {'省':'省级','市':'市级','县':'县级','乡镇':'乡镇','垂直':'垂直管理'};
-var CATS = ['A','B','C'];
-var CAT_LABEL = {'A':'A·综合管理','B':'B·行政执法','C':'C·乡镇街道'};
-var CITY_ORDER = ['江苏省','南京市','无锡市','徐州市','常州市','苏州市','南通市','连云港市','淮安市','盐城市','扬州市','镇江市','泰州市','宿迁市'];
+var LEVELS = PROV.jiangsu.levels;
+var LV_LABEL = PROV.jiangsu.lvLabel;
+var CATS = PROV.jiangsu.cats;
+var CAT_LABEL = PROV.jiangsu.catLabel;
+var CITY_ORDER = PROV.jiangsu.cities;
 var PAGE_SIZE = 100;
 var EDU_RANK = {'高中（中专）':0,'大专':1,'本科':2,'硕士研究生':3,'博士研究生':4,'研究生':3};
+// 江苏各地市户籍要求（社会人员）：b=本科要求，z=大专及以下要求，空=不限
+var HK_RULE = {
+  '无锡市': {b:'无锡', z:'无锡'},
+  '苏州市': {b:'苏州', z:'苏州'},
+  '常州市': {b:'常州', z:''},
+  '镇江市': {b:'镇江', z:''},
+  '连云港市': {b:'江苏', z:''},
+  '淮安市': {b:'', z:'淮安'},
+  '徐州市': {b:'', z:'徐州'},
+};
 
-// 专业目录：专业 -> 大类
+// 专业目录：专业 -> 大类（一个专业可属多个大类，如物联网工程属软件/网络管理/电子信息类）
 var MAJOR_TO_CAT = {};
-(DATA.catalog||[]).forEach(function(cat){
-  (cat.m||[]).forEach(function(maj){ if(maj && !MAJOR_TO_CAT[maj]) MAJOR_TO_CAT[maj] = cat.c; });
-});
+function buildMajorMap(){
+  MAJOR_TO_CAT = {};
+  (DATA.catalog||[]).forEach(function(cat){
+    (cat.m||[]).forEach(function(maj){
+      if(!maj) return;
+      if(!MAJOR_TO_CAT[maj]) MAJOR_TO_CAT[maj] = [];
+      if(MAJOR_TO_CAT[maj].indexOf(cat.c) < 0) MAJOR_TO_CAT[maj].push(cat.c);
+    });
+  });
+}
+buildMajorMap();
+// 大类 -> 门类（工科=工学门类等）
+var MENLEI_MAP = {
+  '计算机类':'工学','计算机（软件）类':'工学','计算机（网络管理）类':'工学','电子信息类':'工学',
+  '机电控制类':'工学','机械工程类':'工学','交通工程类':'工学','航道港口类':'工学','船舶工程类':'工学',
+  '水利工程类':'工学','城建规划类':'工学','测绘类':'工学','建筑工程类':'工学','材料工程类':'工学',
+  '地质矿产类':'工学','安全生产类':'工学','能源动力类':'工学','环境保护类':'工学','化学工程类':'工学',
+  '医药化工类':'工学','食品工程类':'工学','生物工程类':'工学','轻工纺织类':'工学','兵工宇航类':'工学',
+  '仪表仪器及测试技术类':'工学','基础理学类':'理学','法律类':'法学','经济类':'经济学','税务税收类':'经济学',
+  '统计类':'经济学','审计类':'经济学','财务财会类':'管理学','商务贸易类':'经济学','公共管理类':'管理学',
+  '工商管理类':'管理学','土地管理类':'管理学','中文文秘类':'文学','外国语言文学类':'文学','艺术类':'艺术学',
+  '教育类':'教育学','医学类':'医学','公共卫生类':'医学','药学类':'医学','社会政治类':'法学','公安类':'法学',
+  '监所管理类':'法学','军事学类':'军事学','农业类':'农学','林业类':'农学','畜牧养殖类':'农学'
+};
+function menleiOf(major){
+  var cats = MAJOR_TO_CAT[major] || [];
+  var set = {};
+  for(var i=0;i<cats.length;i++){ var ml = MENLEI_MAP[cats[i]]; if(ml) set[ml] = 1; }
+  return Object.keys(set);
+}
 
 var LS = {
   get:function(k,d){ try{ var v=localStorage.getItem('sk_'+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
@@ -367,10 +445,11 @@ var state = { level:'all', cat:'all', city:'all', dist:'all', search:'', _kw:'',
 
 var profile = Object.assign({
   education:'本科', politics:'共青团员', identity:'择业期应届',
-  gender:'男', vision:'不近视', hukou:'江苏', special:'无', legalCert:0, years:0,
-  majors:'计算机科学与技术,软件工程,网络工程,计算机类'
+  gender:'男', vision:'不近视', hukou:'江苏', hukouCity:'淮安', special:'无', legalCert:0, years:0,
+  majors:'物联网工程,电子信息类,计算机类'
 }, LS.get('profile',{}));
 if(profile.identity==='应届毕业生') profile.identity='择业期应届';
+if(profile.majors==='计算机科学与技术,软件工程,网络工程,计算机类') profile.majors='物联网工程,电子信息类,计算机类'; // 旧占位专业迁移为用户真实专业
 
 var favorites = new Set(LS.get('favs', []));
 var overrides = LS.get('overrides', {});
@@ -393,14 +472,17 @@ function showToast(t){ toast.textContent=t; toast.classList.add('show'); clearTi
 function allPosts(){ return DATA.posts||[]; }
 function myMajors(){ return profile.majors.split(/[,，、\s]+/).filter(Boolean); }
 
-var REGIONS = (function(){
+var REGIONS = {cities:[], byCity:{}};
+function buildRegions(){
   var byCity = {};
   allPosts().forEach(function(p){
     if(!byCity[p.cy]) byCity[p.cy] = [];
     if(p.dt && p.dt!==p.cy && byCity[p.cy].indexOf(p.dt)<0) byCity[p.cy].push(p.dt);
   });
-  return {cities: CITY_ORDER, byCity: byCity};
-})();
+  REGIONS = {cities: CITY_ORDER, byCity: byCity};
+  return REGIONS;
+}
+buildRegions();
 
 function searchMatch(p){
   var kw=state._kw;
@@ -426,8 +508,7 @@ function filterBy(p, ignore){
   if(state.fHk==='0' && p.hk) return false;
   if(state.fGen==='m' && p.g!=='m') return false;
   if(state.fGen==='f' && p.g!=='f') return false;
-  if(state.fSp==='vt' && !p.vt) return false;
-  if(state.fSp==='vc' && !p.vc) return false;
+  if(state.fSp && specialOf(p)!==state.fSp) return false;
   if(state.fFa==='1' && !p.fa) return false;
   if(state.fFa==='0' && p.fa) return false;
   if(state.fNum && (p.n||0)<parseInt(state.fNum,10)) return false;
@@ -435,6 +516,7 @@ function filterBy(p, ignore){
 }
 function filterPosts(){ return allPosts().filter(function(p){ return filterBy(p,null); }); }
 function freshRankOf(id){ return id==='当年应届'?2:(id==='择业期应届'?1:0); }
+function specialOf(p){ return p.sp || (p.vt?'退役':(p.vc?'村社':'')); }
 
 function eduMatch(req,my){
   req=(req||'').trim(); if(!req||req==='不限') return true;
@@ -447,8 +529,8 @@ function userMajorKeys(){
   var keys = {};
   myMajors().forEach(function(m){
     keys[m]=1;
-    var c=MAJOR_TO_CAT[m];
-    if(c) keys[c]=1;
+    (MAJOR_TO_CAT[m]||[]).forEach(function(c){ keys[c]=1; });
+    menleiOf(m).forEach(function(ml){ keys[ml]=1; });
   });
   return Object.keys(keys);
 }
@@ -495,13 +577,29 @@ function matchPost(p){
   else if(p.vj>0) r.push({ok:true,k:'视力',d:'有矫正视力要求（≥'+p.vj+'，详见备注）'});
   else r.push({ok:true,k:'视力',d:'无视力要求'});
 
-  if(p.hk){
-    var hkOk=profile.hukou==='江苏';
-    r.push({ok:hkOk,k:'户籍',d:hkOk?'符合（江苏户籍）':'要求江苏户籍（生源），你为'+profile.hukou});
-  }else r.push({ok:true,k:'户籍',d:'不限'});
+  // 户籍：应届(2027届)/研究生不限；社会人员本科/大专按城市规则；定向岗位限江苏户籍
+  var hkReq = p.hk ? '江苏' : '';
+  if(!hkReq && currentProv==='jiangsu'){
+    var isFresh27 = profile.identity === '当年应届';
+    var eduRank = EDU_RANK[profile.education] || 0;
+    if(!isFresh27 && eduRank < 3){
+      var rule = HK_RULE[p.cy];
+      if(rule){
+        hkReq = (eduRank >= 2) ? (rule.b || '') : (rule.z || '');
+      }
+    }
+  }
+  if(hkReq){
+    var hkOk = (hkReq === '江苏') ? (profile.hukou === '江苏') : (profile.hukouCity === hkReq);
+    var hkLbl = hkReq === '江苏' ? '江苏户籍' : ('限'+hkReq+'户籍');
+    r.push({ok:hkOk, k:'户籍', d:hkOk ? '符合（'+hkLbl+'）' : '要求'+hkLbl+'，你为'+(profile.hukou+(profile.hukouCity?'·'+profile.hukouCity:''))});
+  } else {
+    r.push({ok:true, k:'户籍', d:'不限'});
+  }
 
-  if(p.vt) r.push({ok:profile.special==='退役',k:'特殊身份',d:profile.special==='退役'?'符合（面向退役军人）':'面向退役军人，你为'+(profile.special==='无'?'普通考生':profile.special)});
-  else if(p.vc) r.push({ok:profile.special==='村社',k:'特殊身份',d:profile.special==='村社'?'符合（面向村社区书记）':'面向村（社区）书记（主任），你为'+(profile.special==='无'?'普通考生':profile.special)});
+  var sp = specialOf(p);
+  var SPLABEL = {'退役':'退役军人','村社':'村（社区）书记','基层':'服务基层项目人员','残疾':'残疾人'};
+  if(sp) r.push({ok:profile.special===sp, k:'特殊身份', d:profile.special===sp ? '符合（面向'+(SPLABEL[sp]||sp)+'）' : '面向'+(SPLABEL[sp]||sp)+'，你为'+(profile.special==='无'?'普通考生':(SPLABEL[profile.special]||profile.special))});
   else r.push({ok:true,k:'特殊身份',d:'不限'});
 
   if(p.fa) r.push({ok:profile.legalCert===1,k:'法律职业资格',d:profile.legalCert===1?'符合（已取得A类）':'要求取得法律职业资格A类证书'});
@@ -565,6 +663,8 @@ function lvBadge(lv){ return '<span class="badge lv">'+LV_LABEL[lv]+'</span>'; }
 function catBadge(ct){ return '<span class="badge cat'+ct+'">'+CAT_LABEL[ct]+'</span>'; }
 function regionCell(p){ return '<div class="region-cell"><span class="pv">'+p.cy+'</span>'+(p.dt&&p.dt!==p.cy?'<span class="cy">'+p.dt+'</span>':'')+'</div>'; }
 function mb(m){ var cls=(m.ok?'ok':'no')+(m.manual?' manual':''); var lbl=(m.ok?'✓ 可报考':'✕ 不符合')+(m.manual?'<i style="font-style:normal;opacity:.7"> ·手动</i>':''); return '<span class="match-badge '+cls+'">'+lbl+'</span>'; }
+function applyCell(ap){ if(!ap) return '<span class="na">—</span>'; var n=parseInt(ap,10)||0; var cls=n>=300?'hot':(n>=100?'mid':''); return '<span class="apply-num '+cls+'">'+ap+'</span>'; }
+function scoreCell(mn,mx){ if(!mn) return '<span class="na">—</span>'; return '<span class="score">'+mn+(mx&&mx!==mn?'~'+mx:'')+'</span>'; }
 
 function renderList(){
   var start=state.page*PAGE_SIZE;
@@ -598,12 +698,14 @@ function renderList(){
   tableBody.innerHTML=shown.map(function(x){
     var p=x.p,m=x.m;
     return '<tr>'
-      +'<td><div class="id-main">'+p.i+'</div><div class="id-sub">地区 '+p.a+' · 单位 '+p.u+' · 职位 '+p.p+'</div></td>'
+      +'<td><div class="id-main">'+p.i+'</div><div class="id-sub">'+(p.a?'地区 '+p.a+' · 单位 '+p.u+' · 职位 '+p.p:'职位代码 '+p.i)+'</div></td>'
       +'<td><div class="cell-main"><span class="u">'+p.un+'</span><span class="n">'+p.nm+'</span></div></td>'
       +'<td>'+lvBadge(p.lv)+'</td>'
       +'<td>'+catBadge(p.ct)+'</td>'
       +'<td>'+regionCell(p)+'</td>'
       +'<td class="num"><span class="recruit">'+(p.n||1)+'</span></td>'
+      +'<td class="num">'+applyCell(p.ap)+'</td>'
+      +'<td class="num">'+scoreCell(p.mn,p.mx)+'</td>'
       +'<td class="mj">'+(p.mj||'不限')+'</td>'
       +'<td>'+(p.ed||'不限')+'</td>'
       +'<td>'+(p.pl==='党员'?'中共党员':(p.pl==='团员'?'共青团员':'不限'))+'</td>'
@@ -625,6 +727,8 @@ function renderList(){
       +'<span><span class="k">类别：</span>'+CAT_LABEL[p.ct]+'</span>'
       +'<span><span class="k">地区：</span>'+p.cy+(p.dt&&p.dt!==p.cy?' '+p.dt:'')+'</span>'
       +'<span><span class="k">招录：</span>'+(p.n||1)+' 人</span>'
+      +'<span><span class="k">26报名：</span>'+(p.ap||'—')+'</span>'
+      +'<span><span class="k">26进面：</span>'+(p.mn?(p.mn+(p.mx&&p.mx!==p.mn?'~'+p.mx:'')):'—')+'</span>'
       +'<span><span class="k">学历：</span>'+(p.ed||'不限')+'</span>'
       +'<span style="grid-column:1/-1"><span class="k">专业：</span>'+(p.mj||'不限')+'</span>'
       +'</div>'
@@ -661,15 +765,14 @@ function openDetailById(id){
   $('dmId').textContent=p.i+' · 地区代码 '+p.a+' · 单位代码 '+p.u+' · 职位代码 '+p.p;
   var info='<div class="info-grid">'
     +'<div class="info-cell"><div class="k">岗位编号</div><div class="v">'+p.i+'</div></div>'
-    +'<div class="info-cell"><div class="k">地区代码</div><div class="v">'+p.a+'</div></div>'
-    +'<div class="info-cell"><div class="k">单位代码</div><div class="v">'+p.u+'</div></div>'
+    +(p.a?'<div class="info-cell"><div class="k">地区代码</div><div class="v">'+p.a+'</div></div><div class="info-cell"><div class="k">单位代码</div><div class="v">'+p.u+'</div></div>':'')
     +'<div class="info-cell"><div class="k">职位代码</div><div class="v">'+p.p+'</div></div>'
     +'<div class="info-cell"><div class="k">单位名称</div><div class="v">'+p.un+'</div></div>'
     +'<div class="info-cell"><div class="k">隶属关系</div><div class="v">'+LV_LABEL[p.lv]+'</div></div>'
     +'<div class="info-cell"><div class="k">考试类别</div><div class="v">'+CAT_LABEL[p.ct]+'</div></div>'
     +'<div class="info-cell"><div class="k">地区</div><div class="v">'+p.cy+(p.dt&&p.dt!==p.cy?' '+p.dt:'')+'</div></div>'
     +'<div class="info-cell"><div class="k">招考人数</div><div class="v">'+(p.n||1)+' 人</div></div>'
-    +'<div class="info-cell"><div class="k">开考比例</div><div class="v">'+(p.rt||'3')+':1</div></div>'
+    +(p.rt?'<div class="info-cell"><div class="k">开考比例</div><div class="v">'+p.rt+':1</div></div>':'')
     +'<div class="info-cell"><div class="k">学历要求</div><div class="v">'+(p.ed||'不限')+'</div></div>'
     +'<div class="info-cell" style="grid-column:1/-1"><div class="k">专业要求</div><div class="v">'+(p.mj||'不限')+'</div></div>'
     +'<div class="info-cell" style="grid-column:1/-1"><div class="k">职位简介</div><div class="v">'+(p.it||'—')+'</div></div>'
@@ -691,14 +794,16 @@ function openDetailById(id){
     +'<div style="font-size:11.5px;color:var(--txt3);margin-top:8px">'
     +(ov==='ok'?'已手动标记为「可报考」，覆盖自动判定（自动判定：'+(autoOk?'可报':'不可报')+'）':ov==='no'?'已手动标记为「不可报考」，覆盖自动判定（自动判定：'+(autoOk?'可报':'不可报')+'）':'当前为自动判定。若岗位备注中有未识别的限制，可手动覆盖。')
     +'</div></div></div>';
-  var srcHint='<div style="margin-top:11px"><div class="note-box">🔎 源表定位：打开《职位表》Excel，在「地区代码」列 Ctrl+F 搜索 <b>'+p.a+'</b>，再在「单位代码」列核对 <b>'+p.u+'</b>、在「职位代码」列核对 <b>'+p.p+'</b> 即可定位。岗位编号 = 地区代码+单位代码+职位代码。</div></div>';
+  var srcHint = p.a
+    ? '<div style="margin-top:11px"><div class="note-box">🔎 源表定位：打开《职位表》Excel，在「地区代码」列 Ctrl+F 搜索 <b>'+p.a+'</b>，再在「单位代码」列核对 <b>'+p.u+'</b>、在「职位代码」列核对 <b>'+p.p+'</b> 即可定位。</div></div>'
+    : '<div style="margin-top:11px"><div class="note-box">🔎 源表定位：打开《招考简章》Excel，在「职位代码」列 Ctrl+F 搜索 <b>'+p.i+'</b> 即可定位。</div></div>';
   $('dmBody').innerHTML=info+note+srcHint+mHtml;
   detailModal.classList.add('open');
   $('dmBody').querySelectorAll('.ov-btn').forEach(function(b){b.addEventListener('click',function(){setOverride(p.i,b.getAttribute('data-ov'));});});
 }
 
 function renderCondBar(){
-  var tags=['学历 '+profile.education,'政治面貌 '+profile.politics,'身份 '+profile.identity,'户籍 '+profile.hukou,'特殊身份 '+(profile.special==='无'?'无':(profile.special==='退役'?'退役军人':'村社区书记')),'法考 '+(profile.legalCert===1?'有A证':'无'),'专业 '+profile.majors.substring(0,22)+'…'];
+  var tags=['学历 '+profile.education,'政治面貌 '+profile.politics,'身份 '+profile.identity,'户籍 '+(profile.hukou+(profile.hukouCity?'·'+profile.hukouCity:'')),'特殊身份 '+(profile.special==='无'?'无':(profile.special==='退役'?'退役军人':'村社区书记')),'法考 '+(profile.legalCert===1?'有A证':'无'),'专业 '+profile.majors.substring(0,22)+'…'];
   condTags.innerHTML=tags.map(function(t){var i=t.indexOf(' ');return '<span class="tag">'+t.slice(0,i)+'<b>'+t.slice(i+1)+'</b></span>';}).join('');
   if(!CUR.list.length){ condStatus.textContent='—'; condStatus.className='status'; return; }
   var mk=CUR.matchedAll.filter(function(x){return x.m.ok}).length;
@@ -708,6 +813,17 @@ function renderCondBar(){
 function renderAll(){ state.page=0; compute(); renderDims(); renderRegionSelects(); renderList(); renderCondBar(); renderPager(); }
 function goPage(n){ state.page=n; renderList(); renderPager(); }
 function syncToolbar(){ matchToggle.classList.toggle('on',state.onlyMatch); favToggle.classList.toggle('on',state.onlyFav); searchClear.style.display=state.search?'block':'none'; }
+function applyProv(prov){
+  if(prov===currentProv) return;
+  currentProv = prov;
+  var cfg = PROV[prov];
+  DATA = window[cfg.dataVar] || {posts:[], catalog:[]};
+  LEVELS = cfg.levels; LV_LABEL = cfg.lvLabel; CATS = cfg.cats; CAT_LABEL = cfg.catLabel; CITY_ORDER = cfg.cities;
+  buildMajorMap();
+  buildRegions();
+  state.level='all'; state.cat='all'; state.city='all'; state.dist='all';
+  renderAll(); syncToolbar();
+}
 
 /* ===== 导出 ===== */
 var EXPORT_HEADERS=['岗位编号','地区代码','单位代码','职位代码','单位名称','职位名称','隶属关系','考试类别','城市','地区名称','招考人数','开考比例','学历','专业','政治面貌','其它(备注)','可报考'];
@@ -729,6 +845,20 @@ function doExport(scope,fmt){
 }
 
 /* ===== 事件 ===== */
+$('provSeg').querySelectorAll('.seg-btn').forEach(function(b){
+  b.addEventListener('click', function(){
+    var prov=b.getAttribute('data-prov');
+    if(prov===currentProv) return;
+    if(!(PROV[prov] && window[PROV[prov].dataVar])){
+      showToast(PROV[prov].name+' 岗位数据未加载');
+      return;
+    }
+    applyProv(prov);
+    $('provSeg').querySelectorAll('.seg-btn').forEach(function(x){x.classList.remove('active');});
+    b.classList.add('active');
+    $('provNote').textContent = (DATA.posts.length||0).toLocaleString() + ' 个职位';
+  });
+});
 var searchTimer;
 searchInput.addEventListener('input',function(){ searchClear.style.display=searchInput.value?'block':'none'; clearTimeout(searchTimer); searchTimer=setTimeout(function(){state.search=searchInput.value;renderAll();},300); });
 searchClear.addEventListener('click',function(){ searchInput.value=''; state.search=''; searchClear.style.display='none'; renderAll(); searchInput.focus(); });
@@ -759,13 +889,13 @@ exportMenu.querySelectorAll('.em-item').forEach(function(b){b.addEventListener('
 
 editCond.addEventListener('click',function(){
   $('cEdu').value=profile.education; $('cPol').value=profile.politics; $('cObj').value=profile.identity;
-  $('cGender').value=profile.gender; $('cVision').value=profile.vision; $('cHk').value=profile.hukou;
+  $('cGender').value=profile.gender; $('cVision').value=profile.vision; $('cHk').value=profile.hukou; $('cHkCity').value=profile.hukouCity||'';
   $('cSpecial').value=profile.special; $('cLegal').value=String(profile.legalCert||0); $('cYears').value=profile.years; $('cMajors').value=profile.majors;
   condModal.classList.add('open');
 });
 $('saveCond').addEventListener('click',function(){
   profile.education=$('cEdu').value; profile.politics=$('cPol').value; profile.identity=$('cObj').value;
-  profile.gender=$('cGender').value; profile.vision=$('cVision').value; profile.hukou=$('cHk').value;
+  profile.gender=$('cGender').value; profile.vision=$('cVision').value; profile.hukou=$('cHk').value; profile.hukouCity=$('cHkCity').value;
   profile.special=$('cSpecial').value; profile.legalCert=parseInt($('cLegal').value,10)||0;
   profile.years=parseInt($('cYears').value,10)||0; profile.majors=$('cMajors').value.trim();
   LS.set('profile',profile); condModal.classList.remove('open'); renderAll();
