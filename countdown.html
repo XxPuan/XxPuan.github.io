@@ -216,6 +216,34 @@
     #fsBtn.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
     #fsBtn:hover{background:rgba(255,255,255,.15);transform:scale(1.1)}
 
+    /* ===== 仅限本地使用锁定遮罩 ===== */
+    #localLock{
+      position:fixed;inset:0;z-index:1000;
+      background:rgba(8,8,14,.96);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      display:none;
+      align-items:center;justify-content:center;
+      flex-direction:column;
+      text-align:center;
+      padding:24px;
+    }
+    #localLock.show{display:flex}
+    #localLock .lock-ico{font-size:clamp(2.6rem,6vw,3.6rem);line-height:1;margin-bottom:18px}
+    #localLock .lock-title{
+      font-size:clamp(1.1rem,2.4vw,1.5rem);
+      font-weight:800;color:#fff;letter-spacing:.08em;
+      margin-bottom:12px;
+    }
+    #localLock .lock-desc{
+      font-size:clamp(.75rem,1.3vw,.9rem);
+      color:rgba(255,255,255,.5);line-height:1.8;max-width:460px;
+    }
+    #localLock .lock-desc code{
+      font-family:'Cascadia Code','Fira Code',monospace;
+      color:rgba(168,85,247,.9);
+    }
+
     /* ===== 设置面板 ===== */
     #settingsPanel{
       position:fixed;top:0;right:0;z-index:300;
@@ -432,6 +460,13 @@
 <div id="prepOverlay">
   <div class="prep-num" id="prepNum">5</div>
   <div class="prep-label">准备开始</div>
+</div>
+
+<!-- 仅限本地使用锁定遮罩 -->
+<div id="localLock">
+  <div class="lock-ico">🔒</div>
+  <div class="lock-title">此页面仅限本地使用</div>
+  <div class="lock-desc">请在本地双击打开 <code>countdown.html</code>，<br>或通过 <code>localhost</code> / <code>127.0.0.1</code> 访问。</div>
 </div>
 
 <button id="settingsToggle" title="设置">⚙</button>
@@ -941,6 +976,12 @@
   fsBtn.addEventListener('click',goFullscreen)
 
   // ========== 初始化 ==========
+  // 仅限本地打开：非本地环境时锁定整个页面
+  var isLocal=location.protocol==='file:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'
+  if(!isLocal){
+    $('localLock').classList.add('show')
+    return
+  }
   applyCfg()
   if('speechSynthesis' in window){window.speechSynthesis.getVoices()}
 })()
