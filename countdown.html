@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>考试倒计时 · XxPuan</title>
+
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    @font-face{font-family:'KeepText';src:url('assets/fonts/KeepText-Bold.otf') format('opentype');font-weight:700;font-display:swap}
+    :root{--bc15:#F1F1F6;--accent:#A855F7;--accent2:#7C3AED}
+    html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','HarmonyOS Sans','Microsoft YaHei',sans-serif;background:#08080E;color:var(--bc15);-webkit-font-smoothing:antialiased}
+    body{min-height:100vh;overflow-x:hidden;background:transparent}
+    a{color:inherit;text-decoration:none}
+
+    /* ===== 背景图片 ===== */
+    #bgImg{
+      position:fixed;inset:0;z-index:0;
+      background:url('assets/statusground.jpg') center/cover no-repeat;
+      filter:brightness(.5) saturate(1.1);
+    }
+    #bgImg::after{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at 50% 40%,rgba(124,58,237,.14),rgba(8,8,14,.55) 85%);
+    }
+
+    /* ===== 玻璃页眉 ===== */
+    .gs{
+      position:fixed;top:24px;left:50%;transform:translateX(-50%);
+      z-index:100;
+      width:80vw;max-width:1200px;
+      height:60px;
+      border-radius:50px;
+      display:flex;align-items:center;
+      padding:0 28px;
+      background:rgba(255,255,255,.05);
+      backdrop-filter:blur(18px) saturate(1.6) brightness(1.12);
+      -webkit-backdrop-filter:blur(18px) saturate(1.6) brightness(1.12);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 8px 32px rgba(31,38,135,.15),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.1);
+    }
+    .gs__title{display:flex;align-items:center;gap:6px}
+    .gs__title b{font-size:21px;font-weight:800;color:#fff}
+    .gs__title .s{font-size:15px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.01em}
+    .gs__right{margin-left:auto;font-size:clamp(.7rem,1vw,.9rem);font-weight:700;color:#fff;letter-spacing:.06em;cursor:pointer;transition:color .3s}
+    .gs__right:hover{color:rgba(255,255,255,.7)}
+
+    /* 全屏时隐藏页眉，专注考试 */
+    body.fs .gs{display:none}
+
+    /* ===== 内容区（无玻璃卡片，直接铺在背景上） ===== */
+    .page-wrap{
+      position:relative;z-index:3;
+      min-height:100vh;padding-top:130px;padding-bottom:80px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;
+    }
+
+    .exam-name{
+      font-family:'Noto Serif SC','Source Han Serif CN','思源宋体 CN',Georgia,serif;
+      font-weight:900;
+      font-size:clamp(1.6rem,3.6vw,2.8rem);
+      letter-spacing:.12em;
+      color:#fff;
+      line-height:1.3;
+      text-shadow:0 2px 18px rgba(0,0,0,.5);
+    }
+    .exam-sub{
+      font-size:clamp(.75rem,1.1vw,.9rem);
+      font-weight:500;
+      color:rgba(255,255,255,.55);
+      letter-spacing:.22em;
+      margin-top:8px;
+      margin-bottom:clamp(30px,5vw,60px);
+      text-shadow:0 1px 8px rgba(0,0,0,.5);
+    }
+
+    /* ===== 倒计时核心：数字用楷体 ===== */
+    .countdown{
+      display:flex;align-items:flex-start;justify-content:center;
+      gap:clamp(6px,1vw,14px);
+    }
+    .countdown-unit{display:flex;flex-direction:column;align-items:center;min-width:clamp(74px,13vw,150px)}
+    .countdown-num{
+      font-family:'KeepText',sans-serif;
+      font-size:clamp(4rem,14vw,11rem);
+      font-weight:700;
+      display:inline-block;
+      line-height:1.2;
+      padding:.04em .02em;
+      background:linear-gradient(135deg,rgba(255,255,255,.92) 20%,rgba(255,255,255,.5) 80%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      filter:drop-shadow(0 0 10px rgba(124,58,237,.2));
+      letter-spacing:.04em;
+    }
+    .countdown-num.urgent{
+      background:none;
+      -webkit-text-fill-color:#ff2d2d;
+      color:#ff2d2d;
+      filter:drop-shadow(0 0 10px rgba(255,40,40,.7)) drop-shadow(0 0 28px rgba(255,0,0,.4));
+      animation:pulse .6s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+    .countdown-label{
+      font-size:clamp(.65rem,1vw,.85rem);
+      color:rgba(255,255,255,.65);
+      letter-spacing:.16em;
+      font-weight:500;
+      margin-top:10px;
+      text-shadow:0 1px 6px rgba(0,0,0,.5);
+    }
+    .countdown-sep{
+      font-size:clamp(3rem,11vw,8.5rem);
+      font-weight:300;
+      color:rgba(255,255,255,.45);
+      line-height:1;
+      padding-top:clamp(2px,.3vw,6px);
+      text-shadow:0 1px 8px rgba(0,0,0,.5);
+    }
+
+    /* ===== 荧光进度条 ===== */
+    .progress-wrap{
+      width:min(70vw,560px);
+      margin-top:clamp(30px,4.5vw,56px);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:14px;
+    }
+    .progress-bar{
+      position:relative;
+      width:100%;
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow:inset 0 1px 3px rgba(0,0,0,.4);
+      overflow:hidden;
+    }
+    .progress-fill{
+      height:100%;
+      width:0%;
+      border-radius:999px;
+      background:var(--bar-color,#A855F7);
+      box-shadow:0 0 4px var(--bar-color,#A855F7),0 0 10px var(--bar-color,#A855F7);
+      transition:width .4s ease;
+    }
+    .pct-text{
+      font-size:clamp(.65rem,1vw,.85rem);
+      font-weight:600;
+      color:rgba(255,255,255,.5);
+      letter-spacing:.06em;
+      font-variant-numeric:tabular-nums;
+    }
+
+    /* ===== 准备倒计时遮罩 ===== */
+    #prepOverlay{
+      position:fixed;inset:0;z-index:500;
+      background:rgba(8,8,14,.72);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      display:none;align-items:center;justify-content:center;flex-direction:column;
+      text-align:center;
+    }
+    #prepOverlay.show{display:flex}
+    .prep-num{
+      font-family:'KeepText',sans-serif;
+      font-size:clamp(9rem,30vw,18rem);
+      font-weight:700;
+      line-height:1.15;
+      padding:.03em 0;
+      background:linear-gradient(135deg,rgba(255,255,255,.92) 20%,rgba(255,255,255,.5) 80%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      filter:drop-shadow(0 0 20px rgba(124,58,237,.35));
+    }
+    .prep-label{
+      font-size:clamp(1rem,1.6vw,1.3rem);
+      letter-spacing:.35em;
+      color:rgba(255,255,255,.75);
+      margin-top:18px;
+      text-indent:.35em;
+    }
+
+    /* ===== 设置按钮 ===== */
+    #settingsToggle{
+      position:fixed;bottom:24px;right:24px;z-index:200;
+      width:48px;height:48px;border-radius:50%;
+      background:rgba(255,255,255,.08);backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;font-size:22px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:all .3s ease;
+      box-shadow:0 4px 16px rgba(0,0,0,.3);
+    }
+    #settingsToggle:hover{background:rgba(255,255,255,.15);transform:scale(1.1)}
+
+    /* ===== 回到全屏隐藏式按键 ===== */
+    #fsBtn{
+      position:fixed;bottom:84px;right:24px;z-index:200;
+      width:48px;height:48px;border-radius:50%;
+      background:rgba(255,255,255,.08);backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;font-size:22px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:all .3s ease;
+      box-shadow:0 4px 16px rgba(0,0,0,.3);
+      opacity:0;transform:translateY(8px) scale(.9);pointer-events:none;
+    }
+    #fsBtn.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+    #fsBtn:hover{background:rgba(255,255,255,.15);transform:scale(1.1)}
+
+    /* ===== 设置面板 ===== */
+    #settingsPanel{
+      position:fixed;top:0;right:0;z-index:300;
+      width:min(94vw,440px);height:100vh;
+      background:rgba(15,15,30,.97);backdrop-filter:blur(28px);
+      border-left:1px solid rgba(255,255,255,.1);
+      box-shadow:-16px 0 48px rgba(0,0,0,.4);
+      transform:translateX(105%);
+      transition:transform .35s cubic-bezier(.4,0,.2,1);
+      overflow-y:auto;
+      padding:clamp(20px,2.5vw,28px);
+    }
+    #settingsPanel.open{transform:translateX(0)}
+    #settingsPanel h3{
+      font-size:1.05rem;font-weight:700;color:#fff;letter-spacing:.06em;
+      margin-bottom:20px;
+    }
+    .field{margin-bottom:14px}
+    .field label{
+      display:block;font-size:.72rem;color:rgba(255,255,255,.5);
+      margin-bottom:6px;letter-spacing:.04em;
+    }
+    .field input[type=text],.field input[type=number],.field textarea{
+      width:100%;padding:10px 12px;border-radius:10px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.05);color:#fff;
+      font-size:.85rem;font-family:inherit;outline:none;
+      transition:border-color .3s;
+    }
+    .field input:focus,.field textarea:focus{border-color:#A855F7}
+    .field input[type=color]{
+      width:100%;height:38px;padding:2px;
+      border-radius:10px;border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.05);cursor:pointer;
+    }
+    .field textarea{resize:vertical;line-height:1.5;min-height:60px}
+    .field-row{display:flex;gap:10px}
+    .field-row .field{flex:1}
+    .field .sub-hint{font-size:.62rem;color:rgba(255,255,255,.3);margin-top:4px;line-height:1.5}
+
+    .rule-group{
+      padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:12px;
+      background:rgba(255,255,255,.02);margin-bottom:12px;
+    }
+    .rule-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .rule-head span{font-size:.75rem;color:rgba(255,255,255,.55);letter-spacing:.04em}
+    .rule-del{
+      background:transparent;border:none;color:rgba(255,255,255,.35);
+      cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:6px;
+    }
+    .rule-del:hover{color:#ff6b6b;background:rgba(255,45,45,.12)}
+
+    .btn-add-rule{
+      width:100%;padding:10px;border-radius:10px;
+      border:1px dashed rgba(168,85,247,.4);background:rgba(168,85,247,.06);
+      color:rgba(168,85,247,.85);font-size:.78rem;cursor:pointer;margin-bottom:20px;
+    }
+    .btn-add-rule:hover{background:rgba(168,85,247,.14)}
+
+    .panel-actions{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+    .panel-actions .btn{
+      width:100%;padding:12px;border-radius:12px;border:none;
+      font-size:.9rem;font-weight:700;cursor:pointer;letter-spacing:.06em;
+      font-family:inherit;transition:all .25s;
+    }
+    #btnStart{background:linear-gradient(135deg,#7C3AED,#A855F7);color:#fff;box-shadow:0 6px 20px rgba(124,58,237,.35)}
+    #btnStart:hover{opacity:.9}
+    .controls-row{display:flex;gap:10px}
+    .controls-row .btn{flex:1;padding:11px 0;border-radius:12px}
+    #btnPause{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.12)}
+    #btnPause:hover{background:rgba(255,255,255,.12)}
+    #btnReset{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.12)}
+    #btnReset:hover{background:rgba(255,255,255,.12)}
+    #btnStop{background:rgba(255,45,45,.12);color:#ff6b6b;border:1px solid rgba(255,45,45,.25)}
+    #btnStop:hover{background:rgba(255,45,45,.22)}
+    #btnSave{background:transparent;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1)}
+    #btnSave:hover{color:#fff}
+    #settingsCancel{
+      width:100%;padding:10px;border-radius:12px;
+      border:1px solid rgba(255,255,255,.1);background:transparent;
+      color:rgba(255,255,255,.5);font-size:.75rem;cursor:pointer;
+    }
+    #settingsCancel:hover{color:#fff}
+    .hint{font-size:.68rem;color:rgba(255,255,255,.32);line-height:1.6;margin-top:16px}
+
+    /* ===== 导出弹窗 ===== */
+    #btnExport{
+      background:rgba(168,85,247,.08);
+      color:rgba(168,85,247,.85);
+      border:1px solid rgba(168,85,247,.25);
+    }
+    #btnExport:hover{background:rgba(168,85,247,.18);color:#A855F7}
+
+    #exportModal{
+      position:fixed;inset:0;z-index:400;
+      display:none;
+      align-items:center;justify-content:center;
+      background:rgba(0,0,0,.6);
+      backdrop-filter:blur(8px);
+    }
+    #exportModal.open{display:flex}
+    #exportModal .modal-box{
+      width:min(92vw,560px);
+      max-height:80vh;
+      background:rgba(15,15,30,.97);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:16px;
+      padding:clamp(16px,2.5vw,24px);
+      box-shadow:0 24px 64px rgba(0,0,0,.5);
+      display:flex;flex-direction:column;
+    }
+    #exportModal .modal-title{
+      font-size:clamp(.8rem,1.1vw,1rem);
+      font-weight:700;color:#fff;
+      margin-bottom:4px;letter-spacing:.06em;
+    }
+    #exportModal .modal-desc{
+      font-size:clamp(.55rem,.7vw,.65rem);
+      color:rgba(255,255,255,.35);
+      margin-bottom:12px;line-height:1.6;
+    }
+    #exportModal .modal-desc code{
+      font-family:'Cascadia Code','Fira Code',monospace;
+      color:rgba(168,85,247,.85);
+    }
+    #exportModal pre{
+      background:rgba(0,0,0,.4);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:10px;
+      padding:14px;
+      font-family:'Cascadia Code','Fira Code','JetBrains Mono',monospace;
+      font-size:clamp(.5rem,.65vw,.6rem);
+      color:rgba(255,255,255,.8);
+      overflow:auto;
+      white-space:pre-wrap;word-break:break-all;
+      flex:1;min-height:0;
+      line-height:1.6;
+      user-select:all;
+    }
+    #exportModal .modal-actions{
+      display:flex;gap:8px;
+      margin-top:12px;
+    }
+    #exportModal .modal-actions button{
+      flex:1;padding:9px;
+      border-radius:10px;border:none;
+      font-size:clamp(.65rem,.8vw,.75rem);
+      font-weight:600;cursor:pointer;
+      transition:all .25s;
+      font-family:inherit;
+    }
+    #exportModal .btn-copy{
+      background:linear-gradient(135deg,#7C3AED,#A855F7);
+      color:#fff;
+    }
+    #exportModal .btn-copy:hover{opacity:.85}
+    #exportModal .btn-copy.copied{background:linear-gradient(135deg,#22c55e,#16a34a)}
+    #exportModal .btn-close{
+      background:rgba(255,255,255,.06);
+      color:rgba(255,255,255,.5);
+    }
+    #exportModal .btn-close:hover{background:rgba(255,255,255,.1);color:#fff}
+
+    @media screen and (max-width:767px){
+      .gs{width:calc(100% - 24px);height:52px;padding:0 18px}
+      .gs__title b{font-size:17px}
+      .gs__title .s{font-size:13px}
+      .page-wrap{padding-top:100px}
+      .countdown-num{font-size:clamp(2.8rem,17vw,4.6rem)}
+      .countdown-sep{font-size:clamp(2.2rem,12vw,3.4rem)}
+      .countdown-unit{min-width:clamp(48px,16vw,70px)}
+    }
+  </style>
+</head>
+<body>
+
+<div id="bgImg"></div>
+
+<div class="gs">
+  <div class="gs__title"><b>XxPuan</b><span class="s">'s Timer</span></div>
+  <a class="gs__right" href="status.html">返回事件页</a>
+</div>
+
+<div class="page-wrap">
+  <div class="exam-name" id="examName">模拟考试</div>
+  <div class="exam-sub" id="examSub">全真模考 · 请开始作答</div>
+
+  <div class="countdown" id="countdown">
+    <div class="countdown-unit">
+      <span class="countdown-num" id="cdH">00</span>
+      <span class="countdown-label">时</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-unit">
+      <span class="countdown-num" id="cdM">00</span>
+      <span class="countdown-label">分</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-unit">
+      <span class="countdown-num" id="cdS">00</span>
+      <span class="countdown-label">秒</span>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar">
+      <div class="progress-fill" id="barFill"></div>
+    </div>
+    <span class="pct-text" id="barPct">100%</span>
+  </div>
+</div>
+
+<!-- 准备倒计时遮罩 -->
+<div id="prepOverlay">
+  <div class="prep-num" id="prepNum">5</div>
+  <div class="prep-label">准备开始</div>
+</div>
+
+<button id="settingsToggle" title="设置">⚙</button>
+<button id="fsBtn" title="回到全屏">⛶</button>
+
+<!-- 导出弹窗 -->
+<div id="exportModal">
+  <div class="modal-box">
+    <div class="modal-title">导出倒计时数据</div>
+    <div class="modal-desc">复制以下代码，替换 countdown.html 中的 <code>var DEFAULT_CFG={...}</code>，即可让当前设置成为下次打开时的默认值。</div>
+    <pre id="exportCode"></pre>
+    <div class="modal-actions">
+      <button class="btn-copy" id="exportCopyBtn">复制代码</button>
+      <button class="btn-close" id="exportCloseBtn">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div id="settingsPanel">
+  <h3>倒计时设置</h3>
+
+  <div class="field">
+    <label>考试名称</label>
+    <input type="text" id="inExamName" placeholder="例如：行测模拟考试">
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label>小时</label>
+      <input type="number" id="inH" min="0" max="999" value="0">
+    </div>
+    <div class="field">
+      <label>分钟</label>
+      <input type="number" id="inM" min="0" max="59" value="0">
+    </div>
+    <div class="field">
+      <label>秒</label>
+      <input type="number" id="inS" min="0" max="59" value="0">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>副标题（可选）</label>
+    <input type="text" id="inSub" placeholder="例如：全真模考 · 请开始作答">
+  </div>
+
+  <div class="field">
+    <label>进度条颜色</label>
+    <input type="color" id="inBarColor" value="#A855F7">
+  </div>
+
+  <div class="field">
+    <label>开始语音提醒（考试提醒）</label>
+    <textarea id="inStartSpeech" rows="3" placeholder="例如：考试开始，请做好准备"></textarea>
+    <div class="sub-hint">可用占位符：{name} = 考试名称，{duration} = 考试时长。点击「开始」后自动播报。</div>
+  </div>
+
+  <div class="field">
+    <label>结束播报内容（倒计时归零时播报）</label>
+    <textarea id="inEndSpeech" rows="2" placeholder="例如：考试时间到，请立即停笔"></textarea>
+  </div>
+
+  <div class="field">
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+      <input type="checkbox" id="inVoiceEnabled" style="width:auto;accent-color:#A855F7"> 启用语音播报
+    </label>
+  </div>
+
+  <div id="rulesWrap"></div>
+  <button class="btn-add-rule" id="btnAddRule">+ 添加提醒规则</button>
+
+  <div class="panel-actions">
+    <button class="btn" id="btnStart">开始</button>
+    <div class="controls-row">
+      <button class="btn" id="btnPause">暂停</button>
+      <button class="btn" id="btnReset">重置</button>
+      <button class="btn" id="btnStop">停止</button>
+    </div>
+    <button class="btn" id="btnSave">保存设置</button>
+    <button class="btn" id="btnExport">导出数据 → 嵌入文件</button>
+    <button id="settingsCancel">取消</button>
+  </div>
+
+  <div class="hint">
+    提醒规则：当剩余时间 ≤ 设定分钟数时，朗读对应播报内容（每条仅播报一次）。语音使用浏览器内置语音合成，请保持系统音量开启。
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict'
+
+  // ========== 背景鼠标光晕 ==========
+  var glow=document.createElement('div')
+  glow.style.cssText='position:fixed;top:0;left:0;width:800px;height:800px;border-radius:50%;pointer-events:none;z-index:2;background:radial-gradient(circle,rgba(124,58,237,.12),rgba(168,85,247,.06) 40%,transparent 70%)'
+  document.body.appendChild(glow)
+  var mx=0,my=0,gx=0,gy=0
+  document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY})
+  ;(function anim(){gx+=(mx-gx)*.03;gy+=(my-gy)*.03;glow.style.transform='translate('+(gx-400)+'px,'+(gy-400)+'px)';requestAnimationFrame(anim)})()
+
+  // ========== 元素 ==========
+  var $=function(id){return document.getElementById(id)}
+  var elName=$('examName'),elSub=$('examSub')
+  var elH=$('cdH'),elM=$('cdM'),elS=$('cdS')
+  var barFill=$('barFill'),barPct=$('barPct')
+  var prepOverlay=$('prepOverlay'),prepNum=$('prepNum')
+  var fsBtn=$('fsBtn')
+
+  // ========== 状态 ==========
+  var totalMs=0
+  var remainMs=0
+  var running=false
+  var deadline=0
+  var timerId=null
+  var prepTimerId=null
+  var fired={}
+
+  // ========== 默认配置 ==========
+  var DEFAULT_CFG={
+    "name": "模拟考试",
+    "sub": "全真模考 · 请开始作答",
+    "h": 2,
+    "m": 0,
+    "s": 0,
+    "endSpeech": "考试时间到，请立即停笔",
+    "voiceEnabled": true,
+    "rules": [
+      {
+        "min": 15,
+        "text": "考试还剩十五分钟，请检查答题卡，抓紧时间答题"
+      }
+    ],
+    "startSpeech": "国家公务员行测考试即将开始，请做好准备。\n考试时长120分钟",
+    "barColor": "#d57e44"
+  }
+
+  // ========== 配置读写 ==========
+  function loadCfg(){
+    try{
+      var s=localStorage.getItem('countdownCfg')
+      if(s){
+        var c=JSON.parse(s)
+        if(c&&typeof c==='object')return c
+      }
+    }catch(e){}
+    return JSON.parse(JSON.stringify(DEFAULT_CFG))
+  }
+  var cfg=loadCfg()
+
+  function saveCfg(){localStorage.setItem('countdownCfg',JSON.stringify(cfg))}
+
+  // ========== 时长格式化（语音用） ==========
+  function formatDuration(h,m,s){
+    var parts=[]
+    if(h>0)parts.push(h+'小时')
+    if(m>0)parts.push(m+'分钟')
+    if(s>0)parts.push(s+'秒')
+    if(!parts.length)return '0分钟'
+    return parts.join('')
+  }
+
+  // ========== 时间格式化 ==========
+  function pad(n){return String(Math.max(0,Math.floor(n))).padStart(2,'0')}
+
+  function renderTime(){
+    var ms=Math.max(0,remainMs)
+    var totalSec=Math.floor(ms/1000)
+    var h=Math.floor(totalSec/3600)
+    var m=Math.floor((totalSec%3600)/60)
+    var s=totalSec%60
+    elH.textContent=pad(h)
+    elM.textContent=pad(m)
+    elS.textContent=pad(s)
+
+    var pct=totalMs>0?Math.max(0,Math.min(1,1-ms/totalMs)):0
+    barFill.style.width=(pct*100).toFixed(2)+'%'
+    barPct.textContent=Math.round(pct*100)+'%'
+
+    var urgent=running&&ms>0&&ms<=5*60*1000
+    ;[elH,elM,elS].forEach(function(el){
+      if(urgent){el.classList.add('urgent')}else{el.classList.remove('urgent')}
+    })
+
+    updateFsBtn()
+  }
+
+  // ========== 回到全屏按键显隐 ==========
+  function updateFsBtn(){
+    var fs=!!(document.fullscreenElement||document.webkitFullscreenElement)
+    var active=running||(remainMs>0&&remainMs<totalMs)
+    if(!fs&&active){fsBtn.classList.add('show')}else{fsBtn.classList.remove('show')}
+  }
+
+  // ========== 语音播报 ==========
+  var speechPendingTimer=null
+  function stopSpeech(){
+    if('speechSynthesis' in window){
+      try{window.speechSynthesis.cancel()}catch(e){}
+    }
+    if(speechPendingTimer){clearTimeout(speechPendingTimer);speechPendingTimer=null}
+  }
+  function speak(text){
+    if(!cfg.voiceEnabled)return
+    if(!('speechSynthesis' in window))return
+    stopSpeech()
+    speechPendingTimer=setTimeout(function(){
+      speechPendingTimer=null
+      try{
+        var u=new SpeechSynthesisUtterance(text)
+        u.lang='zh-CN';u.rate=1;u.pitch=1
+        var voices=window.speechSynthesis.getVoices()
+        for(var i=0;i<voices.length;i++){
+          if(/zh|Chinese|cmn/i.test(voices[i].lang)){u.voice=voices[i];break}
+        }
+        window.speechSynthesis.speak(u)
+      }catch(e){}
+    },80)
+  }
+  if('speechSynthesis' in window){
+    window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices()}
+  }
+
+  // ========== 检查提醒规则 ==========
+  function checkRules(){
+    if(!cfg.rules||!cfg.rules.length)return
+    var remainMin=remainMs/60000
+    cfg.rules.forEach(function(r,i){
+      var min=parseFloat(r.min)
+      var text=(r.text||'').trim()
+      if(isNaN(min)||!text)return
+      var key='r'+i
+      if(remainMin>0&&remainMin<=min&&!fired[key]){
+        fired[key]=true
+        speak(text)
+      }
+    })
+  }
+
+  // ========== 全屏 ==========
+  function goFullscreen(){
+    var el=document.documentElement
+    try{
+      if(el.requestFullscreen){el.requestFullscreen().catch(function(){})}
+      else if(el.webkitRequestFullscreen){el.webkitRequestFullscreen()}
+    }catch(e){}
+  }
+
+  // ========== 主循环 ==========
+  function tick(){
+    if(!running)return
+    if(deadline>0){
+      remainMs=deadline-Date.now()
+      if(remainMs<=0){
+        remainMs=0
+        finishTimer()
+        return
+      }
+    }
+    checkRules()
+    renderTime()
+  }
+
+  function finishTimer(){
+    running=false
+    if(timerId){clearInterval(timerId);timerId=null}
+    deadline=0
+    renderTime()
+    speak(cfg.endSpeech||'考试时间到')
+    var bp=$('btnPause');if(bp)bp.textContent='暂停'
+  }
+
+  function beginTimer(){
+    prepOverlay.classList.remove('show')
+    if(prepTimerId){clearInterval(prepTimerId);prepTimerId=null}
+    running=true
+    deadline=Date.now()+remainMs
+    fired={}
+    if(timerId){clearInterval(timerId)}
+    timerId=setInterval(tick,250)
+    renderTime()
+  }
+
+  // ========== 准备倒计时（5 秒） ==========
+  function startPrep(){
+    var n=5
+    prepNum.textContent=n
+    prepOverlay.classList.add('show')
+    prepTimerId=setInterval(function(){
+      n--
+      if(n<=0){
+        beginTimer()
+      }else{
+        prepNum.textContent=n
+      }
+    },1000)
+  }
+
+  // ========== 开始流程 ==========
+  function startFlow(){
+    readForm()
+    saveCfg()
+    applyCfg()           // 重置为设置的时长
+    closePanel()
+    goFullscreen()
+    // 开始语音提醒（可自设定，含考试内容 + 时长）
+    var sp=(cfg.startSpeech||'').trim()
+    if(!sp){
+      sp='考试开始，请做好准备。本次考试：{name}，时长 {duration}。'
+    }
+    sp=sp.split('{name}').join(cfg.name||'模拟考试')
+    sp=sp.split('{duration}').join(formatDuration(cfg.h,cfg.m,cfg.s))
+    speak(sp)
+    startPrep()          // 5 秒后开始倒计时
+  }
+
+  // ========== 暂停 / 继续 ==========
+  function pauseTimer(){
+    if(!running)return
+    running=false
+    if(timerId){clearInterval(timerId);timerId=null}
+    if(deadline>0)remainMs=Math.max(0,deadline-Date.now())
+    stopSpeech()
+    $('btnPause').textContent='继续'
+    renderTime()
+  }
+  function resumeTimer(){
+    if(running||remainMs<=0)return
+    running=true
+    deadline=Date.now()+remainMs
+    $('btnPause').textContent='暂停'
+    timerId=setInterval(tick,250)
+    renderTime()
+  }
+  function resetTimer(){
+    if(prepTimerId){clearInterval(prepTimerId);prepTimerId=null}
+    prepOverlay.classList.remove('show')
+    running=false
+    if(timerId){clearInterval(timerId);timerId=null}
+    deadline=0
+    fired={}
+    stopSpeech()
+    totalMs=(cfg.h*3600+cfg.m*60+cfg.s)*1000
+    remainMs=totalMs
+    $('btnPause').textContent='暂停'
+    renderTime()
+  }
+  function stopTimer(){
+    if(prepTimerId){clearInterval(prepTimerId);prepTimerId=null}
+    prepOverlay.classList.remove('show')
+    running=false
+    if(timerId){clearInterval(timerId);timerId=null}
+    deadline=0
+    fired={}
+    stopSpeech()
+    remainMs=0
+    $('btnPause').textContent='暂停'
+    renderTime()
+  }
+
+  // ========== 应用配置到界面 ==========
+  function applyCfg(){
+    elName.textContent=cfg.name||'模拟考试'
+    elSub.textContent=cfg.sub||''
+    if(!elSub.textContent)elSub.style.display='none';else elSub.style.display=''
+    document.documentElement.style.setProperty('--bar-color',cfg.barColor||'#A855F7')
+    totalMs=(cfg.h*3600+cfg.m*60+cfg.s)*1000
+    remainMs=totalMs
+    fired={}
+    renderTime()
+  }
+
+  // ========== 控制按钮 ==========
+  $('btnStart').addEventListener('click',startFlow)
+  $('btnPause').addEventListener('click',function(){
+    if(running){pauseTimer()}else{resumeTimer()}
+  })
+  $('btnReset').addEventListener('click',function(){
+    readForm();saveCfg();applyCfg()
+    resetTimer()
+  })
+  $('btnStop').addEventListener('click',stopTimer)
+  $('btnSave').addEventListener('click',function(){
+    readForm();saveCfg()
+    if(!running){applyCfg()}
+  })
+
+  // ========== 导出数据 ==========
+  $('btnExport').addEventListener('click',function(){
+    readForm();saveCfg()
+    var code='var DEFAULT_CFG='+JSON.stringify(cfg,null,2)
+    $('exportCode').textContent=code
+    $('exportModal').classList.add('open')
+  })
+  $('exportCopyBtn').addEventListener('click',function(){
+    var pre=$('exportCode')
+    var btn=this
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(pre.textContent).then(function(){
+        btn.textContent='已复制 ✓';btn.classList.add('copied')
+        setTimeout(function(){btn.textContent='复制代码';btn.classList.remove('copied')},2000)
+      })
+    }else{
+      var sel=window.getSelection(),range=document.createRange()
+      range.selectNodeContents(pre);sel.removeAllRanges();sel.addRange(range)
+      document.execCommand('copy');sel.removeAllRanges()
+      btn.textContent='已复制 ✓';btn.classList.add('copied')
+      setTimeout(function(){btn.textContent='复制代码';btn.classList.remove('copied')},2000)
+    }
+  })
+  $('exportCloseBtn').addEventListener('click',function(){
+    $('exportModal').classList.remove('open')
+  })
+  $('exportModal').addEventListener('click',function(e){
+    if(e.target===this)this.classList.remove('open')
+  })
+
+  // ========== 设置面板 ==========
+  var panel=$('settingsPanel'),toggle=$('settingsToggle')
+  function openPanel(){
+    fillForm()
+    panel.classList.add('open')
+  }
+  function closePanel(){panel.classList.remove('open')}
+  toggle.addEventListener('click',function(){
+    panel.classList.contains('open')?closePanel():openPanel()
+  })
+  $('settingsCancel').addEventListener('click',closePanel)
+
+  function fillForm(){
+    $('inExamName').value=cfg.name
+    $('inSub').value=cfg.sub
+    $('inH').value=cfg.h
+    $('inM').value=cfg.m
+    $('inS').value=cfg.s
+    $('inStartSpeech').value=cfg.startSpeech
+    $('inEndSpeech').value=cfg.endSpeech
+    $('inBarColor').value=cfg.barColor||'#A855F7'
+    $('inVoiceEnabled').checked=cfg.voiceEnabled!==false
+    renderRules()
+  }
+
+  function readForm(){
+    cfg.name=$('inExamName').value.trim()||'模拟考试'
+    cfg.sub=$('inSub').value.trim()
+    cfg.h=Math.max(0,parseInt($('inH').value)||0)
+    cfg.m=Math.max(0,parseInt($('inM').value)||0)
+    cfg.s=Math.max(0,parseInt($('inS').value)||0)
+    if(cfg.m>59)cfg.m=59
+    if(cfg.s>59)cfg.s=59
+    cfg.startSpeech=$('inStartSpeech').value.trim()
+    cfg.endSpeech=$('inEndSpeech').value.trim()
+    cfg.barColor=$('inBarColor').value||'#A855F7'
+    cfg.voiceEnabled=$('inVoiceEnabled').checked
+
+    var rules=[]
+    var groups=document.querySelectorAll('#rulesWrap .rule-group')
+    groups.forEach(function(g){
+      var min=parseFloat(g.querySelector('.r-min').value)
+      var text=g.querySelector('.r-text').value.trim()
+      if(!isNaN(min)&&text)rules.push({min:min,text:text})
+    })
+    cfg.rules=rules
+  }
+
+  function renderRules(){
+    var wrap=$('rulesWrap')
+    if(!cfg.rules||!cfg.rules.length){
+      wrap.innerHTML=''
+      return
+    }
+    var html=''
+    cfg.rules.forEach(function(r,i){
+      html+='<div class="rule-group" data-i="'+i+'">'
+      html+='<div class="rule-head"><span>提醒 '+(i+1)+'</span><button class="rule-del" title="删除">✕</button></div>'
+      html+='<div class="field"><label>剩余（分钟）</label><input type="number" class="r-min" min="0" step="1" value="'+r.min+'"></div>'
+      html+='<div class="field"><label>播报内容</label><textarea class="r-text" rows="2">'+String(r.text||'').replace(/</g,'&lt;')+'</textarea></div>'
+      html+='</div>'
+    })
+    wrap.innerHTML=html
+  }
+
+  $('rulesWrap').addEventListener('click',function(e){
+    var del=e.target.closest('.rule-del')
+    if(!del)return
+    var g=del.closest('.rule-group')
+    var i=parseInt(g.dataset.i)
+    cfg.rules.splice(i,1)
+    renderRules()
+  })
+
+  $('btnAddRule').addEventListener('click',function(){
+    if(!cfg.rules)cfg.rules=[]
+    cfg.rules.push({min:5,text:'考试还剩五分钟'})
+    renderRules()
+  })
+
+  // ========== 全屏状态监听 ==========
+  function onFsChange(){
+    var fs=!!(document.fullscreenElement||document.webkitFullscreenElement)
+    if(fs){document.body.classList.add('fs')}else{document.body.classList.remove('fs')}
+    updateFsBtn()
+  }
+  document.addEventListener('fullscreenchange',onFsChange)
+  document.addEventListener('webkitfullscreenchange',onFsChange)
+
+  // ========== 回到全屏 ==========
+  fsBtn.addEventListener('click',goFullscreen)
+
+  // ========== 初始化 ==========
+  applyCfg()
+  if('speechSynthesis' in window){window.speechSynthesis.getVoices()}
+})()
+</script>
+
+</body>
+</html>
