@@ -123,40 +123,69 @@
       text-shadow:0 1px 8px rgba(0,0,0,.5);
     }
 
-    /* ===== 荧光进度条 ===== */
+    /* ===== 板块分段进度条 ===== */
     .progress-wrap{
-      width:min(70vw,560px);
+      width:min(78vw,720px);
       margin-top:clamp(30px,4.5vw,56px);
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:14px;
+      gap:10px;
     }
     .progress-bar{
-      position:relative;
       width:100%;
-      height:10px;
-      border-radius:999px;
+      display:flex;
+      gap:4px;
+    }
+    .seg{
+      position:relative;
+      height:22px;
+      border-radius:6px;
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.1);
-      box-shadow:inset 0 1px 3px rgba(0,0,0,.4);
       overflow:hidden;
+      min-width:0;
+      flex:1 1 0;
+      transition:border-color .3s,box-shadow .3s,opacity .3s;
     }
-    .progress-fill{
-      height:100%;
+    .seg-fill{
+      position:absolute;left:0;top:0;bottom:0;
       width:0%;
-      border-radius:999px;
       background:var(--bar-color,#A855F7);
       box-shadow:0 0 4px var(--bar-color,#A855F7),0 0 10px var(--bar-color,#A855F7);
       transition:width .4s ease;
     }
-    .pct-text{
-      font-size:clamp(.65rem,1vw,.85rem);
-      font-weight:600;
-      color:rgba(255,255,255,.5);
-      letter-spacing:.06em;
-      font-variant-numeric:tabular-nums;
+    .seg.done .seg-fill{opacity:.5}
+    .seg.cur{border-color:var(--bar-color,#A855F7);box-shadow:0 0 8px var(--bar-color,#A855F7),0 0 18px var(--bar-color,#A855F7)}
+    .seg-legend{
+      width:100%;display:flex;gap:4px;
     }
+    .legend-item{
+      display:flex;flex-direction:column;align-items:center;
+      min-width:0;
+      flex:1 1 0;
+    }
+    .lg-name{
+      font-size:clamp(.48rem,.75vw,.66rem);
+      color:rgba(255,255,255,.55);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      max-width:100%;
+    }
+    .lg-min{
+      font-size:clamp(.42rem,.62vw,.58rem);
+      color:rgba(255,255,255,.3);
+      font-variant-numeric:tabular-nums;
+      line-height:1.4;
+    }
+    .legend-item.cur .lg-name{color:#fff;font-weight:600}
+    .seg-cur{
+      font-size:clamp(.72rem,1.1vw,.9rem);
+      color:rgba(255,255,255,.8);
+      letter-spacing:.05em;
+      font-weight:600;
+      min-height:1.3em;
+    }
+    .seg-cur b{color:var(--bar-color,#A855F7);font-weight:700}
 
     /* ===== 准备倒计时遮罩 ===== */
     #prepOverlay{
@@ -255,6 +284,41 @@
     .field-row{display:flex;gap:10px}
     .field-row .field{flex:1}
     .field .sub-hint{font-size:.62rem;color:rgba(255,255,255,.3);margin-top:4px;line-height:1.5}
+
+    /* ===== 板块编辑器 ===== */
+    .sec-row{
+      display:flex;flex-direction:column;gap:8px;
+      padding:10px;border:1px solid rgba(255,255,255,.08);
+      border-radius:10px;background:rgba(255,255,255,.02);
+      margin-bottom:8px;
+    }
+    .sec-name{
+      width:100%;padding:9px 12px;border-radius:8px;
+      border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);
+      color:#fff;font-size:.85rem;font-family:inherit;outline:none;
+    }
+    .sec-name:focus{border-color:#A855F7}
+    .sec-row2{display:flex;align-items:center;gap:8px}
+    .sec-min{
+      width:60px;padding:8px;border-radius:8px;text-align:center;
+      border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);
+      color:#fff;font-size:.8rem;font-family:inherit;outline:none;
+    }
+    .sec-min:focus{border-color:#A855F7}
+    .sec-unit{font-size:.7rem;color:rgba(255,255,255,.5);white-space:nowrap}
+    .sec-nav{margin-left:auto;display:flex;gap:4px}
+    .sec-nav button{
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      color:#fff;font-size:.6rem;line-height:1;padding:5px 7px;border-radius:5px;
+      cursor:pointer;
+    }
+    .sec-nav button:hover:not(:disabled){background:rgba(255,255,255,.16)}
+    .sec-nav button:disabled{opacity:.25;cursor:default}
+    .sec-del{
+      background:transparent;border:none;color:rgba(255,255,255,.35);
+      cursor:pointer;font-size:.95rem;padding:4px 6px;border-radius:6px;
+    }
+    .sec-del:hover{color:#ff6b6b;background:rgba(255,45,45,.12)}
 
     .rule-group{
       padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:12px;
@@ -421,10 +485,9 @@
   </div>
 
   <div class="progress-wrap">
-    <div class="progress-bar">
-      <div class="progress-fill" id="barFill"></div>
-    </div>
-    <span class="pct-text" id="barPct">100%</span>
+    <div class="progress-bar" id="segBar"></div>
+    <div class="seg-legend" id="segLegend"></div>
+    <div class="seg-cur" id="segCur"></div>
   </div>
 </div>
 
@@ -458,19 +521,11 @@
     <input type="text" id="inExamName" placeholder="例如：行测模拟考试">
   </div>
 
-  <div class="field-row">
-    <div class="field">
-      <label>小时</label>
-      <input type="number" id="inH" min="0" max="999" value="0">
-    </div>
-    <div class="field">
-      <label>分钟</label>
-      <input type="number" id="inM" min="0" max="59" value="0">
-    </div>
-    <div class="field">
-      <label>秒</label>
-      <input type="number" id="inS" min="0" max="59" value="0">
-    </div>
+  <div class="field">
+    <label>板块建议答题时间（顺序 = 答题顺序）</label>
+    <div id="sectionsWrap"></div>
+    <button class="btn-add-rule" id="btnAddSection" style="margin-bottom:8px">+ 添加板块</button>
+    <div class="sub-hint" id="totalHint"></div>
   </div>
 
   <div class="field">
@@ -486,7 +541,7 @@
   <div class="field">
     <label>开始语音提醒（考试提醒）</label>
     <textarea id="inStartSpeech" rows="3" placeholder="例如：考试开始，请做好准备"></textarea>
-    <div class="sub-hint">可用占位符：{name} = 考试名称，{duration} = 考试时长。点击「开始」后自动播报。</div>
+    <div class="sub-hint">可用占位符：{name} = 考试名称，{duration} = 总时长（各板块之和）。点击「开始」后自动播报。</div>
   </div>
 
   <div class="field">
@@ -536,7 +591,7 @@
   var $=function(id){return document.getElementById(id)}
   var elName=$('examName'),elSub=$('examSub')
   var elH=$('cdH'),elM=$('cdM'),elS=$('cdS')
-  var barFill=$('barFill'),barPct=$('barPct')
+  var segBar=$('segBar'),segLegend=$('segLegend'),segCur=$('segCur')
   var prepOverlay=$('prepOverlay'),prepNum=$('prepNum')
   var fsBtn=$('fsBtn')
 
@@ -548,14 +603,21 @@
   var timerId=null
   var prepTimerId=null
   var fired={}
+  var wakeLock=null
+  var wakeLockSupported='wakeLock' in navigator
 
   // ========== 默认配置 ==========
   var DEFAULT_CFG={
     "name": "模拟考试",
     "sub": "全真模考 · 请开始作答",
-    "h": 2,
-    "m": 0,
-    "s": 0,
+    "sections": [
+      {"name": "政治理论", "min": 12},
+      {"name": "常识判断", "min": 5},
+      {"name": "言语理解与表达", "min": 28},
+      {"name": "数量关系", "min": 10},
+      {"name": "判断推理", "min": 30},
+      {"name": "资料分析", "min": 27}
+    ],
     "endSpeech": "考试时间到，请立即停笔",
     "voiceEnabled": true,
     "rules": [
@@ -564,7 +626,7 @@
         "text": "考试还剩十五分钟，请检查答题卡，抓紧时间答题"
       }
     ],
-    "startSpeech": "国家公务员行测考试即将开始，请做好准备。\n考试时长120分钟",
+    "startSpeech": "国家公务员行测考试即将开始，请做好准备。\n考试时长{duration}",
     "barColor": "#d57e44"
   }
 
@@ -580,17 +642,35 @@
     return JSON.parse(JSON.stringify(DEFAULT_CFG))
   }
   var cfg=loadCfg()
+  // 兼容旧配置：无板块数据时使用默认板块
+  if(!cfg.sections||!cfg.sections.length){
+    cfg.sections=JSON.parse(JSON.stringify(DEFAULT_CFG.sections))
+  }
 
   function saveCfg(){localStorage.setItem('countdownCfg',JSON.stringify(cfg))}
 
+  // ========== 转义 ==========
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
   // ========== 时长格式化（语音用） ==========
-  function formatDuration(h,m,s){
-    var parts=[]
-    if(h>0)parts.push(h+'小时')
-    if(m>0)parts.push(m+'分钟')
-    if(s>0)parts.push(s+'秒')
-    if(!parts.length)return '0分钟'
-    return parts.join('')
+  function sectionTotalMs(){
+    var sum=0
+    ;(cfg.sections||[]).forEach(function(s){sum+=(parseFloat(s.min)||0)})
+    return sum*60000
+  }
+  function totalSpeech(){
+    var min=Math.round(totalMs/60000)
+    if(min>=60){
+      var h=Math.floor(min/60),m=min%60
+      return m?(h+'小时'+m+'分钟'):(h+'小时')
+    }
+    return min+'分钟'
+  }
+  function formatMMSS(ms){
+    var s=Math.max(0,Math.round(ms/1000))
+    var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60
+    if(h>0)return h+':'+pad(m)+':'+pad(sec)
+    return m+':'+pad(sec)
   }
 
   // ========== 时间格式化 ==========
@@ -606,16 +686,73 @@
     elM.textContent=pad(m)
     elS.textContent=pad(s)
 
-    var pct=totalMs>0?Math.max(0,Math.min(1,1-ms/totalMs)):0
-    barFill.style.width=(pct*100).toFixed(2)+'%'
-    barPct.textContent=Math.round(pct*100)+'%'
-
     var urgent=running&&ms>0&&ms<=5*60*1000
     ;[elH,elM,elS].forEach(function(el){
       if(urgent){el.classList.add('urgent')}else{el.classList.remove('urgent')}
     })
 
+    updateSegments()
     updateFsBtn()
+  }
+
+  // ========== 板块分段进度条 ==========
+  function buildSegments(){
+    segBar.innerHTML=''
+    segLegend.innerHTML=''
+    var secs=cfg.sections||[]
+    var total=sectionTotalMs()
+    secs.forEach(function(s){
+      var min=parseFloat(s.min)||0
+      var pct=total>0?(min*60000/total*100):0
+      var seg=document.createElement('div')
+      seg.className='seg'
+      seg.style.width=pct+'%'
+      var fill=document.createElement('div')
+      fill.className='seg-fill'
+      seg.appendChild(fill)
+      segBar.appendChild(seg)
+      var li=document.createElement('div')
+      li.className='legend-item'
+      li.style.width=pct+'%'
+      li.innerHTML='<span class="lg-name">'+esc(s.name||'')+'</span><span class="lg-min">'+min+'′</span>'
+      segLegend.appendChild(li)
+    })
+    updateSegments()
+  }
+
+  function updateSegments(){
+    var secs=cfg.sections||[]
+    var segs=segBar.querySelectorAll('.seg')
+    var items=segLegend.querySelectorAll('.legend-item')
+    var elapsed=totalMs-remainMs
+    var acc=0,curName='',curRemain=0
+    secs.forEach(function(s,i){
+      var min=parseFloat(s.min)||0
+      var ms=min*60000
+      var start=acc,end=acc+ms
+      acc=end
+      var frac=0
+      if(elapsed>=end)frac=1
+      else if(elapsed>start&&ms>0)frac=(elapsed-start)/ms
+      var seg=segs[i],item=items[i]
+      if(seg){
+        var fill=seg.querySelector('.seg-fill')
+        if(fill)fill.style.width=(frac*100)+'%'
+        seg.classList.toggle('done',elapsed>=end)
+        seg.classList.toggle('cur',elapsed>=start&&elapsed<end)
+      }
+      if(item)item.classList.toggle('cur',elapsed>=start&&elapsed<end)
+      if(elapsed>=start&&elapsed<end){curName=s.name;curRemain=end-elapsed}
+    })
+    if(segCur){
+      if(curName){
+        segCur.innerHTML='当前板块：<b>'+esc(curName)+'</b> · 剩余 '+formatMMSS(curRemain)
+      }else if(secs.length){
+        segCur.textContent='共 '+secs.length+' 个板块'
+      }else{
+        segCur.textContent=''
+      }
+    }
   }
 
   // ========== 回到全屏按键显隐 ==========
@@ -679,6 +816,25 @@
     }catch(e){}
   }
 
+  // ========== 保屏（Wake Lock，防止长时间不动黑屏） ==========
+  function acquireWakeLock(){
+    if(!wakeLockSupported)return
+    try{
+      navigator.wakeLock.request('screen').then(function(lock){
+        wakeLock=lock
+        lock.addEventListener('release',function(){
+          if(wakeLock===lock)wakeLock=null
+        })
+      }).catch(function(){})
+    }catch(e){}
+  }
+  function releaseWakeLock(){
+    if(wakeLock){
+      try{wakeLock.release().catch(function(){})}catch(e){}
+      wakeLock=null
+    }
+  }
+
   // ========== 主循环 ==========
   function tick(){
     if(!running)return
@@ -698,6 +854,7 @@
     running=false
     if(timerId){clearInterval(timerId);timerId=null}
     deadline=0
+    releaseWakeLock()
     renderTime()
     speak(cfg.endSpeech||'考试时间到')
     var bp=$('btnPause');if(bp)bp.textContent='暂停'
@@ -709,6 +866,7 @@
     running=true
     deadline=Date.now()+remainMs
     fired={}
+    acquireWakeLock()
     if(timerId){clearInterval(timerId)}
     timerId=setInterval(tick,250)
     renderTime()
@@ -742,7 +900,7 @@
       sp='考试开始，请做好准备。本次考试：{name}，时长 {duration}。'
     }
     sp=sp.split('{name}').join(cfg.name||'模拟考试')
-    sp=sp.split('{duration}').join(formatDuration(cfg.h,cfg.m,cfg.s))
+    sp=sp.split('{duration}').join(totalSpeech())
     speak(sp)
     startPrep()          // 5 秒后开始倒计时
   }
@@ -754,6 +912,7 @@
     if(timerId){clearInterval(timerId);timerId=null}
     if(deadline>0)remainMs=Math.max(0,deadline-Date.now())
     stopSpeech()
+    releaseWakeLock()
     $('btnPause').textContent='继续'
     renderTime()
   }
@@ -761,6 +920,7 @@
     if(running||remainMs<=0)return
     running=true
     deadline=Date.now()+remainMs
+    acquireWakeLock()
     $('btnPause').textContent='暂停'
     timerId=setInterval(tick,250)
     renderTime()
@@ -773,7 +933,8 @@
     deadline=0
     fired={}
     stopSpeech()
-    totalMs=(cfg.h*3600+cfg.m*60+cfg.s)*1000
+    releaseWakeLock()
+    totalMs=sectionTotalMs()
     remainMs=totalMs
     $('btnPause').textContent='暂停'
     renderTime()
@@ -786,6 +947,7 @@
     deadline=0
     fired={}
     stopSpeech()
+    releaseWakeLock()
     remainMs=0
     $('btnPause').textContent='暂停'
     renderTime()
@@ -797,9 +959,10 @@
     elSub.textContent=cfg.sub||''
     if(!elSub.textContent)elSub.style.display='none';else elSub.style.display=''
     document.documentElement.style.setProperty('--bar-color',cfg.barColor||'#A855F7')
-    totalMs=(cfg.h*3600+cfg.m*60+cfg.s)*1000
+    totalMs=sectionTotalMs()
     remainMs=totalMs
     fired={}
+    buildSegments()
     renderTime()
   }
 
@@ -863,28 +1026,22 @@
   function fillForm(){
     $('inExamName').value=cfg.name
     $('inSub').value=cfg.sub
-    $('inH').value=cfg.h
-    $('inM').value=cfg.m
-    $('inS').value=cfg.s
     $('inStartSpeech').value=cfg.startSpeech
     $('inEndSpeech').value=cfg.endSpeech
     $('inBarColor').value=cfg.barColor||'#A855F7'
     $('inVoiceEnabled').checked=cfg.voiceEnabled!==false
+    renderSections()
     renderRules()
   }
 
   function readForm(){
     cfg.name=$('inExamName').value.trim()||'模拟考试'
     cfg.sub=$('inSub').value.trim()
-    cfg.h=Math.max(0,parseInt($('inH').value)||0)
-    cfg.m=Math.max(0,parseInt($('inM').value)||0)
-    cfg.s=Math.max(0,parseInt($('inS').value)||0)
-    if(cfg.m>59)cfg.m=59
-    if(cfg.s>59)cfg.s=59
     cfg.startSpeech=$('inStartSpeech').value.trim()
     cfg.endSpeech=$('inEndSpeech').value.trim()
     cfg.barColor=$('inBarColor').value||'#A855F7'
     cfg.voiceEnabled=$('inVoiceEnabled').checked
+    readSections()
 
     var rules=[]
     var groups=document.querySelectorAll('#rulesWrap .rule-group')
@@ -895,6 +1052,89 @@
     })
     cfg.rules=rules
   }
+
+  // ========== 板块编辑器 ==========
+  function renderSections(){
+    var wrap=$('sectionsWrap')
+    if(!wrap)return
+    var secs=cfg.sections||[]
+    var html=''
+    secs.forEach(function(s,i){
+      html+='<div class="sec-row" data-i="'+i+'">'
+      html+='<input class="sec-name" placeholder="板块名称" value="'+esc(s.name||'')+'">'
+      html+='<div class="sec-row2">'
+      html+='<input class="sec-min" type="number" min="0" step="1" value="'+(parseFloat(s.min)||0)+'">'
+      html+='<span class="sec-unit">分钟</span>'
+      html+='<div class="sec-nav">'
+      html+='<button class="sec-up" title="上移" '+(i===0?'disabled':'')+'>▲</button>'
+      html+='<button class="sec-down" title="下移" '+(i===secs.length-1?'disabled':'')+'>▼</button>'
+      html+='</div>'
+      html+='<button class="sec-del" title="删除">✕</button>'
+      html+='</div>'
+      html+='</div>'
+    })
+    wrap.innerHTML=html
+    updateTotalHint()
+  }
+
+  function readSections(){
+    var secs=[]
+    var rows=document.querySelectorAll('#sectionsWrap .sec-row')
+    rows.forEach(function(r){
+      var name=r.querySelector('.sec-name').value.trim()
+      var min=parseFloat(r.querySelector('.sec-min').value)
+      if(isNaN(min)||min<0)min=0
+      secs.push({name:name||'板块',min:min})
+    })
+    if(secs.length)cfg.sections=secs
+  }
+
+  function updateTotalHint(){
+    var el=$('totalHint')
+    if(!el)return
+    var sum=0
+    ;(cfg.sections||[]).forEach(function(s){sum+=(parseFloat(s.min)||0)})
+    el.textContent='总时长：'+sum+' 分钟（各板块之和）'
+  }
+
+  $('sectionsWrap').addEventListener('click',function(e){
+    var up=e.target.closest('.sec-up')
+    var down=e.target.closest('.sec-down')
+    var del=e.target.closest('.sec-del')
+    if(del){
+      var g=del.closest('.sec-row')
+      var i=parseInt(g.dataset.i)
+      cfg.sections.splice(i,1)
+      renderSections()
+      return
+    }
+    if(up){
+      var g2=up.closest('.sec-row')
+      var j=parseInt(g2.dataset.i)
+      if(j>0){
+        readSections()
+        var t=cfg.sections[j];cfg.sections[j]=cfg.sections[j-1];cfg.sections[j-1]=t
+        renderSections()
+      }
+      return
+    }
+    if(down){
+      var g3=down.closest('.sec-row')
+      var k=parseInt(g3.dataset.i)
+      if(k<cfg.sections.length-1){
+        readSections()
+        var t2=cfg.sections[k];cfg.sections[k]=cfg.sections[k+1];cfg.sections[k+1]=t2
+        renderSections()
+      }
+      return
+    }
+  })
+
+  $('btnAddSection').addEventListener('click',function(){
+    if(!cfg.sections)cfg.sections=[]
+    cfg.sections.push({name:'新板块',min:5})
+    renderSections()
+  })
 
   function renderRules(){
     var wrap=$('rulesWrap')
@@ -939,6 +1179,13 @@
 
   // ========== 回到全屏 ==========
   fsBtn.addEventListener('click',goFullscreen)
+
+  // ========== 页面重新可见时，若仍在计时则重新申请保屏 ==========
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible'&&running){
+      acquireWakeLock()
+    }
+  })
 
   // ========== 初始化 ==========
   applyCfg()
