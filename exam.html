@@ -601,18 +601,35 @@ function getConfig(rec){
 /* ============ 默认数据（示例，可在页面中编辑/删除） ============ */
   var DEFAULT_RECORDS =   [
     {
-      "name": "华图模考 · 第一期",
-      "date": "2026-08-22",
-      "rank": 29,
+      "name": "四海公考 · 模考一卷",
+      "date": "2026-11-08",
+      "rank": null,
+      "qcount": 130,
       "scores": {
         "zz": 9,
-        "pd": 9,
+        "cs": 7,
+        "yy": 14,
+        "sl": 2,
+        "tx": 4,
+        "dy": 8,
+        "lb": 2,
+        "ljp": 8,
+        "zl": 4
+      }
+    },
+    {
+      "name": "华图模考 · 第三期",
+      "date": "2026-09-21",
+      "rank": 20,
+      "scores": {
+        "zz": 15,
+        "pd": 10,
         "lj": 5,
-        "wz": 1,
-        "sl": 4,
+        "wz": 5,
+        "sl": 8,
         "lb": 5,
         "tzl": 20,
-        "zl": 9
+        "zl": 6
       }
     },
     {
@@ -631,18 +648,18 @@ function getConfig(rec){
       }
     },
     {
-      "name": "华图模考 · 第三期",
-      "date": "2026-09-21",
-      "rank": 20,
+      "name": "华图模考 · 第一期",
+      "date": "2026-08-22",
+      "rank": 29,
       "scores": {
-        "zz": 15,
-        "pd": 10,
+        "zz": 9,
+        "pd": 9,
         "lj": 5,
-        "wz": 5,
-        "sl": 8,
+        "wz": 1,
+        "sl": 4,
         "lb": 5,
         "tzl": 20,
-        "zl": 6
+        "zl": 9
       }
     }
   ]
@@ -653,7 +670,7 @@ var records = loadRecords()
 /* ============ 工具函数 ============ */
 function validRecord(r){
   if(!r || typeof r !== 'object' || !r.name || !r.date || isNaN(new Date(r.date).getTime())) return false
-  if(typeof r.rank !== 'number' || r.rank < 1) return false
+  if(r.rank != null && (typeof r.rank !== 'number' || r.rank < 1)) return false
   if(!r.scores || typeof r.scores !== 'object') return false
   var ok = getConfig(r).sections.every(function(s){
     var v = r.scores[s.key]
@@ -682,7 +699,7 @@ function saveRecords(){
 }
 
 function sortRecords(arr){
-  return arr.slice().sort(function(a,b){ return new Date(a.date) - new Date(b.date) })
+  return arr.slice().sort(function(a,b){ return new Date(b.date) - new Date(a.date) })
 }
 
 /* 计算单场得分详情 */
@@ -719,14 +736,14 @@ function renderStats(){
     return
   }
   var totals = records.map(function(r){ return calcRecord(r).total })
-  var latest = totals[totals.length - 1]
+  var latest = totals[0]
   var avg = totals.reduce(function(a,b){return a+b},0) / n
   var maxV = Math.max.apply(null, totals)
   var maxI = totals.indexOf(maxV)
 
   var elL = document.getElementById('stLatest')
   elL.textContent = fmt(latest, 1)
-  document.getElementById('stLatestSub').textContent = records[n-1].name + ' · ' + records[n-1].date
+  document.getElementById('stLatestSub').textContent = records[0].name + ' · ' + records[0].date
   document.getElementById('stAvg').textContent = fmt(avg, 1)
   document.getElementById('stMax').textContent = fmt(maxV, 1)
   document.getElementById('stMaxSub').textContent = records[maxI].name
@@ -746,7 +763,8 @@ function renderTable(){
     html += '<div class="exam-head">'
     html += '<div class="exam-info">'
     html += '<div class="exam-name">' + esc(rec.name) + '</div>'
-    html += '<div class="exam-meta">' + rec.date + ' · 排名第 <span class="rank">' + rec.rank + '</span> 名</div>'
+    var rankText = (rec.rank != null) ? ' · 排名第 <span class="rank">' + rec.rank + '</span> 名' : ''
+    html += '<div class="exam-meta">' + rec.date + rankText + '</div>'
     html += '</div>'
     html += '<div class="exam-total">'
     html += '<div class="total-num">' + fmt(calc.total, 1) + '</div>'
@@ -888,8 +906,9 @@ function renderRadar(){
 function renderScore(){
   if(!hasECharts) return
   if(records.length === 0){ charts.score.clear(); return }
-  var names = records.map(function(r){ return r.name + '\n' + r.date })
-  var totals = records.map(function(r){ return +calcRecord(r).total.toFixed(1) })
+  var chrono = records.slice().reverse()
+  var names = chrono.map(function(r){ return r.name + '\n' + r.date })
+  var totals = chrono.map(function(r){ return +calcRecord(r).total.toFixed(1) })
   var avg = totals.reduce(function(a,b){return a+b},0) / totals.length
   var maxV = Math.max.apply(null, totals)
 
@@ -931,8 +950,9 @@ function renderScore(){
 function renderRank(){
   if(!hasECharts) return
   if(records.length === 0){ charts.rank.clear(); return }
-  var names = records.map(function(r){ return r.name + '\n' + r.date })
-  var ranks = records.map(function(r){ return r.rank })
+  var chrono = records.slice().reverse()
+  var names = chrono.map(function(r){ return r.name + '\n' + r.date })
+  var ranks = chrono.map(function(r){ return (r.rank != null) ? r.rank : null })
 
   charts.rank.setOption({
     backgroundColor:'transparent',
@@ -966,8 +986,8 @@ function renderProgress(){
     if(hasECharts) charts.progress.clear()
     return
   }
-  var first = records[0]
-  var last = records[records.length - 1]
+  var first = records[records.length - 1]
+  var last = records[0]
   var lastCfg = getConfig(last)
   var firstCfg = getConfig(first)
   var rows = lastCfg.sections.map(function(s){
@@ -1033,12 +1053,13 @@ function renderProgress(){
 function renderTrend(){
   if(!hasECharts) return
   if(records.length === 0){ charts.trend.clear(); return }
-  var baseCfg = getConfig(records[records.length - 1])
+  var baseCfg = getConfig(records[0])
   var idx = parseInt(document.getElementById('trendSelect').value, 10)
   var sec = baseCfg.sections[idx]
   if(!sec) return
-  var names = records.map(function(r){ return r.name + '\n' + r.date })
-  var vals = records.map(function(r){
+  var chrono = records.slice().reverse()
+  var names = chrono.map(function(r){ return r.name + '\n' + r.date })
+  var vals = chrono.map(function(r){
     var s = getConfig(r).sections.filter(function(x){ return x.key === sec.key })[0]
     if(!s) return null
     return +( (r.scores[s.key] / s.total) * 100 ).toFixed(1)
@@ -1099,12 +1120,12 @@ function renderRadarSelect(){
   sel.innerHTML = records.map(function(r, i){
     return '<option value="' + i + '">' + esc(r.name) + '（' + r.date + '）</option>'
   }).join('')
-  if(records.length) sel.value = cur !== '' && +cur < records.length ? cur : String(records.length - 1)
+  if(records.length) sel.value = cur !== '' && +cur < records.length ? cur : '0'
 }
 function renderTrendSelect(){
   var sel = document.getElementById('trendSelect')
   var cur = sel.value
-  var baseCfg = records.length ? getConfig(records[records.length - 1]) : CONFIG_135
+  var baseCfg = records.length ? getConfig(records[0]) : CONFIG_135
   sel.innerHTML = baseCfg.sections.map(function(s, i){
     return '<option value="' + i + '">' + s.name + '</option>'
   }).join('')
@@ -1123,7 +1144,7 @@ function openModal(idx){
   var html = ''
   html += '<div class="f-group wide"><label>考试名称</label><input id="f-name" placeholder="如：华图省模考 · 第4期" value="' + esc(rec.name || '') + '"></div>'
   html += '<div class="f-group"><label>考试日期</label><input id="f-date" type="date" value="' + (rec.date || '') + '"></div>'
-  html += '<div class="f-group"><label>排名（名次）</label><input id="f-rank" type="number" min="1" placeholder="如 62" value="' + (rec.rank != null ? rec.rank : '') + '"></div>'
+  html += '<div class="f-group"><label>排名（名次）<small>可选</small></label><input id="f-rank" type="number" min="1" placeholder="选填，如 62" value="' + (rec.rank != null ? rec.rank : '') + '"></div>'
   html += '<div class="f-group"><label>题目总数</label><select id="f-qcount"><option value="135"' + (qc===135?' selected':'') + '>135 题（原计算方式）</option><option value="130"' + (qc===130?' selected':'') + '>130 题（新分值分布）</option></select></div>'
   html += '<div id="f-sections" class="f-sections-grid"></div>'
   document.getElementById('modalForm').innerHTML = html
@@ -1150,7 +1171,8 @@ function closeModal(){ modal.classList.remove('open') }
 function saveFromModal(){
   var name = document.getElementById('f-name').value.trim()
   var date = document.getElementById('f-date').value
-  var rank = parseInt(document.getElementById('f-rank').value, 10)
+  var rankRaw = document.getElementById('f-rank').value.trim()
+  var rank = rankRaw === '' ? null : parseInt(rankRaw, 10)
   var qcount = parseInt(document.getElementById('f-qcount').value, 10)
   var cfg = qcount === 130 ? CONFIG_130 : CONFIG_135
   var scores = {}
@@ -1158,7 +1180,7 @@ function saveFromModal(){
 
   if(!name){ alert('请填写考试名称'); return }
   if(!date){ alert('请选择考试日期'); return }
-  if(!rank || rank < 1){ alert('请填写有效的排名（正整数）'); return }
+  if(rank != null && (isNaN(rank) || rank < 1)){ alert('请填写有效的排名（正整数）'); return }
 
   document.querySelectorAll('#f-sections input[data-key]').forEach(function(inp){
     var k = inp.dataset.key
