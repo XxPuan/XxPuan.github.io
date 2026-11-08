@@ -27,25 +27,41 @@
       background:radial-gradient(ellipse at 50% 40%,rgba(124,58,237,.14),rgba(8,8,14,.55) 85%);
     }
 
-    /* ===== 玻璃页眉 ===== */
+    /* ===== 玻璃页眉（液态玻璃，与 status.html 同款） ===== */
     .gs{
       position:fixed;top:24px;left:50%;transform:translateX(-50%);
       z-index:100;
       width:80vw;max-width:1200px;
       height:60px;
       border-radius:50px;
-      display:flex;align-items:center;
+      display:flex;align-items:center;justify-content:flex-start;
       padding:0 28px;
-      background:rgba(255,255,255,.05);
-      backdrop-filter:blur(18px) saturate(1.6) brightness(1.12);
-      -webkit-backdrop-filter:blur(18px) saturate(1.6) brightness(1.12);
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 8px 32px rgba(31,38,135,.15),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.1);
+      overflow:hidden;
     }
-    .gs__title{display:flex;align-items:center;gap:6px}
+    .gs--svg{
+      background:hsl(0 0% 0% / 0);
+      backdrop-filter:var(--gs-filter) saturate(1.3);
+      -webkit-backdrop-filter:var(--gs-filter) saturate(1.3);
+      box-shadow:
+        0 0 1.5px 1px rgba(255,255,255,.15) inset,
+        0 0 10px 4px rgba(255,255,255,.07) inset,
+        0 4px 16px rgba(17,17,26,.06),
+        0 8px 24px rgba(17,17,26,.05),
+        0 16px 56px rgba(17,17,26,.05);
+    }
+    .gs--fallback{
+      background:rgba(255,255,255,.08);
+      backdrop-filter:blur(18px) saturate(1.8) brightness(1.15);
+      -webkit-backdrop-filter:blur(18px) saturate(1.8) brightness(1.15);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 8px 32px rgba(31,38,135,.15),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(255,255,255,.12);
+    }
+    .gs__svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;z-index:-1}
+    .gs__content{position:relative;z-index:1;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between;border-radius:inherit;padding:0 4px}
+    .gs__title{display:flex;align-items:center;gap:5px}
     .gs__title b{font-size:21px;font-weight:800;color:#fff}
     .gs__title .s{font-size:15px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.01em}
-    .gs__right{margin-left:auto;font-size:clamp(.7rem,1vw,.9rem);font-weight:700;color:#fff;letter-spacing:.06em;cursor:pointer;transition:color .3s}
+    .gs__right{margin-left:auto;font-size:clamp(.7rem,1vw,.9rem);font-weight:700;color:#fff;letter-spacing:.06em;cursor:pointer;transition:color .3s;text-decoration:none}
     .gs__right:hover{color:rgba(255,255,255,.7)}
 
     /* 全屏时隐藏页眉，专注考试 */
@@ -487,9 +503,27 @@
 
 <div id="bgImg"></div>
 
-<div class="gs">
-  <div class="gs__title"><b>XxPuan</b><span class="s">'s Timer</span></div>
-  <a class="gs__right" href="status.html">返回事件页</a>
+<div class="gs" id="glassSurface">
+  <svg class="gs__svg" id="glassSvg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="gsFilter" colorInterpolationFilters="sRGB" x="0%" y="0%" width="100%" height="100%">
+        <feImage id="feMap" x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" id="feRed" xChannelSelector="R" yChannelSelector="G" result="dispRed"/>
+        <feColorMatrix in="dispRed" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="red"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" id="feGreen" xChannelSelector="R" yChannelSelector="G" result="dispGreen"/>
+        <feColorMatrix in="dispGreen" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="green"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" id="feBlue" xChannelSelector="R" yChannelSelector="G" result="dispBlue"/>
+        <feColorMatrix in="dispBlue" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="blue"/>
+        <feBlend in="red" in2="green" mode="screen" result="rg"/>
+        <feBlend in="rg" in2="blue" mode="screen" result="output"/>
+        <feGaussianBlur in="output" stdDeviation="0.7"/>
+      </filter>
+    </defs>
+  </svg>
+  <div class="gs__content">
+    <div class="gs__title"><b>XxPuan</b><span class="s">'s Timer</span></div>
+    <a class="gs__right" href="status.html">返回事件页</a>
+  </div>
 </div>
 
 <div class="page-wrap">
@@ -626,6 +660,34 @@
 <script>
 (function(){
   'use strict'
+
+  // ========== 液态玻璃页眉（与 status.html 同款 SVG 折射） ==========
+  var gs=document.getElementById('glassSurface')
+  window.addEventListener('scroll',function(){gs.style.background=window.scrollY>30?'rgba(255,255,255,.035)':''},{passive:true})
+  var isChromium=!(/Safari/.test(navigator.userAgent)&&!/Chrome/.test(navigator.userAgent))&&!/Firefox/.test(navigator.userAgent)
+  var td=document.createElement('div');td.style.backdropFilter='url(#gsFilter)'
+  var supportsSvg=td.style.backdropFilter!==''&&isChromium
+  gs.classList.add(supportsSvg?'gs--svg':'gs--fallback')
+  if(supportsSvg)gs.style.setProperty('--gs-filter','url(#gsFilter)')
+  var distortionScale=-180,redOffset=0,greenOffset=10,blueOffset=20
+  var borderWidth=.07,brightness=50,opacity=.93,blurAmt=11,borderRadius=50,mixBlendMode='difference'
+  function genMap(el,w,h){
+    var e=Math.min(w,h)*borderWidth*.5
+    return 'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><defs><linearGradient id="rg" x1="100%" y1="0%" x2="0%" y2="0%"><stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="red"/></linearGradient><linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#0000"/><stop offset="100%" stop-color="blue"/></linearGradient></defs><rect fill="black" width="'+w+'" height="'+h+'"/><rect rx="'+borderRadius+'" width="'+w+'" height="'+h+'" fill="url(#rg)"/><rect rx="'+borderRadius+'" width="'+w+'" height="'+h+'" fill="url(#bg)" style="mix-blend-mode:'+mixBlendMode+'"/><rect x="'+e+'" y="'+e+'" width="'+(w-e*2)+'" height="'+(h-e*2)+'" rx="'+borderRadius+'" fill="hsl(0 0% '+brightness+'% / '+opacity+')" style="filter:blur('+blurAmt+'px)"/></svg>')
+  }
+  function updateGS(){
+    if(!supportsSvg)return
+    var m=document.getElementById('feMap')
+    if(m){var r=gs.getBoundingClientRect();if(r.width>1)m.setAttribute('href',genMap(gs,r.width,r.height))}
+    var r=document.getElementById('feRed'),g=document.getElementById('feGreen'),b=document.getElementById('feBlue')
+    if(r)r.setAttribute('scale',distortionScale+redOffset)
+    if(g)g.setAttribute('scale',distortionScale+greenOffset)
+    if(b)b.setAttribute('scale',distortionScale+blueOffset)
+  }
+  updateGS()
+  var rt
+  window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(updateGS,150)})
+  if(window.ResizeObserver)new ResizeObserver(function(){clearTimeout(rt);rt=setTimeout(updateGS,100)}).observe(gs)
 
   // ========== 背景鼠标光晕 ==========
   var glow=document.createElement('div')
