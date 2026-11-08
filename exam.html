@@ -315,6 +315,8 @@
     .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
     @media screen and (max-width:760px){.form-grid{grid-template-columns:1fr 1fr}}
     .form-grid .wide{grid-column:1/-1}
+    .f-sections-grid{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+    @media screen and (max-width:760px){.f-sections-grid{grid-template-columns:1fr 1fr}}
     .f-group label{display:block;font-size:clamp(0.55rem,.7vw,0.65rem);color:var(--t-mid);margin-bottom:4px;letter-spacing:.05em}
     .f-group label small{color:var(--t-low);margin-left:4px}
     .f-group input{
@@ -324,6 +326,13 @@
     }
     .f-group input:focus{border-color:#A855F7}
     .f-group input::placeholder{color:var(--t-dim)}
+    .f-group select{
+      width:100%;padding:8px 10px;border-radius:8px;
+      border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;
+      font-size:clamp(0.6rem,.75vw,0.7rem);font-family:inherit;outline:none;transition:border-color .3s;cursor:pointer;
+    }
+    .f-group select:focus{border-color:#A855F7}
+    .f-group select option{background:#15152a;color:#fff}
     .modal-actions{display:flex;gap:10px;margin-top:20px}
     .modal-actions .btn{flex:1;padding:11px}
 
@@ -485,8 +494,8 @@
 
   <!-- 页脚说明 -->
   <div class="foot-note">
-    <b>记分规则：</b>总分 = Σ 各板块（正确数 × 每题分值），满分 100 分。<br>
-    <b>目标正确率：</b>政治常识 50% · 片段阅读 80% · 逻辑填空 75% · 文章阅读 80% · 数量关系 40% · 类比推理 80% · 图形/逻辑/定义 75% · 资料分析 85%。<br>
+    <b>记分规则：</b>添加记录时可选择题量——<b>135 题</b>（原计算方式）或 <b>130 题</b>（新分值分布，各板块分值已按比例归一化到总分 100 分：政治理论 0.812×20、常识判断 0.609×15、逻辑填空 0.812×12、片段阅读 0.812×14、文章阅读 0.812×4、数量关系 0.711×10、图形推理 0.711×8、定义判断 0.711×9、类比推理 0.609×9、逻辑判断 0.812×9、资料分析 0.914×20）。总分 = Σ 各板块（正确数 × 每题分值）。<br>
+    <b>目标正确率：</b>政治理论 60% · 常识判断 50% · 逻辑填空 75% · 片段阅读 80% · 文章阅读 80% · 数量关系 40% · 类比推理 80% · 逻辑判断 75% · 图形推理 70% · 定义判断 70% · 资料分析 85%。<br>
     <span class="hl">低于目标正确率的板块会被红色高亮，</span>并体现在雷达图、进步幅度与趋势图中；数据保存在浏览器本地（localStorage），可用「导出数据」生成嵌入代码持久化到本文件。
   </div>
 </div>
@@ -556,7 +565,8 @@ window.addEventListener('resize', function(){ clearTimeout(rt2); rt2 = setTimeou
 if(window.ResizeObserver) new ResizeObserver(function(){ clearTimeout(rt2); rt2 = setTimeout(updateGS, 100) }).observe(gsEl)
 
 /* ============ 板块配置（题数 / 每题分值 / 目标正确率） ============ */
-var CONFIG = {
+var CONFIG_135 = {
+  qcount: 135,
   sections: [
     { key:'zz',  name:'政治常识',       total:20, weight:0.65, target:0.50 },
     { key:'pd',  name:'片段阅读',       total:15, weight:0.70, target:0.80 },
@@ -567,6 +577,27 @@ var CONFIG = {
     { key:'tzl', name:'图形/逻辑/定义', total:35, weight:0.80, target:0.75 },
     { key:'zl',  name:'资料分析',       total:20, weight:0.90, target:0.85 }
   ]
+}
+/* 130 题（新分值分布，已按比例归一化到总分 100 分）：政治理论 0.812×20、常识判断 0.609×15、逻辑填空 0.812×12、片段阅读 0.812×14、文章阅读 0.812×4、数量关系 0.711×10、图形推理 0.711×8、定义判断 0.711×9、类比推理 0.609×9、逻辑判断 0.812×9、资料分析 0.914×20 */
+var CONFIG_130 = {
+  qcount: 130,
+  sections: [
+    { key:'zz',  name:'政治理论', total:20, weight:0.812183, target:0.60 },
+    { key:'cs',  name:'常识判断', total:15, weight:0.609137, target:0.50 },
+    { key:'lj',  name:'逻辑填空', total:12, weight:0.812183, target:0.75 },
+    { key:'pd',  name:'片段阅读', total:14, weight:0.812183, target:0.80 },
+    { key:'wz',  name:'文章阅读', total:4,  weight:0.812183, target:0.80 },
+    { key:'sl',  name:'数量关系', total:10, weight:0.710660, target:0.40 },
+    { key:'tx',  name:'图形推理', total:8,  weight:0.710660, target:0.70 },
+    { key:'dy',  name:'定义判断', total:9,  weight:0.710660, target:0.70 },
+    { key:'lb',  name:'类比推理', total:9,  weight:0.609137, target:0.80 },
+    { key:'ljp', name:'逻辑判断', total:9,  weight:0.812183, target:0.75 },
+    { key:'zl',  name:'资料分析', total:20, weight:0.913706, target:0.85 }
+  ]
+}
+function getConfig(rec){
+  if(rec && rec.qcount === 130) return CONFIG_130
+  return CONFIG_135
 }
 
 /* ============ 默认数据（示例，可在页面中编辑/删除） ============ */
@@ -626,7 +657,7 @@ function validRecord(r){
   if(!r || typeof r !== 'object' || !r.name || !r.date || isNaN(new Date(r.date).getTime())) return false
   if(typeof r.rank !== 'number' || r.rank < 1) return false
   if(!r.scores || typeof r.scores !== 'object') return false
-  var ok = CONFIG.sections.every(function(s){
+  var ok = getConfig(r).sections.every(function(s){
     var v = r.scores[s.key]
     return typeof v === 'number' && v >= 0 && v <= s.total
   })
@@ -658,8 +689,9 @@ function sortRecords(arr){
 
 /* 计算单场得分详情 */
 function calcRecord(rec){
+  var cfg = getConfig(rec)
   var total = 0
-  var sections = CONFIG.sections.map(function(s){
+  var sections = cfg.sections.map(function(s){
     var correct = rec.scores[s.key]
     var pct = correct / s.total
     var score = correct * s.weight
@@ -794,11 +826,12 @@ function renderRadar(){
   var rec = records[idx]
   var calc = calcRecord(rec)
 
-  var indicator = CONFIG.sections.map(function(s){
+  var cfg = getConfig(rec)
+  var indicator = cfg.sections.map(function(s){
     return { name: s.name, max: 100 }
   })
   var curVal = calc.sections.map(function(s){ return +(s.pct*100).toFixed(1) })
-  var tgtVal = CONFIG.sections.map(function(s){ return +(s.target*100).toFixed(1) })
+  var tgtVal = cfg.sections.map(function(s){ return +(s.target*100).toFixed(1) })
 
   charts.radar.setOption({
     backgroundColor:'transparent',
@@ -937,14 +970,18 @@ function renderProgress(){
   }
   var first = records[0]
   var last = records[records.length - 1]
-  var rows = CONFIG.sections.map(function(s){
-    var fp = first.scores[s.key] / s.total * 100
+  var lastCfg = getConfig(last)
+  var firstCfg = getConfig(first)
+  var rows = lastCfg.sections.map(function(s){
+    var fSec = firstCfg.sections.filter(function(x){ return x.key === s.key })[0]
+    if(!fSec) return null
+    var fp = first.scores[s.key] / fSec.total * 100
     var lp = last.scores[s.key] / s.total * 100
     return {
       name: s.name, target: s.target * 100,
       first: +fp.toFixed(1), last: +lp.toFixed(1)
     }
-  })
+  }).filter(function(r){ return r })
 
   if(!hasECharts) return
   var shortFirst = first.name.length > 14 ? first.name.slice(0,14) + '…' : first.name
@@ -998,11 +1035,15 @@ function renderProgress(){
 function renderTrend(){
   if(!hasECharts) return
   if(records.length === 0){ charts.trend.clear(); return }
+  var baseCfg = getConfig(records[records.length - 1])
   var idx = parseInt(document.getElementById('trendSelect').value, 10)
-  var sec = CONFIG.sections[idx]
+  var sec = baseCfg.sections[idx]
+  if(!sec) return
   var names = records.map(function(r){ return r.name + '\n' + r.date })
   var vals = records.map(function(r){
-    return +( (r.scores[sec.key] / sec.total) * 100 ).toFixed(1)
+    var s = getConfig(r).sections.filter(function(x){ return x.key === sec.key })[0]
+    if(!s) return null
+    return +( (r.scores[s.key] / s.total) * 100 ).toFixed(1)
   })
   var tgt = +(sec.target * 100).toFixed(1)
 
@@ -1065,7 +1106,8 @@ function renderRadarSelect(){
 function renderTrendSelect(){
   var sel = document.getElementById('trendSelect')
   var cur = sel.value
-  sel.innerHTML = CONFIG.sections.map(function(s, i){
+  var baseCfg = records.length ? getConfig(records[records.length - 1]) : CONFIG_135
+  sel.innerHTML = baseCfg.sections.map(function(s, i){
     return '<option value="' + i + '">' + s.name + '</option>'
   }).join('')
   if(cur !== '') sel.value = cur
@@ -1078,19 +1120,31 @@ var modal = document.getElementById('modal')
 function openModal(idx){
   editIdx = idx
   document.getElementById('modalTitle').textContent = idx >= 0 ? '编辑考试记录' : '添加考试记录'
-  var rec = idx >= 0 ? records[idx] : { name:'', date:'', rank:'', scores:{} }
+  var rec = idx >= 0 ? records[idx] : { name:'', date:'', rank:'', scores:{}, qcount:135 }
+  var qc = rec.qcount === 130 ? 130 : 135
   var html = ''
   html += '<div class="f-group wide"><label>考试名称</label><input id="f-name" placeholder="如：华图省模考 · 第4期" value="' + esc(rec.name || '') + '"></div>'
   html += '<div class="f-group"><label>考试日期</label><input id="f-date" type="date" value="' + (rec.date || '') + '"></div>'
   html += '<div class="f-group"><label>排名（名次）</label><input id="f-rank" type="number" min="1" placeholder="如 62" value="' + (rec.rank != null ? rec.rank : '') + '"></div>'
-  html += '<div class="f-group"></div>'
-  CONFIG.sections.forEach(function(s){
-    var v = rec.scores ? rec.scores[s.key] : ''
+  html += '<div class="f-group"><label>题目总数</label><select id="f-qcount"><option value="135"' + (qc===135?' selected':'') + '>135 题（原计算方式）</option><option value="130"' + (qc===130?' selected':'') + '>130 题（新分值分布）</option></select></div>'
+  html += '<div id="f-sections" class="f-sections-grid"></div>'
+  document.getElementById('modalForm').innerHTML = html
+  renderSectionInputs(qc, rec.scores || {})
+  document.getElementById('f-qcount').addEventListener('change', function(){
+    renderSectionInputs(parseInt(this.value,10), {})
+  })
+  modal.classList.add('open')
+}
+
+function renderSectionInputs(qc, scores){
+  var cfg = qc === 130 ? CONFIG_130 : CONFIG_135
+  var html = ''
+  cfg.sections.forEach(function(s){
+    var v = scores ? scores[s.key] : ''
     html += '<div class="f-group"><label>' + s.name + '<small>共' + s.total + '题 · ' + s.weight + '分/题 · 目标' + Math.round(s.target*100) + '%</small></label>'
     html += '<input type="number" min="0" max="' + s.total + '" placeholder="正确数(0-' + s.total + ')" value="' + (v != null ? v : '') + '" data-key="' + s.key + '"></div>'
   })
-  document.getElementById('modalForm').innerHTML = html
-  modal.classList.add('open')
+  document.getElementById('f-sections').innerHTML = html
 }
 
 function closeModal(){ modal.classList.remove('open') }
@@ -1099,6 +1153,8 @@ function saveFromModal(){
   var name = document.getElementById('f-name').value.trim()
   var date = document.getElementById('f-date').value
   var rank = parseInt(document.getElementById('f-rank').value, 10)
+  var qcount = parseInt(document.getElementById('f-qcount').value, 10)
+  var cfg = qcount === 130 ? CONFIG_130 : CONFIG_135
   var scores = {}
   var valid = true
 
@@ -1106,17 +1162,17 @@ function saveFromModal(){
   if(!date){ alert('请选择考试日期'); return }
   if(!rank || rank < 1){ alert('请填写有效的排名（正整数）'); return }
 
-  document.querySelectorAll('#modalForm input[data-key]').forEach(function(inp){
+  document.querySelectorAll('#f-sections input[data-key]').forEach(function(inp){
     var k = inp.dataset.key
     var v = parseInt(inp.value, 10)
-    var sec = CONFIG.sections.filter(function(s){return s.key === k})[0]
+    var sec = cfg.sections.filter(function(s){return s.key === k})[0]
     if(isNaN(v) || v < 0){ valid = false; alert(sec.name + ' 正确数不能为空或小于0'); inp.focus(); return }
     if(v > sec.total){ valid = false; alert(sec.name + ' 正确数不能超过 ' + sec.total + ' 题'); inp.focus(); return }
     scores[k] = v
   })
   if(!valid) return
 
-  var rec = { name:name, date:date, rank:rank, scores:scores }
+  var rec = { name:name, date:date, rank:rank, qcount:qcount, scores:scores }
   if(editIdx >= 0){
     records[editIdx] = rec
   }else{
