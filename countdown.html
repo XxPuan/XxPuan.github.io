@@ -717,6 +717,7 @@
   var timerId=null
   var prepTimerId=null
   var fired={}
+  var curSecIdx=-1
   var wakeLock=null
   var wakeLockSupported='wakeLock' in navigator
 
@@ -862,7 +863,7 @@
     var segs=segBar.querySelectorAll('.seg')
     var items=segLegend.querySelectorAll('.legend-item')
     var elapsed=totalMs-remainMs
-    var acc=0,curName='',curRemain=0
+    var acc=0,curIdx=-1,curName='',curRemain=0
     secs.forEach(function(s,i){
       var min=parseFloat(s.min)||0
       var ms=min*60000
@@ -879,8 +880,15 @@
         seg.classList.toggle('cur',elapsed>=start&&elapsed<end)
       }
       if(item)item.classList.toggle('cur',elapsed>=start&&elapsed<end)
-      if(elapsed>=start&&elapsed<end){curName=s.name;curRemain=end-elapsed}
+      if(elapsed>=start&&elapsed<end){curIdx=i;curName=s.name;curRemain=end-elapsed}
     })
+    // 板块切换：上一板块结束时“叮”一声提醒
+    if(curIdx>=0 && curIdx!==curSecIdx){
+      if(curSecIdx>=0 && running && cfg.progressMode!=='single'){
+        ding()
+      }
+      curSecIdx=curIdx
+    }
     if(segCur){
       if(curName){
         segCur.innerHTML='当前板块：<b>'+esc(curName)+'</b> · 剩余 '+formatMMSS(curRemain)
@@ -914,6 +922,42 @@
     var fs=!!(document.fullscreenElement||document.webkitFullscreenElement)
     var active=running||(remainMs>0&&remainMs<totalMs)
     if(!fs&&active){fsBtn.classList.add('show')}else{fsBtn.classList.remove('show')}
+  }
+
+  // ========== 板块切换提示音（叮） ==========
+  var audioCtx=null
+  function primeAudio(){
+    try{
+      var AC=window.AudioContext||window.webkitAudioContext
+      if(!AC)return
+      if(!audioCtx)audioCtx=new AC()
+      if(audioCtx.state==='suspended')audioCtx.resume()
+    }catch(e){}
+  }
+  function ding(){
+    try{
+      if(!audioCtx)return
+      if(audioCtx.state==='suspended')audioCtx.resume()
+      var t=audioCtx.currentTime
+      var osc=audioCtx.createOscillator()
+      var g=audioCtx.createGain()
+      osc.type='sine'
+      osc.frequency.value=880
+      g.gain.setValueAtTime(0.0001,t)
+      g.gain.exponentialRampToValueAtTime(0.45,t+0.012)
+      g.gain.exponentialRampToValueAtTime(0.0001,t+0.75)
+      osc.connect(g);g.connect(audioCtx.destination)
+      osc.start(t);osc.stop(t+0.8)
+      var osc2=audioCtx.createOscillator()
+      var g2=audioCtx.createGain()
+      osc2.type='sine'
+      osc2.frequency.value=1760
+      g2.gain.setValueAtTime(0.0001,t)
+      g2.gain.exponentialRampToValueAtTime(0.15,t+0.012)
+      g2.gain.exponentialRampToValueAtTime(0.0001,t+0.4)
+      osc2.connect(g2);g2.connect(audioCtx.destination)
+      osc2.start(t);osc2.stop(t+0.45)
+    }catch(e){}
   }
 
   // ========== 语音播报 ==========
@@ -1044,6 +1088,7 @@
     running=true
     deadline=Date.now()+remainMs
     fired={}
+    curSecIdx=-1
     acquireWakeLock()
     if(timerId){clearInterval(timerId)}
     timerId=setInterval(tick,250)
@@ -1068,6 +1113,7 @@
   // ========== 开始流程 ==========
   function startFlow(){
     primeSpeech()       // 在用户手势内解锁移动端语音
+    primeAudio()        // 在用户手势内解锁音频（板块切换提示音）
     readForm()
     saveCfg()
     applyCfg()           // 重置为设置的时长
@@ -1111,6 +1157,7 @@
     if(timerId){clearInterval(timerId);timerId=null}
     deadline=0
     fired={}
+    curSecIdx=-1
     stopSpeech()
     releaseWakeLock()
     totalMs=((cfg.h||0)*3600+(cfg.m||0)*60+(cfg.s||0))*1000
@@ -1125,6 +1172,7 @@
     if(timerId){clearInterval(timerId);timerId=null}
     deadline=0
     fired={}
+    curSecIdx=-1
     stopSpeech()
     releaseWakeLock()
     remainMs=0
@@ -1141,6 +1189,7 @@
     totalMs=((cfg.h||0)*3600+(cfg.m||0)*60+(cfg.s||0))*1000
     remainMs=totalMs
     fired={}
+    curSecIdx=-1
     buildSegments()
     applyProgressMode()
     renderTime()
