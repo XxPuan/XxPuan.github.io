@@ -431,7 +431,7 @@
   <div class="stat-grid">
     <div class="stat-card"><div class="stat-label">考试次数</div><div class="stat-value" id="stCount">0</div><div class="stat-sub">已记录模考场次</div></div>
     <div class="stat-card"><div class="stat-label">最新总分</div><div class="stat-value hot" id="stLatest">--</div><div class="stat-sub" id="stLatestSub"></div></div>
-    <div class="stat-card"><div class="stat-label">平均总分</div><div class="stat-value" id="stAvg">--</div><div class="stat-sub">满分 100 分</div></div>
+    <div class="stat-card"><div class="stat-label">平均总分</div><div class="stat-value" id="stAvg">--</div><div class="stat-sub">满分 100 分（135 版 99 分）</div></div>
     <div class="stat-card"><div class="stat-label">最高总分</div><div class="stat-value" id="stMax">--</div><div class="stat-sub" id="stMaxSub"></div></div>
   </div>
 
@@ -494,8 +494,8 @@
 
   <!-- 页脚说明 -->
   <div class="foot-note">
-    <b>记分规则：</b>添加记录时可选择题量——<b>135 题</b>（原计算方式）或 <b>130 题</b>（四海版，各板块分值已按比例归一化到总分 100 分：政治理论 0.808×20、常识判断 0.606×15、言语理解与表达 0.808×30、数量关系 0.707×10、图形推理 0.707×10、定义判断 0.707×10、类比推理 0.606×5、逻辑判断 0.808×10、资料分析 0.909×20）。总分 = Σ 各板块（正确数 × 每题分值）。<br>
-    <b>目标正确率：</b>政治理论 60% · 常识判断 50% · 言语理解与表达 80% · 数量关系 40% · 类比推理 80% · 逻辑判断 75% · 图形推理 70% · 定义判断 70% · 资料分析 85%。<br>
+    <b>记分规则：</b>添加记录时可选择题量——<b>135 题</b>（国考版 6 板块：政治理论 0.6×20、常识判断 0.6×15、言语理解 0.7×30、数量关系 0.7×15、判断推理 0.8×35、资料分析 0.925×20，合计 99 分）或 <b>130 题</b>（四海版 9 板块，各板块分值已按比例归一化到总分 100 分：政治理论 0.808×20、常识判断 0.606×15、言语理解与表达 0.808×30、数量关系 0.707×10、图形推理 0.707×10、定义判断 0.707×10、类比推理 0.606×5、逻辑判断 0.808×10、资料分析 0.909×20）。总分 = Σ 各板块（正确数 × 每题分值）。<br>
+    <b>目标正确率：</b>政治理论 60% · 常识判断 50% · 言语理解 80% · 数量关系 40% · 判断推理 75% · 资料分析 85%（130 版另有 图形推理 70% · 定义判断 70% · 类比推理 80% · 逻辑判断 75%）。<br>
     <span class="hl">低于目标正确率的板块会被红色高亮，</span>并体现在雷达图、进步幅度与趋势图中；数据保存在浏览器本地（localStorage），可用「导出数据」生成嵌入代码持久化到本文件。
   </div>
 </div>
@@ -565,8 +565,22 @@ window.addEventListener('resize', function(){ clearTimeout(rt2); rt2 = setTimeou
 if(window.ResizeObserver) new ResizeObserver(function(){ clearTimeout(rt2); rt2 = setTimeout(updateGS, 100) }).observe(gsEl)
 
 /* ============ 板块配置（题数 / 每题分值 / 目标正确率） ============ */
+/* 135 题（国考版 6 板块）：20×0.6 + 15×0.6 + 30×0.7 + 15×0.7 + 35×0.8 + 20×0.925 = 99 分 */
 var CONFIG_135 = {
   qcount: 135,
+  sections: [
+    { key:'zz',  name:'政治理论', total:20, weight:0.6,   target:0.60 },
+    { key:'cs',  name:'常识判断', total:15, weight:0.6,   target:0.50 },
+    { key:'yy',  name:'言语理解', total:30, weight:0.7,   target:0.80 },
+    { key:'sl',  name:'数量关系', total:15, weight:0.7,   target:0.40 },
+    { key:'tl',  name:'判断推理', total:35, weight:0.8,   target:0.75 },
+    { key:'zl',  name:'资料分析', total:20, weight:0.925, target:0.85 }
+  ]
+}
+/* 旧版 135 题（8 板块，合计 100 分）：历史记录沿用原口径，不改算分 */
+var CONFIG_135_LEGACY = {
+  qcount: 135,
+  legacy: true,
   sections: [
     { key:'zz',  name:'政治常识',       total:20, weight:0.65, target:0.50 },
     { key:'pd',  name:'片段阅读',       total:15, weight:0.70, target:0.80 },
@@ -595,11 +609,41 @@ var CONFIG_130 = {
 }
 function getConfig(rec){
   if(rec && rec.qcount === 130) return CONFIG_130
+  /* 旧版 135 记录：scores 带旧板块 key（tzl/pd/lj/wz），按旧口径算分 */
+  if(rec && rec.scores && (rec.scores.tzl != null || rec.scores.pd != null || rec.scores.lj != null || rec.scores.wz != null)) return CONFIG_135_LEGACY
+  return CONFIG_135
+}
+/* 下拉/模态框取值：135（新版）/ 130 / 135L（旧版 8 板块） */
+function cfgKeyFor(rec){
+  var cfg = getConfig(rec)
+  if(cfg === CONFIG_130) return 130
+  if(cfg === CONFIG_135_LEGACY) return '135L'
+  return 135
+}
+function cfgForQcKey(k){
+  if(k === 130 || k === '130') return CONFIG_130
+  if(k === '135L') return CONFIG_135_LEGACY
   return CONFIG_135
 }
 
 /* ============ 默认数据（示例，可在页面中编辑/删除） ============ */
   var DEFAULT_RECORDS =   [
+    {
+      "name": "华图模考 · 第四期",
+      "date": "2026-11-12",
+      "rank": null,
+      "qcount": 135,
+      "scores": {
+        "zz": 9,
+        "pd": 11,
+        "lj": 7,
+        "wz": 1,
+        "sl": 4,
+        "lb": 6,
+        "tzl": 18,
+        "zl": 14
+      }
+    },
     {
       "name": "四海公考 · 模考二卷",
       "date": "2026-11-08",
@@ -610,7 +654,7 @@ function getConfig(rec){
         "cs": 4,
         "yy": 17,
         "sl": 2,
-        "tx": 4,
+        "tx": 3,
         "dy": 7,
         "lb": 1,
         "ljp": 9,
@@ -722,19 +766,20 @@ function sortRecords(arr){
 /* 计算单场得分详情 */
 function calcRecord(rec){
   var cfg = getConfig(rec)
-  var total = 0
+  var total = 0, maxTotal = 0
   var sections = cfg.sections.map(function(s){
     var correct = rec.scores[s.key]
     var pct = correct / s.total
     var score = correct * s.weight
     total += score
+    maxTotal += s.total * s.weight
     return {
       key:s.key, name:s.name, total:s.total, weight:s.weight,
       correct:correct, pct:pct, score:score, target:s.target,
       below: pct < s.target
     }
   })
-  return { sections: sections, total: total }
+  return { sections: sections, total: total, max: maxTotal }
 }
 
 function fmt(n, d){ return Number(n).toFixed(d == null ? 1 : d) }
@@ -785,7 +830,7 @@ function renderTable(){
     html += '</div>'
     html += '<div class="exam-total">'
     html += '<div class="total-num">' + fmt(calc.total, 1) + '</div>'
-    html += '<div class="total-label">总分 · 满分100</div>'
+    html += '<div class="total-label">总分 · 满分' + Math.round(calc.max) + '</div>'
     html += '</div>'
     if(IS_LOCAL){
       html += '<div class="row-actions">'
@@ -1157,23 +1202,23 @@ function openModal(idx){
   editIdx = idx
   document.getElementById('modalTitle').textContent = idx >= 0 ? '编辑考试记录' : '添加考试记录'
   var rec = idx >= 0 ? records[idx] : { name:'', date:'', rank:'', scores:{}, qcount:135 }
-  var qc = rec.qcount === 130 ? 130 : 135
+  var qc = cfgKeyFor(rec)
   var html = ''
   html += '<div class="f-group wide"><label>考试名称</label><input id="f-name" placeholder="如：华图省模考 · 第4期" value="' + esc(rec.name || '') + '"></div>'
   html += '<div class="f-group"><label>考试日期</label><input id="f-date" type="date" value="' + (rec.date || '') + '"></div>'
   html += '<div class="f-group"><label>排名（名次）<small>可选</small></label><input id="f-rank" type="number" min="1" placeholder="选填，如 62" value="' + (rec.rank != null ? rec.rank : '') + '"></div>'
-  html += '<div class="f-group"><label>题目总数</label><select id="f-qcount"><option value="135"' + (qc===135?' selected':'') + '>135 题（原计算方式）</option><option value="130"' + (qc===130?' selected':'') + '>130 题（新分值分布）</option></select></div>'
+  html += '<div class="f-group"><label>题目总数</label><select id="f-qcount"><option value="135"' + (qc===135?' selected':'') + '>135 题（6 板块）</option><option value="130"' + (qc===130?' selected':'') + '>130 题（四海 9 板块）</option><option value="135L"' + (qc==='135L'?' selected':'') + '>135 题（旧版 8 板块）</option></select></div>'
   html += '<div id="f-sections" class="f-sections-grid"></div>'
   document.getElementById('modalForm').innerHTML = html
   renderSectionInputs(qc, rec.scores || {})
   document.getElementById('f-qcount').addEventListener('change', function(){
-    renderSectionInputs(parseInt(this.value,10), {})
+    renderSectionInputs(this.value, {})
   })
   modal.classList.add('open')
 }
 
 function renderSectionInputs(qc, scores){
-  var cfg = qc === 130 ? CONFIG_130 : CONFIG_135
+  var cfg = cfgForQcKey(qc)
   var html = ''
   cfg.sections.forEach(function(s){
     var v = scores ? scores[s.key] : ''
@@ -1190,8 +1235,8 @@ function saveFromModal(){
   var date = document.getElementById('f-date').value
   var rankRaw = document.getElementById('f-rank').value.trim()
   var rank = rankRaw === '' ? null : parseInt(rankRaw, 10)
-  var qcount = parseInt(document.getElementById('f-qcount').value, 10)
-  var cfg = qcount === 130 ? CONFIG_130 : CONFIG_135
+  var cfg = cfgForQcKey(document.getElementById('f-qcount').value)
+  var qcount = cfg.qcount
   var scores = {}
   var valid = true
 
