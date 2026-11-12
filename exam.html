@@ -431,7 +431,7 @@
   <div class="stat-grid">
     <div class="stat-card"><div class="stat-label">考试次数</div><div class="stat-value" id="stCount">0</div><div class="stat-sub">已记录模考场次</div></div>
     <div class="stat-card"><div class="stat-label">最新总分</div><div class="stat-value hot" id="stLatest">--</div><div class="stat-sub" id="stLatestSub"></div></div>
-    <div class="stat-card"><div class="stat-label">平均总分</div><div class="stat-value" id="stAvg">--</div><div class="stat-sub">满分 100 分（135 版 99 分）</div></div>
+    <div class="stat-card"><div class="stat-label">平均总分</div><div class="stat-value" id="stAvg">--</div><div class="stat-sub">满分 100 分</div></div>
     <div class="stat-card"><div class="stat-label">最高总分</div><div class="stat-value" id="stMax">--</div><div class="stat-sub" id="stMaxSub"></div></div>
   </div>
 
@@ -494,7 +494,7 @@
 
   <!-- 页脚说明 -->
   <div class="foot-note">
-    <b>记分规则：</b>添加记录时可选择题量——<b>135 题</b>（国考版 6 板块：政治理论 0.6×20、常识判断 0.6×15、言语理解 0.7×30、数量关系 0.7×15、判断推理 0.8×35、资料分析 0.925×20，合计 99 分）或 <b>130 题</b>（四海版 9 板块，各板块分值已按比例归一化到总分 100 分：政治理论 0.808×20、常识判断 0.606×15、言语理解与表达 0.808×30、数量关系 0.707×10、图形推理 0.707×10、定义判断 0.707×10、类比推理 0.606×5、逻辑判断 0.808×10、资料分析 0.909×20）。总分 = Σ 各板块（正确数 × 每题分值）。<br>
+    <b>记分规则：</b>添加记录时可选择题量——<b>135 题</b>（国考版 6 板块，原分值为政治理论 0.6×20、常识判断 0.6×15、言语理解 0.7×30、数量关系 0.7×15、判断推理 0.8×35、资料分析 0.925×20，合计 99 分，已按比例归一化到总分 100：政治理论 0.606×20、常识判断 0.606×15、言语理解 0.707×30、数量关系 0.707×15、判断推理 0.808×35、资料分析 0.934×20）或 <b>130 题</b>（四海版 9 板块，各板块分值已按比例归一化到总分 100 分：政治理论 0.808×20、常识判断 0.606×15、言语理解与表达 0.808×30、数量关系 0.707×10、图形推理 0.707×10、定义判断 0.707×10、类比推理 0.606×5、逻辑判断 0.808×10、资料分析 0.909×20）。总分 = Σ 各板块（正确数 × 每题分值）。<br>
     <b>目标正确率：</b>政治理论 60% · 常识判断 50% · 言语理解 80% · 数量关系 40% · 判断推理 75% · 资料分析 85%（130 版另有 图形推理 70% · 定义判断 70% · 类比推理 80% · 逻辑判断 75%）。<br>
     <span class="hl">低于目标正确率的板块会被红色高亮，</span>并体现在雷达图、进步幅度与趋势图中；数据保存在浏览器本地（localStorage），可用「导出数据」生成嵌入代码持久化到本文件。
   </div>
@@ -565,16 +565,18 @@ window.addEventListener('resize', function(){ clearTimeout(rt2); rt2 = setTimeou
 if(window.ResizeObserver) new ResizeObserver(function(){ clearTimeout(rt2); rt2 = setTimeout(updateGS, 100) }).observe(gsEl)
 
 /* ============ 板块配置（题数 / 每题分值 / 目标正确率） ============ */
-/* 135 题（国考版 6 板块）：20×0.6 + 15×0.6 + 30×0.7 + 15×0.7 + 35×0.8 + 20×0.925 = 99 分 */
+/* 135 题（国考版 6 板块，原始分 0.6/0.6/0.7/0.7/0.8/0.925 合计 99 分，已按 100/99 归一化到满分 100）：
+   政治理论 0.606061×20 + 常识判断 0.606061×15 + 言语理解 0.707071×30 + 数量关系 0.707071×15
+   + 判断推理 0.808081×35 + 资料分析 0.934343×20 = 100 分 */
 var CONFIG_135 = {
   qcount: 135,
   sections: [
-    { key:'zz',  name:'政治理论', total:20, weight:0.6,   target:0.60 },
-    { key:'cs',  name:'常识判断', total:15, weight:0.6,   target:0.50 },
-    { key:'yy',  name:'言语理解', total:30, weight:0.7,   target:0.80 },
-    { key:'sl',  name:'数量关系', total:15, weight:0.7,   target:0.40 },
-    { key:'tl',  name:'判断推理', total:35, weight:0.8,   target:0.75 },
-    { key:'zl',  name:'资料分析', total:20, weight:0.925, target:0.85 }
+    { key:'zz',  name:'政治理论', total:20, weight:0.606061, target:0.60 },
+    { key:'cs',  name:'常识判断', total:15, weight:0.606061, target:0.50 },
+    { key:'yy',  name:'言语理解', total:30, weight:0.707071, target:0.80 },
+    { key:'sl',  name:'数量关系', total:15, weight:0.707071, target:0.40 },
+    { key:'tl',  name:'判断推理', total:35, weight:0.808081, target:0.75 },
+    { key:'zl',  name:'资料分析', total:20, weight:0.934343, target:0.85 }
   ]
 }
 /* 旧版 135 题（8 板块，合计 100 分）：历史记录沿用原口径，不改算分 */
