@@ -255,8 +255,6 @@
     .sec-card.below .sec-count{color:#ff8a8a;text-shadow:0 0 10px rgba(239,68,68,.5)}
     .sec-card.below .sec-foot{color:rgba(255,182,182,.9)}
     .sec-card.below .sec-target{color:rgba(255,138,138,.7)}
-    .warn-mark{color:#ff6b6b;animation:blink 1.2s infinite;font-size:0.85em}
-    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
     .row-actions{display:flex;gap:6px;flex-shrink:0}
     .icon-btn{
       width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.16);
@@ -440,7 +438,7 @@
     <div class="card-title"><span class="bar"></span>成绩记录明细</div>
     <div id="recordList"></div>
     <div class="chart-tip" style="margin-top:12px">
-      <b>■ 红色高亮</b> = 该板块正确率低于目标正确率（⚠ 需重点加强）。每个板块格显示：<u>正确数/题数</u> · <u>正确率 · 得分</u> · <u>目标正确率</u>。
+      <b>■ 红色高亮</b> = 该板块正确率低于目标正确率（需重点加强）。每个板块格显示：<u>正确数/题数</u> · <u>正确率 · 得分</u> · <u>目标正确率</u>。
     </div>
   </div>
 
@@ -681,7 +679,8 @@ function cfgForQcKey(k){
     {
       "name": "华图模考 · 第三期",
       "date": "2026-09-21",
-      "rank": 20,
+      "rank": null,
+      "qcount": 135,
       "scores": {
         "zz": 15,
         "pd": 10,
@@ -696,7 +695,8 @@ function cfgForQcKey(k){
     {
       "name": "华图模考 · 第二期",
       "date": "2026-08-30",
-      "rank": 28,
+      "rank": null,
+      "qcount": 135,
       "scores": {
         "zz": 9,
         "pd": 8,
@@ -711,7 +711,8 @@ function cfgForQcKey(k){
     {
       "name": "华图模考 · 第一期",
       "date": "2026-08-22",
-      "rank": 29,
+      "rank": null,
+      "qcount": 135,
       "scores": {
         "zz": 9,
         "pd": 9,
@@ -724,7 +725,6 @@ function cfgForQcKey(k){
       }
     }
   ]
-
 var STORE_KEY = 'gkExamRecordsV2'
 var records = loadRecords()
 
@@ -842,7 +842,7 @@ function renderTable(){
     html += '<div class="sec-grid">'
     calc.sections.forEach(function(s){
       html += '<div class="sec-card' + (s.below ? ' below' : '') + '">'
-      html += '<div class="sec-head"><span class="sec-name">' + s.name + '</span>' + (s.below ? '<span class="warn-mark">⚠</span>' : '') + '<span class="sec-target">目标' + Math.round(s.target*100) + '%</span></div>'
+      html += '<div class="sec-head"><span class="sec-name">' + s.name + '</span>' + '<span class="sec-target">目标' + Math.round(s.target*100) + '%</span></div>'
       html += '<div class="sec-count">' + s.correct + '<span class="sec-total">/' + s.total + '</span></div>'
       html += '<div class="sec-foot">正确率 ' + fmtPct(s.pct) + ' · ' + fmt(s.score, 1) + ' 分</div>'
       html += '</div>'
@@ -959,7 +959,7 @@ function renderRadar(){
     listEl.innerHTML = '<span class="weak-none">✓ 本次全部板块达标，保持住！</span>'
   }else{
     listEl.innerHTML = below.map(function(s){
-      return '<span class="weak-tag">⚠ ' + s.name + ' ' + fmtPct(s.pct) + '（目标' + Math.round(s.target*100) + '%）</span>'
+      return '<span class="weak-tag">' + s.name + ' ' + fmtPct(s.pct) + '（目标' + Math.round(s.target*100) + '%）</span>'
     }).join('')
   }
 }
