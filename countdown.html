@@ -7,6 +7,9 @@
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>考试倒计时 · XxPuan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
 
   <style>
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -76,8 +79,8 @@
     }
 
     .exam-name{
-      font-family:'Noto Serif SC','Source Han Serif CN','思源宋体 CN',Georgia,serif;
-      font-weight:900;
+      font-family:'Noto Serif SC','Source Han Serif SC','Source Han Serif CN','思源宋体 CN','Songti SC','STSong','SimSun','PingFang SC','Microsoft YaHei',serif;
+      font-weight:800;
       font-size:clamp(1.6rem,3.6vw,2.8rem);
       letter-spacing:.12em;
       color:#fff;
@@ -915,6 +918,26 @@
 
   // ========== 语音播报 ==========
   var speechPendingTimer=null
+  var zhVoice=null
+  function loadVoices(){
+    if(!('speechSynthesis' in window))return
+    try{
+      var voices=window.speechSynthesis.getVoices()
+      for(var i=0;i<voices.length;i++){
+        if(/zh|Chinese|cmn/i.test(voices[i].lang)){zhVoice=voices[i];break}
+      }
+    }catch(e){}
+  }
+  function primeSpeech(){
+    // iOS/移动端需在用户手势内首次发声以解锁语音引擎
+    if(!('speechSynthesis' in window))return
+    try{
+      var u=new SpeechSynthesisUtterance(' ')
+      u.volume=0;u.rate=1
+      if(zhVoice)u.voice=zhVoice
+      window.speechSynthesis.speak(u)
+    }catch(e){}
+  }
   function stopSpeech(){
     if('speechSynthesis' in window){
       try{window.speechSynthesis.cancel()}catch(e){}
@@ -930,16 +953,20 @@
       try{
         var u=new SpeechSynthesisUtterance(text)
         u.lang='zh-CN';u.rate=1;u.pitch=1
-        var voices=window.speechSynthesis.getVoices()
-        for(var i=0;i<voices.length;i++){
-          if(/zh|Chinese|cmn/i.test(voices[i].lang)){u.voice=voices[i];break}
+        if(zhVoice){u.voice=zhVoice}
+        else{
+          var voices=window.speechSynthesis.getVoices()
+          for(var i=0;i<voices.length;i++){
+            if(/zh|Chinese|cmn/i.test(voices[i].lang)){zhVoice=voices[i];u.voice=voices[i];break}
+          }
         }
         window.speechSynthesis.speak(u)
       }catch(e){}
     },80)
   }
   if('speechSynthesis' in window){
-    window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices()}
+    loadVoices()
+    window.speechSynthesis.onvoiceschanged=loadVoices
   }
 
   // ========== 检查提醒规则 ==========
@@ -1040,6 +1067,7 @@
 
   // ========== 开始流程 ==========
   function startFlow(){
+    primeSpeech()       // 在用户手势内解锁移动端语音
     readForm()
     saveCfg()
     applyCfg()           // 重置为设置的时长
