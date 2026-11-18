@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>人生清单管理 - XxPuan</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p-rgb:218,175,75;--p:#DAAF4B;--pl:#F0D060;--da:#e7e7a9;--db:#e5e37e;--dc:#559155;--bg:#08080E;--c15:#F0EEE8;--c13:#D4CCC0;--c12:#B8AFA0;--c10:#9A9080;--c8:#6B6358}
+body{font-family:-apple-system,'Segoe UI','PingFang SC','HarmonyOS Sans','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--c15);padding:2rem;min-height:100vh;position:relative}
+body::before{
+  content:'';position:fixed;inset:0;
+  pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 700px 700px at 18% 28%, color-mix(in srgb,var(--da) 38%,transparent), transparent 65%),
+    radial-gradient(ellipse 600px 600px at 78% 18%, color-mix(in srgb,var(--db) 30%,transparent), transparent 65%),
+    radial-gradient(ellipse 800px 800px at 45% 82%, color-mix(in srgb,var(--dc) 28%,transparent), transparent 65%);
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 400px 400px at 60% 40%, color-mix(in srgb,var(--da) 15%,transparent), transparent 60%),
+    radial-gradient(ellipse 450px 450px at 30% 70%, color-mix(in srgb,var(--db) 12%,transparent), transparent 60%);
+  animation:drifting 12s ease-in-out infinite alternate;
+}
+@keyframes drifting{0%{transform:translate(0,0)}33%{transform:translate(15px,-10px)}50%{transform:translate(-10px,15px)}100%{transform:translate(10px,-5px)}}
+a{color:inherit;text-decoration:none}
+h1{font-size:1.6rem;font-weight:700;margin-bottom:.3rem}
+.sub{color:var(--c8);font-size:.85rem;margin-bottom:1.6rem;line-height:1.7}
+.wrap{max-width:1000px;margin:0 auto;position:relative;z-index:1}
+.bk{display:inline-flex;align-items:center;gap:6px;color:var(--c10);font-size:13px;margin-bottom:1rem;padding:.35rem .9rem;border:1px solid rgba(255,255,255,.08);border-radius:999px;transition:all .25s}
+.bk:hover{color:var(--pl);border-color:rgba(218,175,75,.3)}
+
+.panelbox{background:rgba(255,255,255,.035);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:1.3rem 1.4rem;margin-bottom:1.4rem;box-shadow:0 8px 32px rgba(0,0,0,.16)}
+.panelbox h2{font-size:.95rem;font-weight:700;color:var(--c13);margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.panelbox h2 .sm{font-size:12px;font-weight:500;color:var(--c8)}
+
+.fd{margin-bottom:1rem}
+.fd label{display:block;font-size:12.5px;font-weight:600;color:var(--c10);margin-bottom:6px}
+.fd input[type=text],.fd input[type=number],.fd input[type=date],.fd select,.fd textarea{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:.62rem .9rem;font-family:inherit;font-size:14px;color:var(--c13);outline:none;transition:border-color .2s}
+.fd textarea{resize:vertical;min-height:64px;line-height:1.7}
+.fd input:focus,.fd select:focus,.fd textarea:focus{border-color:rgba(218,175,75,.35)}
+.fd input::placeholder,.fd textarea::placeholder{color:var(--c8)}
+.row{display:flex;gap:.8rem}
+.row > *{flex:1;min-width:0}
+.hintline{font-size:11.5px;color:var(--c8);margin-top:5px}
+
+.btn{padding:.6rem 1.3rem;border-radius:999px;border:none;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .28s}
+.btn-p{background:linear-gradient(135deg,var(--p),var(--pl));color:#fff;box-shadow:0 4px 16px rgba(218,175,75,.2)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(218,175,75,.3)}
+.btn-o{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--c12)}
+.btn-o:hover{border-color:var(--pl);color:var(--c15)}
+.btn-d{background:transparent;border:1px solid rgba(255,120,120,.2);color:#E88B8B}
+.btn-d:hover{background:rgba(255,90,90,.1);border-color:rgba(255,120,120,.45)}
+.btn-s{padding:.32rem .8rem;font-size:12px}
+.act{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11.5px;font-weight:600;color:var(--c8);letter-spacing:.05em;padding:.5rem .6rem;border-bottom:1px solid rgba(255,255,255,.07);white-space:nowrap}
+td{padding:.6rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--c12);vertical-align:middle}
+tr:hover td{background:rgba(255,255,255,.02)}
+td.tt{color:var(--c13);font-weight:600}
+td.money{font-variant-numeric:tabular-nums;font-weight:700;color:var(--pl);white-space:nowrap}
+td.money.tbd{color:var(--c8);font-weight:500;font-size:12px}
+.tag{font-size:11px;font-weight:600;padding:1px 7px;border-radius:4px;border:1px solid rgba(255,255,255,.1);color:var(--c10);white-space:nowrap}
+.tag.do{border-color:rgba(240,208,96,.28);color:#F0D060}
+.tag.buy{border-color:rgba(140,180,255,.28);color:#9DBAFF}
+.tag.other{border-color:rgba(200,170,255,.24);color:#C9AEFF}
+.st{font-size:11.5px;font-weight:600;white-space:nowrap}
+.st-plan{color:#93A3B8}.st-doing{color:var(--pl)}.st-done{color:#7FD1A0}
+.tbl-ops{display:flex;gap:6px;justify-content:flex-end}
+.empty-row td{text-align:center;color:var(--c8);padding:2rem 1rem;font-size:13px}
+
+.sum{display:flex;gap:1.4rem;flex-wrap:wrap;font-size:12.5px;color:var(--c10);margin-top:1rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.05)}
+.sum b{color:var(--pl);font-weight:700}
+
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.78);z-index:999;justify-content:center;align-items:center;padding:1rem}
+.modal.s{display:flex}
+.modal-inner{background:var(--bg);border:1px solid rgba(255,255,255,.09);border-radius:18px;width:100%;max-width:820px;max-height:86vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.4rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.modal-head h3{font-size:.95rem;font-weight:600;color:var(--c13)}
+.modal-close{background:none;border:none;color:var(--c8);font-size:1.15rem;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .2s}
+.modal-close:hover{color:var(--c15);background:rgba(255,255,255,.05)}
+.modal-body{flex:1;overflow:auto;padding:1.1rem 1.4rem}
+.modal-code{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:1rem;white-space:pre;font-family:'Courier New',monospace;font-size:12.5px;color:var(--pl);max-height:380px;overflow:auto;line-height:1.6;user-select:all}
+.modal-foot{padding:.8rem 1.4rem;border-top:1px solid rgba(255,255,255,.05);display:flex;gap:.7rem;justify-content:flex-end}
+.cp-btn{padding:.5rem 1.2rem;border-radius:999px;border:1px solid rgba(218,175,75,.24);background:rgba(218,175,75,.06);color:var(--pl);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s}
+.cp-btn:hover{background:rgba(218,175,75,.13)}
+.done-btn{padding:.5rem 1.2rem;border-radius:999px;border:none;background:linear-gradient(135deg,var(--p),var(--pl));color:#fff;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .3s}
+.done-btn:hover{transform:translateY(-1px)}
+.steps{font-size:12px;color:var(--c8);line-height:1.9;margin-bottom:.9rem}
+.steps code{background:rgba(255,255,255,.05);padding:1px 5px;border-radius:4px;color:var(--pl)}
+.steps li{margin-left:1.1rem}
+.toast{position:fixed;left:50%;bottom:2rem;transform:translate(-50%,20px);background:rgba(30,30,38,.96);border:1px solid rgba(218,175,75,.3);color:var(--pl);font-size:13px;font-weight:600;padding:.6rem 1.2rem;border-radius:999px;opacity:0;pointer-events:none;transition:all .3s;z-index:1000}
+.toast.s{opacity:1;transform:translate(-50%,0)}
+@media(max-width:767px){body{padding:1rem}.row{flex-direction:column}.tblwrap{overflow-x:auto}table{min-width:640px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="bk" href="blog.html#life">← 返回人生清单</a>
+  <h1>人生清单管理</h1>
+  <p class="sub">左侧添加 / 右侧编辑删除 → 点「生成数据」复制覆盖 <code style="color:#F0D060">life-list.js</code> → 提交推送到站点。<br>本页的编辑也自动存在浏览器本地，刷新不丢，但只有覆盖文件才会对所有人可见。</p>
+
+  <!-- 添加 -->
+  <div class="panelbox">
+    <h2>添加条目 <span class="sm" id="editTip">当前为新增模式</span></h2>
+    <div class="fd">
+      <label>标题</label>
+      <input type="text" id="fTitle" placeholder="例如：去看一次海">
+    </div>
+    <div class="row">
+      <div class="fd">
+        <label>分类</label>
+        <select id="fCat">
+          <option value="do">想做</option>
+          <option value="buy">想买</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
+      <div class="fd">
+        <label>状态</label>
+        <select id="fStatus">
+          <option value="plan">计划中</option>
+          <option value="doing">进行中</option>
+          <option value="done">已完成</option>
+        </select>
+      </div>
+      <div class="fd">
+        <label>预计花费（元）</label>
+        <input type="number" id="fCost" min="0" step="1" placeholder="留空表示待定">
+      </div>
+    </div>
+    <div class="row">
+      <div class="fd">
+        <label>期望完成时间</label>
+        <input type="date" id="fDue">
+        <div class="hintline">可留空</div>
+      </div>
+      <div class="fd">
+        <label>相关链接</label>
+        <input type="text" id="fLink" placeholder="https://... 可留空">
+        <div class="hintline">填了标题就能点开</div>
+      </div>
+    </div>
+    <div class="fd">
+      <label>备注</label>
+      <textarea id="fNote" placeholder="为什么想做 / 计划怎么安排 / 价格参考来源"></textarea>
+    </div>
+    <div class="act">
+      <button class="btn btn-p" id="saveBtn" onclick="saveItem()">添加条目</button>
+      <button class="btn btn-o" id="cancelBtn" onclick="resetForm()" style="display:none">取消编辑</button>
+    </div>
+  </div>
+
+  <!-- 列表 -->
+  <div class="panelbox">
+    <h2>清单列表 <span class="sm" id="listCount">0 项</span></h2>
+    <div class="tblwrap">
+      <table>
+        <thead>
+          <tr><th>标题</th><th>分类</th><th>状态</th><th>花费</th><th>期望完成</th><th style="text-align:right">操作</th></tr>
+        </thead>
+        <tbody id="itemBody"></tbody>
+      </table>
+    </div>
+    <div class="sum" id="sumLine"></div>
+    <div class="act" style="margin-top:1.1rem">
+      <button class="btn btn-p" onclick="genData()">生成数据</button>
+      <button class="btn btn-o" onclick="importData()">粘贴导入</button>
+      <button class="btn btn-d" onclick="clearAll()">清空本地清单</button>
+    </div>
+  </div>
+</div>
+
+<!-- 生成结果 -->
+<div class="modal" id="modal">
+  <div class="modal-inner">
+    <div class="modal-head">
+      <h3>life-list.js 数据</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <ol class="steps">
+        <li>点下面「复制」</li>
+        <li>打开站点目录的 <code>life-list.js</code>，全选粘贴覆盖</li>
+        <li>在站点仓库执行 <code>git add life-list.js</code> → <code>git commit</code> → <code>git push</code></li>
+      </ol>
+      <div class="modal-code" id="modalCode"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="cp-btn" onclick="copyCode()">复制</button>
+      <button class="done-btn" onclick="closeModal()">完成</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="life-list.js"></script>
+<script>
+var LS_ITEMS = 'lifeItems_v1';
+var CAT_LABEL = {do:'想做', buy:'想买', other:'其他'};
+var STATUS_LABEL = {plan:'计划中', doing:'进行中', done:'已完成'};
+var STATUS_ORDER = {doing:0, plan:1, done:2};
+var items = [];
+var editingId = null;
+
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('s');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ t.classList.remove('s') }, 1900);
+}
+function norm(it, i){
+  return {
+    id: it.id || ('l' + Date.now() + '_' + i),
+    title: String(it.title || '').trim(),
+    cat: CAT_LABEL[it.cat] ? it.cat : 'do',
+    status: STATUS_LABEL[it.status] ? it.status : 'plan',
+    cost: (it.cost === 0 || it.cost) ? Number(it.cost) : null,
+    due: it.due || '',
+    note: it.note || '',
+    link: it.link || ''
+  };
+}
+function load(){
+  var raw = null;
+  try{ raw = localStorage.getItem(LS_ITEMS) }catch(e){}
+  if(raw){
+    try{
+      var arr = JSON.parse(raw);
+      if(Array.isArray(arr)){ items = arr.map(norm); return }
+    }catch(e){}
+  }
+  // 首次：从 life-list.js 读默认数据
+  items = (window.LIFE_ITEMS || []).map(norm);
+}
+function persist(){
+  try{ localStorage.setItem(LS_ITEMS, JSON.stringify(items)) }catch(e){}
+}
+function fmt(n){
+  if(n === null || n === undefined || n === '') return '—';
+  return '¥' + Number(n).toLocaleString('zh-CN');
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+  });
+}
+function sorted(){
+  return items.slice().sort(function(a,b){
+    var s = (STATUS_ORDER[a.status]||0) - (STATUS_ORDER[b.status]||0);
+    if(s !== 0) return s;
+    if(a.due && b.due) return a.due < b.due ? -1 : (a.due > b.due ? 1 : 0);
+    if(a.due) return -1;
+    if(b.due) return 1;
+    return 0;
+  });
+}
+function render(){
+  var body = document.getElementById('itemBody');
+  var list = sorted();
+  document.getElementById('listCount').textContent = items.length + ' 项';
+  if(!list.length){
+    body.innerHTML = '<tr class="empty-row"><td colspan="6">还没有条目，在上面添加第一条</td></tr>';
+  } else {
+    body.innerHTML = list.map(function(i){
+      return '<tr>' +
+        '<td class="tt">' + esc(i.title) + (i.note ? '<div style="font-size:11.5px;color:#6B6358;font-weight:400;margin-top:2px">' + esc(i.note).slice(0, 40) + (i.note.length > 40 ? '…' : '') + '</div>' : '') + '</td>' +
+        '<td><span class="tag ' + i.cat + '">' + CAT_LABEL[i.cat] + '</span></td>' +
+        '<td><span class="st st-' + i.status + '">' + STATUS_LABEL[i.status] + '</span></td>' +
+        '<td class="money' + (i.cost === null ? ' tbd' : '') + '">' + (i.cost === null ? '待定' : fmt(i.cost)) + '</td>' +
+        '<td>' + (i.due ? esc(i.due) : '<span style="color:#6B6358">—</span>') + '</td>' +
+        '<td><div class="tbl-ops">' +
+          '<button class="btn btn-o btn-s" onclick="editItem(\'' + i.id + '\')">编辑</button>' +
+          '<button class="btn btn-d btn-s" onclick="delItem(\'' + i.id + '\')">删除</button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('');
+  }
+  var total = items.reduce(function(s,i){ return s + (i.cost||0) }, 0);
+  var left = items.filter(function(i){return i.status !== 'done'}).reduce(function(s,i){ return s + (i.cost||0) }, 0);
+  var doneN = items.filter(function(i){return i.status === 'done'}).length;
+  document.getElementById('sumLine').innerHTML =
+    '<span>共 <b>' + items.length + '</b> 项</span>' +
+    '<span>已完成 <b>' + doneN + '</b> 项</span>' +
+    '<span>预计总花费 <b>' + (total ? fmt(total) : '待定') + '</b></span>' +
+    '<span>剩余待花 <b>' + (left ? fmt(left) : '¥0') + '</b></span>';
+}
+function readForm(){
+  var costRaw = document.getElementById('fCost').value.trim();
+  return {
+    title: document.getElementById('fTitle').value.trim(),
+    cat: document.getElementById('fCat').value,
+    status: document.getElementById('fStatus').value,
+    cost: costRaw === '' ? null : Number(costRaw),
+    due: document.getElementById('fDue').value,
+    link: document.getElementById('fLink').value.trim(),
+    note: document.getElementById('fNote').value.trim()
+  };
+}
+function resetForm(){
+  editingId = null;
+  ['fTitle','fCost','fDue','fLink','fNote'].forEach(function(id){ document.getElementById(id).value = '' });
+  document.getElementById('fCat').value = 'do';
+  document.getElementById('fStatus').value = 'plan';
+  document.getElementById('saveBtn').textContent = '添加条目';
+  document.getElementById('cancelBtn').style.display = 'none';
+  document.getElementById('editTip').textContent = '当前为新增模式';
+}
+function saveItem(){
+  var f = readForm();
+  if(!f.title){ toast('标题不能为空'); document.getElementById('fTitle').focus(); return }
+  if(f.cost !== null && (isNaN(f.cost) || f.cost < 0)){ toast('花费填数字'); return }
+  if(editingId){
+    var idx = items.findIndex(function(i){ return i.id === editingId });
+    if(idx >= 0){ items[idx] = norm(Object.assign({ id: editingId }, f), idx); toast('已保存修改') }
+  } else {
+    var it = norm(Object.assign({ id: 'l' + Date.now() }, f), items.length);
+    items.push(it);
+    toast('已添加');
+  }
+  persist();
+  resetForm();
+  render();
+}
+function editItem(id){
+  var it = items.find(function(i){ return i.id === id });
+  if(!it) return;
+  editingId = id;
+  document.getElementById('fTitle').value = it.title;
+  document.getElementById('fCat').value = it.cat;
+  document.getElementById('fStatus').value = it.status;
+  document.getElementById('fCost').value = (it.cost === null ? '' : it.cost);
+  document.getElementById('fDue').value = it.due;
+  document.getElementById('fLink').value = it.link;
+  document.getElementById('fNote').value = it.note;
+  document.getElementById('saveBtn').textContent = '保存修改';
+  document.getElementById('cancelBtn').style.display = '';
+  document.getElementById('editTip').textContent = '正在编辑：' + it.title;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('fTitle').focus();
+}
+function delItem(id){
+  var it = items.find(function(i){ return i.id === id });
+  if(!it) return;
+  if(!confirm('删除「' + it.title + '」？')) return;
+  items = items.filter(function(i){ return i.id !== id });
+  persist();
+  if(editingId === id) resetForm();
+  render();
+  toast('已删除');
+}
+function clearAll(){
+  if(!confirm('清空本地清单（不会改动已发布的 life-list.js）？')) return;
+  items = [];
+  persist();
+  resetForm();
+  render();
+  toast('已清空');
+}
+function buildSource(){
+  var today = new Date();
+  var d = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  var lines = items.map(function(i){
+    return '  { id: ' + JSON.stringify(i.id) +
+      ', title: ' + JSON.stringify(i.title) +
+      ', cat: ' + JSON.stringify(i.cat) +
+      ', status: ' + JSON.stringify(i.status) +
+      ', cost: ' + (i.cost === null ? 'null' : i.cost) +
+      ', due: ' + JSON.stringify(i.due) +
+      ', note: ' + JSON.stringify(i.note) +
+      ', link: ' + JSON.stringify(i.link) + ' }';
+  });
+  return '/* 人生清单数据 —— 由 life-editor.html 生成后覆盖本文件 */\n' +
+    'window.LIFE_META = {\n  updated: ' + JSON.stringify(d) + '\n}\n\n' +
+    'window.LIFE_ITEMS = [\n' + lines.join(',\n') + '\n]\n';
+}
+function genData(){
+  document.getElementById('modalCode').textContent = buildSource();
+  document.getElementById('modal').classList.add('s');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('s') }
+function copyCode(){
+  var el = document.getElementById('modalCode');
+  var txt = el.textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ toast('已复制') }, function(){ fallbackCopy(el) });
+  } else {
+    fallbackCopy(el);
+  }
+}
+function fallbackCopy(el){
+  var r = document.createRange();
+  r.selectNodeContents(el);
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(r);
+  try{ document.execCommand('copy'); toast('已复制') }catch(e){ toast('复制失败，请手动选中') }
+}
+function importData(){
+  var txt = prompt('粘贴 life-list.js 的全部内容（或只粘贴 LIFE_ITEMS 数组）：');
+  if(!txt) return;
+  var m = txt.match(/LIFE_ITEMS\s*=\s*(\[[\s\S]*?\n\])/);
+  var arr = null;
+  if(m){
+    try{ arr = (new Function('return ' + m[1]))() }catch(e){}
+  }
+  if(!arr){
+    try{ arr = JSON.parse(txt) }catch(e){}
+  }
+  if(!Array.isArray(arr)){ toast('解析失败，检查粘贴内容'); return }
+  items = arr.map(norm);
+  persist();
+  resetForm();
+  render();
+  toast('导入 ' + items.length + ' 项');
+}
+
+load();
+render();
+</script>
+</body>
+</html>

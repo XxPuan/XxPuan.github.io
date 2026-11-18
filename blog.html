@@ -11,13 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,500;1,700&display=swap" rel="stylesheet">
   <style>
-    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Regular.woff2')format('woff2');font-weight:400;font-display:swap}
-    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Medium.woff2')format('woff2');font-weight:500;font-display:swap}
-    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Bold.woff2')format('woff2');font-weight:700;font-display:swap}
-    @font-face{font-family:'HarmonyOS Sans';src:url('assets/fonts/HarmonyOS_Sans_Black.woff2')format('woff2');font-weight:800;font-display:swap}
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{--primary-rgb:218,175,75;--primary:#DAAF4B;--primary-light:#F0D060;--diffuse-a:#e7e7a9;--diffuse-b:#e5e37e;--diffuse-c:#559155;--bg:#08080E;--bc15:#F0EEE8;--bc13:#D4CCC0;--bc12:#B8AFA0;--bc10:#9A9080;--bc8:#6B6358;--header-h:80px}
-    html{font-family:'HarmonyOS Sans',-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--bc15);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+    html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','HarmonyOS Sans','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--bc15);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
     body{min-height:100vh;position:relative}
     body::before{
       content:'';position:fixed;inset:0;
@@ -67,11 +63,25 @@
     .float-back:hover .float-back-icon{filter:brightness(10)}
 
     .page-wrap{display:flex;min-height:calc(100vh - var(--header-h))}
-    .page{flex:1;padding:3rem 4rem 5rem 4rem;max-width:960px;margin:0 auto}
+    .page{flex:1;padding:3rem 4rem 5rem 4rem;max-width:960px;margin:0 auto;position:relative;z-index:1}
 
-    .page-header{margin-bottom:2.5rem}
+    .page-header{margin-bottom:1.8rem}
     .page-header h1{font-size:clamp(1.8rem,3vw,2.4rem);font-weight:700;margin-bottom:.4rem}
     .page-header .sub{color:var(--bc10);font-size:1rem}
+
+    .tabs{display:flex;gap:10px;margin-bottom:2.2rem;flex-wrap:wrap}
+    .tab{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--bc10);padding:.55rem 1.3rem;border-radius:999px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:8px}
+    .tab:hover{color:var(--bc13);border-color:rgba(218,175,75,.2)}
+    .tab.on{background:linear-gradient(135deg,rgba(218,175,75,.18),rgba(240,208,96,.08));border-color:rgba(218,175,75,.45);color:var(--primary-light);box-shadow:0 4px 18px rgba(218,175,75,.12)}
+    .tab .cnt{font-size:11px;font-weight:700;opacity:.75;background:rgba(255,255,255,.07);padding:1px 7px;border-radius:999px}
+    .panel{display:none}
+    .panel.on{display:block}
+
+    .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.6rem;flex-wrap:wrap}
+    .sec-head h2{font-size:1.25rem;font-weight:700}
+    .sec-head .hint{font-size:13px;color:var(--bc8);margin-top:3px}
+    .mini-link{font-size:12.5px;font-weight:600;color:var(--primary-light);border:1px solid rgba(218,175,75,.22);padding:.38rem .95rem;border-radius:999px;transition:all .3s;white-space:nowrap}
+    .mini-link:hover{background:rgba(218,175,75,.12);border-color:rgba(218,175,75,.4)}
 
     .blog-timeline{position:relative;padding-left:100px}
     .timeline-svg{position:absolute;left:80px;top:0;height:100%;width:30px;pointer-events:none;z-index:1}
@@ -95,11 +105,61 @@
     .blog-card .card-tags{display:flex;gap:6px;margin-top:.8rem;flex-wrap:wrap}
     .blog-card .card-tags span{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--primary-light);border:1px solid rgba(218,175,75,.2);padding:1px 8px;border-radius:4px}
 
+    /* ---- 人生清单 ---- */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.4rem}
+    .stat{position:relative;overflow:hidden;background:rgba(255,255,255,.04);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:.95rem 1.05rem}
+    .stat::after{content:'';position:absolute;top:-55%;right:-25%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(218,175,75,.16),transparent 70%);pointer-events:none}
+    .stat .k{font-size:11.5px;letter-spacing:.06em;color:var(--bc8);margin-bottom:.35rem}
+    .stat .v{font-size:1.45rem;font-weight:800;color:var(--bc15);line-height:1.2}
+    .stat .v em{font-style:normal;font-size:.62em;font-weight:600;color:var(--bc10);margin-left:2px}
+
+    .bar-wrap{margin-bottom:1.6rem}
+    .bar-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--bc8);margin-bottom:7px}
+    .bar{height:8px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}
+    .bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--primary-light));box-shadow:0 0 12px rgba(240,208,96,.35);transition:width .7s cubic-bezier(.22,1,.36,1)}
+
+    .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:1.3rem}
+    .chip{font-family:inherit;font-size:12.5px;font-weight:600;padding:.34rem .85rem;border-radius:999px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);color:var(--bc10);cursor:pointer;transition:all .25s}
+    .chip:hover{color:var(--bc13);border-color:rgba(255,255,255,.14)}
+    .chip.on{background:rgba(218,175,75,.13);border-color:rgba(218,175,75,.38);color:var(--primary-light)}
+    .chip-sep{width:1px;height:18px;background:rgba(255,255,255,.09);margin:0 3px}
+
+    .life-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .life-card{border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:1.1rem 1.25rem;background:rgba(255,255,255,.035);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:all .35s cubic-bezier(.22,1,.36,1);animation:rise .45s both}
+    .life-card:hover{transform:translateY(-3px);border-color:rgba(218,175,75,.22);background:rgba(255,255,255,.055);box-shadow:0 8px 28px rgba(0,0,0,.18)}
+    .life-card.done{opacity:.55}
+    .life-card.done .lc-title{text-decoration:line-through;text-decoration-color:rgba(255,255,255,.28)}
+    @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .lc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:.5rem}
+    .lc-title{font-size:1rem;font-weight:600;color:var(--bc13);line-height:1.5}
+    .life-card:hover .lc-title{color:var(--bc15)}
+    .lc-cost{font-size:1rem;font-weight:800;color:var(--primary-light);white-space:nowrap;font-variant-numeric:tabular-nums}
+    .lc-cost.tbd{font-size:12px;font-weight:600;color:var(--bc8)}
+    .lc-meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:.55rem}
+    .tag{font-size:11px;font-weight:600;padding:1px 7px;border-radius:4px;border:1px solid rgba(255,255,255,.1);color:var(--bc10);white-space:nowrap}
+    .tag.do{border-color:rgba(240,208,96,.28);color:#F0D060}
+    .tag.buy{border-color:rgba(140,180,255,.28);color:#9DBAFF}
+    .tag.other{border-color:rgba(200,170,255,.24);color:#C9AEFF}
+    .st{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;white-space:nowrap}
+    .st i{width:6px;height:6px;border-radius:50%;display:block}
+    .st-plan{color:#93A3B8}.st-plan i{background:#93A3B8;box-shadow:0 0 6px rgba(147,163,184,.5)}
+    .st-doing{color:var(--primary-light)}.st-doing i{background:var(--primary-light);box-shadow:0 0 7px rgba(240,208,96,.6)}
+    .st-done{color:#7FD1A0}.st-done i{background:#7FD1A0;box-shadow:0 0 7px rgba(127,209,160,.5)}
+    .lc-due{font-size:11.5px;color:var(--bc8)}
+    .lc-note{font-size:13px;color:var(--bc10);line-height:1.75;margin-top:.15rem}
+    .empty{border:1px dashed rgba(255,255,255,.1);border-radius:16px;padding:3rem 1.5rem;text-align:center;color:var(--bc8);font-size:14px}
+    .empty a{color:var(--primary-light);border-bottom:1px solid rgba(218,175,75,.3)}
+    .life-foot{margin-top:1.6rem;font-size:12px;color:var(--bc8);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
     footer{padding:2rem 4rem;border-top:1px solid rgba(255,255,255,.04);text-align:center;color:var(--bc8);font-size:13px}
     footer .footer-inner{max-width:960px;margin:0 auto}
     .reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
     .reveal.visible{opacity:1;transform:translateY(0)}
 
+    @media screen and (max-width:900px){
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .life-grid{grid-template-columns:1fr}
+    }
     @media screen and (max-width:767px){
       #header{padding:0 1rem}#headerBadge{height:28px}
       #progressTrack{left:0;width:2px}
@@ -128,21 +188,73 @@
       <h1>博客</h1>
       <p class="sub">记录、思考与生活</p>
     </div>
-    <div id="blogTimeline" class="blog-timeline reveal reveal-d2">
-      <svg class="timeline-svg" viewBox="0 0 30 1000" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="rgba(240,208,96,.3)"/>
-            <stop offset="50%" stop-color="rgba(218,175,75,.5)"/>
-            <stop offset="100%" stop-color="rgba(240,208,96,.15)"/>
-          </linearGradient>
-        </defs>
-        <path d="M15,0 C5,60 25,120 15,180 C5,240 25,300 15,360 C5,420 25,480 15,540 C5,600 25,660 15,720 C5,780 25,840 15,900 C5,960 25,980 15,1000" vector-effect="non-scaling-stroke"/>
-      </svg>
+
+    <div class="tabs">
+      <button class="tab on" data-tab="blog">博客文章<span class="cnt" id="cntBlog">0</span></button>
+      <button class="tab" data-tab="life">人生清单<span class="cnt" id="cntLife">0</span></button>
     </div>
+
+    <!-- 板块一：博客文章 -->
+    <section class="panel on" id="panel-blog">
+      <div class="sec-head">
+        <div>
+          <h2>文章时间线</h2>
+          <div class="hint">按时间倒序，点击卡片阅读全文</div>
+        </div>
+        <a class="mini-link" href="editor.html">写新文章</a>
+      </div>
+      <div id="blogTimeline" class="blog-timeline reveal reveal-d2">
+        <svg class="timeline-svg" viewBox="0 0 30 1000" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(240,208,96,.3)"/>
+              <stop offset="50%" stop-color="rgba(218,175,75,.5)"/>
+              <stop offset="100%" stop-color="rgba(240,208,96,.15)"/>
+            </linearGradient>
+          </defs>
+          <path d="M15,0 C5,60 25,120 15,180 C5,240 25,300 15,360 C5,420 25,480 15,540 C5,600 25,660 15,720 C5,780 25,840 15,900 C5,960 25,980 15,1000" vector-effect="non-scaling-stroke"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- 板块二：人生清单 -->
+    <section class="panel" id="panel-life">
+      <div class="sec-head">
+        <div>
+          <h2>人生清单</h2>
+          <div class="hint">想做 / 想买的事，连同大概花费与完成状态</div>
+        </div>
+        <a class="mini-link" href="life-editor.html">管理清单</a>
+      </div>
+
+      <div class="stats" id="lifeStats"></div>
+      <div class="bar-wrap">
+        <div class="bar-meta"><span id="barLabel">完成进度</span><span id="barPct">0%</span></div>
+        <div class="bar"><i id="barFill"></i></div>
+      </div>
+
+      <div class="filters" id="lifeFilters">
+        <button class="chip on" data-cat="all">全部</button>
+        <button class="chip" data-cat="do">想做</button>
+        <button class="chip" data-cat="buy">想买</button>
+        <button class="chip" data-cat="other">其他</button>
+        <span class="chip-sep"></span>
+        <button class="chip on" data-status="all">全部状态</button>
+        <button class="chip" data-status="plan">计划中</button>
+        <button class="chip" data-status="doing">进行中</button>
+        <button class="chip" data-status="done">已完成</button>
+      </div>
+
+      <div class="life-grid" id="lifeGrid"></div>
+      <div class="life-foot" id="lifeFoot"></div>
+    </section>
   </div>
 </div>
 
+<a href="index.html" class="float-back"><img src="assets/返回.png" alt="返回" class="float-back-icon">返回首页</a>
+<footer><div class="footer-inner"><span>© 2026 XxPuan's Value</span></div></footer>
+
+<script src="life-list.js"></script>
 <script>
 const blogPosts = [
   {
@@ -206,7 +318,20 @@ const blogPosts = [
 ]
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
-function renderPosts() {
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+  })
+}
+
+function observeReveals(root){
+  var obs = new IntersectionObserver(function(e){
+    e.forEach(function(i){ if(i.isIntersecting){ i.target.classList.add('visible'); obs.unobserve(i.target) } })
+  }, {threshold:0.12})
+  ;(root || document).querySelectorAll('.reveal').forEach(function(el){ obs.observe(el) })
+}
+
+function renderPosts(){
   const container = document.getElementById('blogTimeline')
   const svg = container.querySelector('.timeline-svg')
   container.innerHTML = ''
@@ -222,20 +347,147 @@ function renderPosts() {
     entry.innerHTML =
       '<div class="blog-date"><span class="dot"></span><span class="day">' + parseInt(d, 10) + '</span><span class="month">' + monthAbbr + '</span><span class="year">' + y + '</span></div>' +
       '<div class="blog-card' + (disabled ? '' : ' clickable') + '"' + (disabled ? '' : ' onclick="location.href=\'' + href + '\'"') + '>' +
-      '<h3>' + post.title + '</h3>' +
+      '<h3>' + esc(post.title) + '</h3>' +
       '<div class="card-date-alt">' + dateLabel + '</div>' +
-      '<p>' + post.summary + '</p>' +
-      '<div class="card-tags">' + post.tags.map(function(t){return '<span>' + t + '</span>'}).join('') + '</div></div>'
+      '<p>' + esc(post.summary) + '</p>' +
+      '<div class="card-tags">' + post.tags.map(function(t){return '<span>' + esc(t) + '</span>'}).join('') + '</div></div>'
     container.appendChild(entry)
   })
-  var obs = new IntersectionObserver(function(e){e.forEach(function(i){if(i.isIntersecting){i.target.classList.add('visible');obs.unobserve(i.target)}})},{threshold:0.15})
-  document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el)})
+  document.getElementById('cntBlog').textContent = blogPosts.filter(function(p){return p.file && !p.disabled}).length
+  observeReveals(container)
 }
-renderPosts()
-</script>
 
-<a href="index.html" class="float-back"><img src="assets/返回.png" alt="返回" class="float-back-icon">返回首页</a>
-<footer><div class="footer-inner"><span>© 2026 XxPuan's Value</span></div></footer>
+/* ---------- 人生清单 ---------- */
+var CAT_LABEL = {do:'想做', buy:'想买', other:'其他'}
+var STATUS_LABEL = {plan:'计划中', doing:'进行中', done:'已完成'}
+var STATUS_ORDER = {doing:0, plan:1, done:2}
+var lifeItems = (window.LIFE_ITEMS || []).map(function(it, i){
+  return {
+    id: it.id || ('l' + i),
+    title: it.title || '',
+    cat: CAT_LABEL[it.cat] ? it.cat : 'do',
+    status: STATUS_LABEL[it.status] ? it.status : 'plan',
+    cost: (it.cost === 0 || it.cost) ? Number(it.cost) : null,
+    due: it.due || '',
+    note: it.note || '',
+    link: it.link || ''
+  }
+})
+var lifeFilter = {cat:'all', status:'all'}
+
+function fmtCost(n){
+  if(n === null || n === undefined || n === '' || isNaN(n)) return ''
+  return '¥' + Number(n).toLocaleString('zh-CN')
+}
+function sortedItems(){
+  return lifeItems.slice().sort(function(a, b){
+    var s = (STATUS_ORDER[a.status] || 0) - (STATUS_ORDER[b.status] || 0)
+    if(s !== 0) return s
+    if(a.due && b.due) return a.due < b.due ? -1 : (a.due > b.due ? 1 : 0)
+    if(a.due) return -1
+    if(b.due) return 1
+    return 0
+  })
+}
+function renderLifeStats(){
+  var total = lifeItems.length
+  var done = lifeItems.filter(function(i){return i.status === 'done'}).length
+  var doN = lifeItems.filter(function(i){return i.cat === 'do'}).length
+  var buyN = lifeItems.filter(function(i){return i.cat === 'buy'}).length
+  var allCost = lifeItems.reduce(function(s, i){return s + (i.cost || 0)}, 0)
+  var leftCost = lifeItems.filter(function(i){return i.status !== 'done'}).reduce(function(s, i){return s + (i.cost || 0)}, 0)
+
+  document.getElementById('lifeStats').innerHTML =
+    '<div class="stat"><div class="k">想做</div><div class="v">' + doN + '<em>项</em></div></div>' +
+    '<div class="stat"><div class="k">想买</div><div class="v">' + buyN + '<em>项</em></div></div>' +
+    '<div class="stat"><div class="k">预计总花费</div><div class="v">' + (allCost ? fmtCost(allCost) : '待定') + '</div></div>' +
+    '<div class="stat"><div class="k">完成</div><div class="v">' + done + '<em>/ ' + total + ' 项</em></div></div>'
+
+  var pct = total ? Math.round(done / total * 100) : 0
+  document.getElementById('barPct').textContent = pct + '%'
+  document.getElementById('barLabel').textContent = '完成进度 · 已完成 ' + done + ' 项，待花 ' + (leftCost ? fmtCost(leftCost) : '¥0')
+  document.getElementById('barFill').style.width = pct + '%'
+  document.getElementById('cntLife').textContent = total
+}
+function renderLifeGrid(){
+  var grid = document.getElementById('lifeGrid')
+  var list = sortedItems().filter(function(i){
+    if(lifeFilter.cat !== 'all' && i.cat !== lifeFilter.cat) return false
+    if(lifeFilter.status !== 'all' && i.status !== lifeFilter.status) return false
+    return true
+  })
+  if(!lifeItems.length){
+    grid.innerHTML = '<div class="empty">清单还是空的 —— 去 <a href="life-editor.html">管理清单</a> 添加第一件事</div>'
+    document.getElementById('lifeFoot').innerHTML = ''
+    return
+  }
+  if(!list.length){
+    grid.innerHTML = '<div class="empty">这个筛选下没有条目</div>'
+    document.getElementById('lifeFoot').innerHTML = ''
+    return
+  }
+  grid.innerHTML = list.map(function(i, idx){
+    var cost = i.cost === null ? '<span class="lc-cost tbd">花费待定</span>' : '<span class="lc-cost">' + fmtCost(i.cost) + '</span>'
+    var title = esc(i.title)
+    if(i.link) title = '<a href="' + esc(i.link) + '" target="_blank" rel="noopener">' + title + '</a>'
+    return '<div class="life-card' + (i.status === 'done' ? ' done' : '') + '" style="animation-delay:' + (idx * 45) + 'ms">' +
+      '<div class="lc-top"><div class="lc-title">' + title + '</div>' + cost + '</div>' +
+      '<div class="lc-meta"><span class="tag ' + i.cat + '">' + CAT_LABEL[i.cat] + '</span>' +
+      '<span class="st st-' + i.status + '"><i></i>' + STATUS_LABEL[i.status] + '</span>' +
+      (i.due ? '<span class="lc-due">' + esc(i.due) + ' 前</span>' : '') + '</div>' +
+      (i.note ? '<div class="lc-note">' + esc(i.note) + '</div>' : '') +
+      '</div>'
+  }).join('')
+  var leftCost = list.reduce(function(s, i){return s + (i.cost || 0)}, 0)
+  var foot = '当前显示 ' + list.length + ' / ' + lifeItems.length + ' 项 · 合计 ' + (leftCost ? fmtCost(leftCost) : '待定')
+  if(window.LIFE_META && window.LIFE_META.updated) foot += ' · 更新于 ' + String(window.LIFE_META.updated).slice(0, 10)
+  document.getElementById('lifeFoot').innerHTML = '<span>' + foot + '</span>'
+}
+function bindLifeFilters(){
+  var box = document.getElementById('lifeFilters')
+  box.addEventListener('click', function(e){
+    var btn = e.target.closest('.chip')
+    if(!btn) return
+    if(btn.dataset.cat){
+      lifeFilter.cat = btn.dataset.cat
+      box.querySelectorAll('[data-cat]').forEach(function(b){ b.classList.toggle('on', b === btn) })
+    } else if(btn.dataset.status){
+      lifeFilter.status = btn.dataset.status
+      box.querySelectorAll('[data-status]').forEach(function(b){ b.classList.toggle('on', b === btn) })
+    }
+    renderLifeGrid()
+  })
+}
+
+/* ---------- 板块切换 ---------- */
+function showTab(name, push){
+  var target = name === 'life' ? 'life' : 'blog'
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.toggle('on', t.dataset.tab === target) })
+  document.getElementById('panel-blog').classList.toggle('on', target === 'blog')
+  document.getElementById('panel-life').classList.toggle('on', target === 'life')
+  if(target === 'blog') observeReveals(document.getElementById('panel-blog'))
+  if(push !== false){
+    try{
+      history.replaceState(null, '', target === 'life' ? '#life' : location.pathname + location.search)
+    }catch(err){}
+  }
+  try{ localStorage.setItem('blogTab', target) }catch(err){}
+}
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click', function(){ showTab(t.dataset.tab) })
+})
+
+renderPosts()
+renderLifeStats()
+renderLifeGrid()
+bindLifeFilters()
+
+var initial = (location.hash === '#life') ? 'life' : 'blog'
+if(location.hash !== '#life' && location.hash !== '#blog'){
+  try{ initial = localStorage.getItem('blogTab') === 'life' ? 'life' : 'blog' }catch(err){}
+}
+showTab(initial, false)
+</script>
 
 <script>
 ;(function(){
