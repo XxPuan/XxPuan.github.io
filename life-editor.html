@@ -67,8 +67,11 @@ td.money.tbd{color:var(--c8);font-weight:500;font-size:12px}
 .tag.do{border-color:rgba(240,208,96,.28);color:#F0D060}
 .tag.buy{border-color:rgba(140,180,255,.28);color:#9DBAFF}
 .tag.other{border-color:rgba(200,170,255,.24);color:#C9AEFF}
-.st{font-size:11.5px;font-weight:600;white-space:nowrap}
-.st-plan{color:#93A3B8}.st-doing{color:var(--pl)}.st-done{color:#7FD1A0}
+.st{display:inline-flex;align-items:center;font-size:11px;font-weight:700;white-space:nowrap;padding:2px 9px;border-radius:999px;border:1px solid transparent;line-height:1.6}
+.st-plan{color:#A8B6C9;background:rgba(147,163,184,.1);border-color:rgba(147,163,184,.32);border-style:dashed}
+.st-doing{color:#241a04;background:linear-gradient(135deg,#F5D97A,#DAAF4B);border-color:rgba(255,255,255,.22);box-shadow:0 0 10px rgba(240,208,96,.25)}
+.st-done{color:#8FE0B0;background:rgba(127,209,160,.14);border-color:rgba(127,209,160,.4)}
+.st-done::before{content:'✓';font-size:10.5px;font-weight:800;margin-right:2px}
 .tbl-ops{display:flex;gap:6px;justify-content:flex-end}
 .empty-row td{text-align:center;color:var(--c8);padding:2rem 1rem;font-size:13px}
 
