@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>人生清单管理 - XxPuan</title>
 <style>
+@font-face{font-family:'Bebas Neue';src:url('assets/fonts/BebasNeue-Regular.otf')format('opentype');font-weight:400;font-style:normal;font-display:swap}
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--p-rgb:218,175,75;--p:#DAAF4B;--pl:#F0D060;--da:#e7e7a9;--db:#e5e37e;--dc:#559155;--bg:#08080E;--c15:#F0EEE8;--c13:#D4CCC0;--c12:#B8AFA0;--c10:#9A9080;--c8:#6B6358}
 body{font-family:-apple-system,'Segoe UI','PingFang SC','HarmonyOS Sans','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--c15);padding:2rem;min-height:100vh;position:relative}
@@ -61,7 +62,7 @@ th{text-align:left;font-size:11.5px;font-weight:600;color:var(--c8);letter-spaci
 td{padding:.6rem;border-bottom:1px solid rgba(255,255,255,.04);color:var(--c12);vertical-align:middle}
 tr:hover td{background:rgba(255,255,255,.02)}
 td.tt{color:var(--c13);font-weight:600}
-td.money{font-variant-numeric:tabular-nums;font-weight:700;color:var(--pl);white-space:nowrap}
+td.money{font-family:'Bebas Neue',-apple-system,'Segoe UI','PingFang SC',sans-serif;font-size:1.05rem;font-weight:400;letter-spacing:.03em;color:var(--pl);white-space:nowrap}
 td.money.tbd{color:var(--c8);font-weight:500;font-size:12px}
 .tag{font-size:11px;font-weight:600;padding:1px 7px;border-radius:4px;border:1px solid rgba(255,255,255,.1);color:var(--c10);white-space:nowrap}
 .tag.do{border-color:rgba(240,208,96,.28);color:#F0D060}
@@ -76,7 +77,7 @@ td.money.tbd{color:var(--c8);font-weight:500;font-size:12px}
 .empty-row td{text-align:center;color:var(--c8);padding:2rem 1rem;font-size:13px}
 
 .sum{display:flex;gap:1.4rem;flex-wrap:wrap;font-size:12.5px;color:var(--c10);margin-top:1rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.05)}
-.sum b{color:var(--pl);font-weight:700}
+.sum b{font-family:'Bebas Neue',-apple-system,'Segoe UI','PingFang SC',sans-serif;font-size:1.15rem;font-weight:400;letter-spacing:.03em;color:var(--pl)}
 
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.78);z-index:999;justify-content:center;align-items:center;padding:1rem}
 .modal.s{display:flex}

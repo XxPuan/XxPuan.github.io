@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,500;1,700&display=swap" rel="stylesheet">
   <style>
+    @font-face{font-family:'Bebas Neue';src:url('assets/fonts/BebasNeue-Regular.otf')format('opentype');font-weight:400;font-style:normal;font-display:swap}
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{--primary-rgb:218,175,75;--primary:#DAAF4B;--primary-light:#F0D060;--diffuse-a:#e7e7a9;--diffuse-b:#e5e37e;--diffuse-c:#559155;--bg:#08080E;--bc15:#F0EEE8;--bc13:#D4CCC0;--bc12:#B8AFA0;--bc10:#9A9080;--bc8:#6B6358;--header-h:80px}
     html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','HarmonyOS Sans','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--bc15);-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
@@ -91,9 +92,9 @@
     .blog-entry:last-child{margin-bottom:0}
 
     .blog-date{font-family:'Playfair Display',Georgia,'Times New Roman',serif;font-style:italic;text-align:right;padding-top:.3rem;position:relative;z-index:2}
-    .blog-date .day{display:block;font-size:2.2rem;font-weight:700;line-height:1;background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,.18));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .blog-date .month{display:block;font-size:.9rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--primary-light);margin-top:2px}
-    .blog-date .year{display:block;font-size:.65rem;color:var(--bc8);letter-spacing:.04em;margin-top:0}
+    .blog-date .day{display:inline-block;font-family:'Bebas Neue',-apple-system,'Segoe UI','PingFang SC',sans-serif;font-size:2.6rem;font-weight:400;line-height:1.15;padding:.06em .02em .02em;background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,.18));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .blog-date .month{display:block;font-family:'Bebas Neue',-apple-system,'Segoe UI','PingFang SC',sans-serif;font-size:1rem;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--primary-light);margin-top:1px;line-height:1.2}
+    .blog-date .year{display:block;font-family:'Bebas Neue',-apple-system,'Segoe UI','PingFang SC',sans-serif;font-size:.82rem;font-weight:400;color:var(--bc8);letter-spacing:.08em;margin-top:1px;line-height:1.2}
     .blog-date .dot{position:absolute;right:-14px;top:.6rem;width:10px;height:10px;border-radius:50%;background:var(--primary-light);box-shadow:0 0 8px rgba(240,208,96,.4);z-index:3}
 
     .blog-card{border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:1.5rem 1.8rem;background:rgba(255,255,255,.04);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 4px 24px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.06);transition:all .35s cubic-bezier(.22,1,.36,1);cursor:pointer;position:relative;z-index:2}
@@ -110,11 +111,12 @@
     .stat{position:relative;overflow:hidden;background:rgba(255,255,255,.04);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:.95rem 1.05rem}
     .stat::after{content:'';position:absolute;top:-55%;right:-25%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(218,175,75,.16),transparent 70%);pointer-events:none}
     .stat .k{font-size:11.5px;letter-spacing:.06em;color:var(--bc8);margin-bottom:.35rem}
-    .stat .v{font-size:1.45rem;font-weight:800;color:var(--bc15);line-height:1.2}
-    .stat .v em{font-style:normal;font-size:.62em;font-weight:600;color:var(--bc10);margin-left:2px}
+    .stat .v{font-family:'Bebas Neue',-apple-system,'Segoe UI','PingFang SC',sans-serif;font-size:1.9rem;font-weight:400;color:var(--bc15);line-height:1.1;letter-spacing:.02em}
+    .stat .v em{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;font-style:normal;font-size:.6em;font-weight:600;color:var(--bc10);margin-left:3px;letter-spacing:0}
 
     .bar-wrap{margin-bottom:1.6rem}
-    .bar-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--bc8);margin-bottom:7px}
+    .bar-meta{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--bc8);margin-bottom:7px}
+    #barPct{font-family:'Bebas Neue',-apple-system,'Segoe UI','PingFang SC',sans-serif;font-size:1.1rem;font-weight:400;color:var(--primary-light);letter-spacing:.04em}
     .bar{height:8px;border-radius:99px;background:rgba(255,255,255,.05);overflow:hidden}
     .bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--primary-light));box-shadow:0 0 12px rgba(240,208,96,.35);transition:width .7s cubic-bezier(.22,1,.36,1)}
 
@@ -144,8 +146,8 @@
     .lc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:.5rem}
     .lc-title{font-size:1rem;font-weight:600;color:var(--bc13);line-height:1.5}
     .life-card:hover .lc-title{color:var(--bc15)}
-    .lc-cost{font-size:1rem;font-weight:800;color:var(--primary-light);white-space:nowrap;font-variant-numeric:tabular-nums}
-    .lc-cost.tbd{font-size:12px;font-weight:600;color:var(--bc8)}
+    .lc-cost{font-family:'Bebas Neue',-apple-system,'Segoe UI','PingFang SC',sans-serif;font-size:1.25rem;font-weight:400;color:var(--primary-light);white-space:nowrap;letter-spacing:.03em;line-height:1.2}
+    .lc-cost.tbd{font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;font-size:12px;font-weight:600;color:var(--bc8);letter-spacing:0}
     .lc-meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:.55rem}
     .tag{font-size:11px;font-weight:600;padding:1px 7px;border-radius:4px;border:1px solid rgba(255,255,255,.1);color:var(--bc10);white-space:nowrap}
     .tag.do{border-color:rgba(240,208,96,.28);color:#F0D060}
